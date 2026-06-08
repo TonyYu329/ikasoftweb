@@ -1,0 +1,60 @@
+/* Game styles */
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+#gameCanvas {
+    display: block;
+}
+
+#ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 20px;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#score {
+    float: left;
+    font-size: 18px;
+}
+
+#lives {
+    float: right;
+    font-size: 18px;
+}
+
+#gameOver {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    z-index: 20;
+}
+
+#gameOver h2 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+#gameOver p {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#gameOver button {
+    padding: 10px 30px;
+    font-size: 18px;
+    cursor: pointer;
+    pointer-events: auto;
+}

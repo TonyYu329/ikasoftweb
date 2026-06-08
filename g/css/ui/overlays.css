@@ -1,0 +1,42 @@
+/* Overlay styles */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.overlay-content {
+    background: #2a2a4a;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 300px;
+}
+
+.overlay-content h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.overlay-content p {
+    margin-bottom: 10px;
+    color: #aaa;
+}
+
+.overlay-content button {
+    margin-top: 20px;
+    padding: 10px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+}
