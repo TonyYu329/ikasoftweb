@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文件夹加密隐藏王 — 经典的文件夹加密、文件夹隐藏系统安全工具</title>
+<meta name="description" content="《文件夹加密隐藏王》是一款经典的文件夹加密、文件夹隐藏的系统安全工具，是您保护电脑里个人隐私的最佳助手。绿色软件，无需安装，解压即用。">
+<meta name="keywords" content="文件夹加密隐藏王, 文件夹加密, 文件夹隐藏, 加密软件, 隐藏文件夹, 艾卡软件工作室">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ===================== 设计令牌 ===================== */
+:root {
+  /* 背景层级 — 暗蓝色系，从配色样例图提取 */
+  --bg-deep: #040d1a;
+  --bg-base: #05152c;
+  --bg-alt: #06172b;
+  --bg-mid: #0a1825;
+  --bg-surface-dark: #0f2636;
+  --bg-surface-mid: #0d2736;
+
+  /* 边框 */
+  --color-border: #1a2a3a;
+
+  /* 强调色 — 暖金色 */
+  --color-gold: #ee9038;
+  --color-gold-hover: #f3a13e;
+  --color-gold-deep: #d47828;
+
+  /* 文本色 */
+  --text-primary: #e8edf3;
+  --text-body: #9ca9b9;
+  --text-secondary: #5a6f82;
+  --text-muted: #3c4f60;
+
+  /* 功能色 */
+  --color-success: #4ade80;
+  --color-error: #ef4444;
+
+  /* 语义化别名 */
+  --color-bg: var(--bg-base);
+  --color-surface: var(--bg-surface-dark);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-body);
+  --color-accent: var(--color-gold);
+  --color-accent-hover: var(--color-gold-hover);
+  --color-accent-deep: var(--color-gold-deep);
+
+  --font-sans: 'Inter', 'Helvetica Neue', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 0px;
+  --radius-full: 9999px;
+
+  --shadow-glow: 0 0 0 1px rgba(212, 120, 40, 0.3), 0 0 20px 3px rgba(238, 144, 56, 0.15);
+  --shadow-card: 0 1px 0 0 rgba(26, 42, 58, 0.5);
+  --shadow-card-hover: 0 1px 0 0 rgba(26, 42, 58, 0.8);
+
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===================== 基础样式 ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--text-primary);
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+a:hover { color: var(--text-primary); }
+a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ===================== 导航栏 ===================== */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(5, 21, 44, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(26, 42, 58, 0.5);
+}
+
+.navbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.navbar-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--color-accent);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(212, 120, 40, 0.3), 0 0 12px 2px rgba(238, 144, 56, 0.15);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+}
+
+.navbar-links a {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  transition: all var(--duration-fast);
+}
+
+.navbar-links a:hover,
+.navbar-links a.active {
+  color: var(--text-primary);
+  background: var(--color-surface);
+}
+
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.navbar-toggle:hover { background: var(--color-surface); }
+
+/* ===================== Hero 区域 ===================== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: var(--color-bg);
+  overflow: hidden;
+  padding-top: 60px;
+}
+
+.hero-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-20) var(--space-6);
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.hero-text h1 {
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.0;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.025em;
+}
+
+.hero-subtitle {
+  font-size: 1.0625rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-3);
+  max-width: 480px;
+}
+
+.hero-desc {
+  font-size: 0.875rem;
+  color: rgba(154, 169, 185, 0.75);
+  line-height: 1.8;
+  margin-bottom: var(--space-8);
+  max-width: 480px;
+}
+
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 12px;
+  background: var(--color-surface);
+  border: 1px solid rgba(26, 42, 58, 0.7);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.hero-badge svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  stroke: var(--color-accent);
+}
+
+.hero-badge.green svg { stroke: var(--color-success); }
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.75rem 1.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-primary:hover {
+  background: var(--color-gold-hover);
+  transform: translateY(-1px);
+  color: var(--text-primary);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(26, 42, 58, 0.7);
+}
+
+.btn-secondary:hover {
+  background: rgba(22, 20, 18, 0.8);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+}
+
+.btn-outline:hover {
+  background: var(--color-accent);
+  color: var(--text-primary);
+}
+
+/* Hero 右侧示意图 */
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-surface);
+  border: 1px solid rgba(26, 42, 58, 0.5);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.hero-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.hero-card-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.hero-card-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.hero-card-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(26, 42, 58, 0.8);
+}
+
+.hero-card-dots span:nth-child(1) { background: #ef4444; }
+.hero-card-dots span:nth-child(2) { background: #eab308; }
+.hero-card-dots span:nth-child(3) { background: #22c55e; }
+
+.folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.folder-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(26, 42, 58, 0.3);
+  transition: background var(--duration-fast);
+}
+
+.folder-item:hover { background: rgba(255, 255, 255, 0.04); }
+
+.folder-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.folder-icon.hidden { background: rgba(248, 113, 113, 0.08); }
+.folder-icon.normal { background: rgba(74, 222, 128, 0.08); }
+
+.folder-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.folder-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.folder-status {
+  font-size: 0.6875rem;
+  color: rgba(154, 169, 185, 0.55);
+}
+
+/* ===================== 通用节样式 ===================== */
+.section {
+  padding: var(--space-24) var(--space-6);
+}
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto var(--space-16);
+}
+
+.section-label {
+  display: inline-block;
+  padding: 4px 14px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(26, 42, 58, 0.5);
+  margin-bottom: var(--space-4);
+}
+
+.section-header h2 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin-bottom: var(--space-4);
+}
+
+.section-header p {
+  font-size: 1rem;
+  color: rgba(154, 169, 185, 0.75);
+  line-height: 1.7;
+}
+
+/* ===================== 功能特点 ===================== */
+#features {
+  border-top: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+.feature-card {
+  background: var(--color-surface);
+  border: 1px solid rgba(26, 42, 58, 0.4);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.feature-card:hover {
+  background: rgba(22, 20, 18, 0.7);
+  border-color: rgba(26, 42, 58, 0.7);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  margin-bottom: var(--space-4);
+  background: rgba(238, 144, 56, 0.08);
+  border: 1px solid rgba(238, 144, 56, 0.12);
+}
+
+.feature-card.green .feature-icon {
+  background: rgba(74, 222, 128, 0.06);
+  border-color: rgba(74, 222, 128, 0.1);
+}
+
+.feature-card h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  letter-spacing: -0.01em;
+}
+
+.feature-card p {
+  font-size: 0.875rem;
+  color: rgba(154, 169, 185, 0.7);
+  line-height: 1.7;
+}
+
+.feature-card p strong { color: var(--color-text-secondary); }
+
+/* ===================== 使用说明 ===================== */
+#howto {
+  border-top: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.step-card {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid rgba(26, 42, 58, 0.4);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.step-card:hover {
+  border-color: rgba(26, 42, 58, 0.7);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: rgba(238, 144, 56, 0.1);
+  border: 1px solid rgba(238, 144, 56, 0.15);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.step-content p,
+.step-content li {
+  font-size: 0.8125rem;
+  color: rgba(154, 169, 185, 0.7);
+  line-height: 1.7;
+}
+
+.step-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.step-content ul li {
+  padding-left: var(--space-4);
+  position: relative;
+}
+
+.step-content ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.step-content ol {
+  padding-left: var(--space-4);
+}
+
+.step-content ol li {
+  margin-bottom: var(--space-1);
+}
+
+.step-content strong { color: var(--color-text-secondary); }
+
+/* ===================== 注册/价格 ===================== */
+#pricing {
+  border-top: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  max-width: 720px;
+  margin: 0 auto var(--space-8);
+}
+
+.pricing-card {
+  background: var(--color-surface);
+  border: 1px solid rgba(26, 42, 58, 0.4);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  position: relative;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.pricing-card:hover {
+  border-color: rgba(26, 42, 58, 0.8);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.pricing-card.featured {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 24px rgba(238, 144, 56, 0.06);
+}
+
+.pricing-card.featured::before {
+  content: '推荐';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 16px;
+  background: var(--color-accent);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 1px rgba(212, 120, 40, 0.3), 0 0 12px 2px rgba(238, 144, 56, 0.15);
+}
+
+.pricing-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.pricing-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.pricing-price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.pricing-price span {
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(154, 169, 185, 0.55);
+}
+
+.pricing-desc {
+  font-size: 0.8125rem;
+  color: rgba(154, 169, 185, 0.55);
+  margin-top: var(--space-2);
+}
+
+.pricing-features {
+  list-style: none;
+  margin-bottom: var(--space-6);
+}
+
+.pricing-features li {
+  padding: var(--space-2) 0;
+  font-size: 0.875rem;
+  color: rgba(154, 169, 185, 0.75);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pricing-features li::before {
+  content: '→';
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.pricing-btn {
+  display: block;
+  text-align: center;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.pricing-btn.primary {
+  background: var(--color-accent);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.pricing-btn.primary:hover {
+  background: var(--color-gold-hover);
+  transform: translateY(-1px);
+  color: var(--text-primary);
+}
+
+.pricing-btn.secondary {
+  background: rgba(26, 42, 58, 0.3);
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(26, 42, 58, 0.5);
+}
+
+.pricing-btn.secondary:hover {
+  background: rgba(26, 42, 58, 0.5);
+  color: var(--text-primary);
+}
+
+/* ===================== 注册说明 ===================== */
+.reg-info {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border: 1px solid rgba(26, 42, 58, 0.4);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.reg-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.reg-tab {
+  flex: 1;
+  padding: var(--space-3) var(--space-5);
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(154, 169, 185, 0.55);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  transition: all var(--duration-fast);
+  position: relative;
+}
+
+.reg-tab:hover { color: var(--color-text-secondary); }
+
+.reg-tab.active {
+  color: var(--color-accent);
+  background: rgba(238, 144, 56, 0.04);
+}
+
+.reg-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: var(--color-accent);
+}
+
+.reg-panel {
+  display: none;
+  padding: var(--space-8);
+}
+
+.reg-panel.active { display: block; }
+
+.reg-panel h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.reg-steps {
+  list-style: none;
+  counter-reset: step;
+}
+
+.reg-steps li {
+  counter-increment: step;
+  padding: var(--space-3) 0;
+  padding-left: var(--space-10);
+  position: relative;
+  font-size: 0.875rem;
+  color: rgba(154, 169, 185, 0.7);
+  line-height: 1.6;
+  border-bottom: 1px solid rgba(26, 42, 58, 0.3);
+}
+
+.reg-steps li:last-child { border-bottom: none; }
+
+.reg-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: var(--space-3);
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: rgba(238, 144, 56, 0.08);
+  border: 1px solid rgba(238, 144, 56, 0.12);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.reg-steps li strong { color: var(--color-text-secondary); }
+.reg-steps li .highlight { color: var(--color-warning); font-weight: 600; }
+.reg-steps li a { font-weight: 500; color: var(--color-accent); }
+.reg-steps li a:hover { color: var(--text-primary); }
+
+.reg-images {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.reg-images img {
+  border: 1px solid rgba(26, 42, 58, 0.5);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  object-fit: none;
+}
+
+.reg-note {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: rgba(248, 113, 113, 0.06);
+  border: 1px solid rgba(248, 113, 113, 0.1);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  color: rgba(154, 169, 185, 0.7);
+}
+
+.reg-note strong { color: var(--color-warning); }
+
+.free-methods {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.free-methods th,
+.free-methods td {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid rgba(26, 42, 58, 0.4);
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.free-methods th {
+  background: rgba(26, 42, 58, 0.2);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.free-methods td {
+  color: rgba(154, 169, 185, 0.7);
+  line-height: 1.6;
+}
+
+.free-methods td strong { color: var(--color-text-secondary); }
+
+/* ===================== 关于本软件 ===================== */
+#about {
+  border-top: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.about-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border: 1px solid rgba(26, 42, 58, 0.4);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.about-info-table th,
+.about-info-table td {
+  padding: var(--space-3) var(--space-5);
+  font-size: 0.875rem;
+  border-bottom: 1px solid rgba(26, 42, 58, 0.3);
+}
+
+.about-info-table th {
+  background: rgba(26, 42, 58, 0.2);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  width: 120px;
+  text-align: left;
+}
+
+.about-info-table td {
+  color: rgba(154, 169, 185, 0.7);
+}
+
+.about-info-table tr:last-child th,
+.about-info-table tr:last-child td {
+  border-bottom: none;
+}
+
+.about-info-table a {
+  color: var(--color-accent);
+}
+
+.about-desc-box {
+  background: var(--color-surface);
+  border: 1px solid rgba(26, 42, 58, 0.4);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+}
+
+.about-desc-box h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.about-desc-box p {
+  font-size: 0.875rem;
+  color: rgba(154, 169, 185, 0.7);
+  line-height: 1.8;
+  margin-bottom: var(--space-2);
+}
+
+.about-desc-box .highlight-desc {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.about-trial-note {
+  margin-top: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: rgba(238, 144, 56, 0.04);
+  border: 1px solid rgba(238, 144, 56, 0.1);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: rgba(154, 169, 185, 0.8);
+  line-height: 1.7;
+}
+
+.about-trial-note strong { color: var(--color-accent); }
+
+/* ===================== 底部 ===================== */
+.footer {
+  background: var(--color-bg);
+  padding: var(--space-16) var(--space-6) var(--space-8);
+  border-top: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-10);
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-8);
+  border-bottom: 1px solid rgba(26, 42, 58, 0.3);
+}
+
+.footer-brand h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.footer-brand p {
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: rgba(154, 169, 185, 0.55);
+  max-width: 360px;
+}
+
+.footer-col h4 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-3);
+  opacity: 0.6;
+}
+
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col ul li {
+  margin-bottom: var(--space-2);
+}
+
+.footer-col ul li a {
+  font-size: 0.8125rem;
+  color: rgba(154, 169, 185, 0.55);
+  transition: color var(--duration-fast);
+}
+
+.footer-col ul li a:hover { color: var(--text-primary); }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  color: rgba(154, 169, 185, 0.45);
+}
+
+.footer-bottom a {
+  color: rgba(154, 169, 185, 0.45);
+}
+
+.footer-bottom a:hover { color: var(--color-text-secondary); }
+
+/* ===================== 回到顶部 ===================== */
+.back-to-top {
+  position: fixed;
+  bottom: var(--space-8);
+  right: var(--space-8);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--text-primary);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: var(--shadow-glow);
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: all var(--duration-normal) var(--ease-out);
+  z-index: 900;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.back-to-top:hover { background: var(--color-gold-hover); }
+.back-to-top:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* ===================== 响应式 ===================== */
+@media (max-width: 1024px) {
+  .hero-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--space-10);
+  }
+
+  .hero-subtitle,
+  .hero-desc { margin-left: auto; margin-right: auto; }
+  .hero-badges { justify-content: center; }
+  .hero-actions { justify-content: center; }
+
+  .hero-visual { display: none; }
+
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .about-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: rgba(5, 21, 44, 0.98);
+    border-bottom: 1px solid rgba(26, 42, 58, 0.5);
+    flex-direction: column;
+    padding: var(--space-4);
+    gap: var(--space-1);
+  }
+
+  .navbar-links.open { display: flex; }
+
+  .navbar-links a {
+    display: block;
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.9375rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .navbar-toggle { display: block; }
+
+  .section { padding: var(--space-16) var(--space-5); }
+  .section-header { margin-bottom: var(--space-10); }
+
+  .hero { min-height: auto; padding-top: 60px; }
+  .hero-content { padding: var(--space-12) var(--space-5); }
+  .hero-text h1 { font-size: 2rem; }
+
+  .features-grid { grid-template-columns: 1fr; }
+
+  .steps-grid { grid-template-columns: 1fr; }
+
+  .pricing-grid { grid-template-columns: 1fr; }
+
+  .pricing-card.featured { order: -1; }
+
+  .reg-tabs { flex-direction: column; }
+  .reg-tab { padding: var(--space-3) var(--space-4); }
+  .reg-tab.active::after { display: none; }
+
+  .free-methods th,
+  .free-methods td { padding: var(--space-2); font-size: 0.8125rem; }
+
+  .footer-grid { grid-template-columns: 1fr; gap: var(--space-8); }
+  .footer-bottom { flex-direction: column; text-align: center; }
+
+  .back-to-top { bottom: var(--space-4); right: var(--space-4); }
+}
+
+@media (max-width: 480px) {
+  .hero-text h1 { font-size: 1.75rem; }
+  .btn { width: 100%; justify-content: center; }
+  .hero-actions { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== 导航栏 ==================== -->
+<nav class="navbar" role="navigation" aria-label="主导航">
+  <div class="navbar-inner">
+    <a href="#" class="navbar-logo">
+      <span class="navbar-logo-icon">🗲</span>
+      <span>文件夹加密隐藏王</span>
+    </a>
+
+    <button class="navbar-toggle" aria-label="切换导航菜单" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+      </svg>
+    </button>
+
+    <ul class="navbar-links" role="list">
+      <li><a href="#features" class="active">功能特点</a></li>
+      <li><a href="#howto">使用说明</a></li>
+      <li><a href="#pricing">怎样注册</a></li>
+      <li><a href="#about">关于本软件</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ==================== Hero ==================== -->
+<section class="hero" aria-label="软件介绍">
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-badges" style="margin-bottom:var(--space-3);">
+        <span class="hero-badge" style="background:transparent; border-color:rgba(26,42,58,0.4); letter-spacing:0.05em; font-size:0.6875rem;">
+          艾卡软件工作室 出品
+        </span>
+      </div>
+      <h1>文件夹加密隐藏王</h1>
+      <p class="hero-subtitle">经典的文件夹加密、文件夹隐藏的系统安全工具</p>
+      <p class="hero-desc">
+        她是一款经典的文件夹加密与隐藏工具，是您保护电脑里个人隐私的最佳助手。
+        绿色软件，无需安装，解压后即可使用，不会给您的系统留下垃圾文件。
+      </p>
+
+      <div class="hero-badges">
+        <span class="hero-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          隐蔽性强
+        </span>
+        <span class="hero-badge green">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          无需安装 解压即用
+        </span>
+        <span class="hero-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          安全可靠
+        </span>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#pricing" class="btn btn-primary">立即注册</a>
+        <a href="#features" class="btn btn-secondary">了解更多</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-card-header">
+          <span class="hero-card-title">我的电脑</span>
+          <div class="hero-card-dots" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="folder-list">
+          <div class="folder-item">
+            <span class="folder-icon hidden">🔒</span>
+            <div class="folder-info">
+              <div class="folder-name">私人文档</div>
+              <div class="folder-status">已隐藏</div>
+            </div>
+          </div>
+          <div class="folder-item">
+            <span class="folder-icon hidden">🔒</span>
+            <div class="folder-info">
+              <div class="folder-name">工作资料</div>
+              <div class="folder-status">已隐藏</div>
+            </div>
+          </div>
+          <div class="folder-item">
+            <span class="folder-icon normal">📂</span>
+            <div class="folder-info">
+              <div class="folder-name">公共共享</div>
+              <div class="folder-status">正常</div>
+            </div>
+          </div>
+          <div class="folder-item">
+            <span class="folder-icon hidden">🔒</span>
+            <div class="folder-info">
+              <div class="folder-name">照片备份</div>
+              <div class="folder-status">已隐藏</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 功能特点 ==================== -->
+<section id="features" class="section" aria-label="功能特点">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">核心优势</span>
+      <h2>为什么选择文件夹加密隐藏王？</h2>
+      <p>她具有隐蔽性强、安全可靠、使用方便等三大优点</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🌿</div>
+        <h3>绿色软件</h3>
+        <p>她为绿色软件，<strong>无需安装，解压后即可使用</strong>，不会给您的系统留下垃圾文件。</p>
+      </div>
+
+      <div class="feature-card green">
+        <div class="feature-icon">🛡️</div>
+        <h3>隐蔽性强</h3>
+        <p>她通过特殊方法将您需要隐藏的文件夹安全彻底的隐藏起来，使您的隐私不被泄漏。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>不影响系统速度</h3>
+        <p>她运行稳定可靠，不会在后台运行监视程序，<strong>绝对不影响系统速度</strong>。</p>
+      </div>
+
+      <div class="feature-card green">
+        <div class="feature-icon">🧹</div>
+        <h3>无残留</h3>
+        <p>她不会给您的右键菜单添加任何内容，试用不满意直接删除即可，不留任何残余信息。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>移动磁盘支持</h3>
+        <p>她可以隐藏移动磁盘上的文件，即使拿到其它电脑上也是隐藏状态。</p>
+      </div>
+
+      <div class="feature-card green">
+        <div class="feature-icon">🔐</div>
+        <h3>加密强度高</h3>
+        <p>她加密强度高，即使您在重新安装系统后，隐藏文件夹也不会显示。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 使用说明 ==================== -->
+<section id="howto" class="section" aria-label="使用说明">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">快速上手</span>
+      <h2>文件夹加密隐藏王非常容易使用！</h2>
+      <p>保证您不用任何人教您，即可自如操作</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>隐藏文件夹</h3>
+          <ol>
+            <li>在软件左侧目录中选中您要隐藏的文件夹。</li>
+            <li>点击工具栏中的 <strong>添加</strong> 按钮添加到右侧的列表中。</li>
+            <li>选中右侧列表中的文件夹，点击工具栏中的 <strong>隐藏</strong> 按钮即可。</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>解除隐藏</h3>
+          <ol>
+            <li>在软件右侧文件夹隐藏列表中选中您要解除隐藏的文件夹。</li>
+            <li>点击工具栏中的 <strong>解除隐藏</strong> 按钮即可。</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>打开目录</h3>
+          <ol>
+            <li>当您的隐藏文件夹解除隐藏后，选中该隐藏项目。</li>
+            <li>点击工具栏的 <strong>"打开"</strong> 按钮来打开隐藏目录。</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>搜索隐藏目录</h3>
+          <ol>
+            <li>当您的文件夹列表被破坏，或您找不到隐藏的文件夹时使用此功能。</li>
+            <li>此功能可以帮您<strong>找回您的文件夹</strong>。</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 怎样注册 ==================== -->
+<section id="pricing" class="section" aria-label="怎样注册">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">注册购买</span>
+      <h2>怎样注册</h2>
+      <p>未注册的《文件夹加密隐藏王》您只能使用30天，而注册的版本将不会有任何的限制并且可以享受以后的免费升级</p>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <h3>试用版</h3>
+          <div class="pricing-price">免费</div>
+          <p class="pricing-desc">30天全功能体验</p>
+        </div>
+        <ul class="pricing-features">
+          <li>所有功能完整试用</li>
+          <li>30天免费使用期</li>
+          <li>体验全部加密隐藏功能</li>
+        </ul>
+        <a href="#howto" class="pricing-btn secondary">免费下载试用</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="pricing-header">
+          <h3>注册版</h3>
+          <div class="pricing-price">¥?<span> 永久</span></div>
+          <p class="pricing-desc">一次购买，永久使用，享受免费升级</p>
+        </div>
+        <ul class="pricing-features">
+          <li>解除 30 天试用限制</li>
+          <li>享受以后的免费升级</li>
+          <li>所有功能无任何限制</li>
+          <li>重新安装系统后可继续使用</li>
+        </ul>
+        <a href="#reg-detail" class="pricing-btn primary" onclick="switchRegTab('offline')">立即注册</a>
+      </div>
+    </div>
+
+    <!-- 注册详情 -->
+    <div id="reg-detail" class="reg-info">
+      <div class="reg-tabs" role="tablist">
+        <button class="reg-tab active" role="tab" aria-selected="true" data-tab="offline" onclick="switchRegTab('offline')">📧 非在线注册</button>
+        <button class="reg-tab" role="tab" aria-selected="false" data-tab="free" onclick="switchRegTab('free')">🎁 免费获取</button>
+      </div>
+
+      <!-- 非在线注册 -->
+      <div class="reg-panel active" id="panel-offline" role="tabpanel">
+        <h4><span class="icon">📧</span> 在线注册步骤</h4>
+        <ol class="reg-steps">
+          <li>
+            <strong>【第一步】</strong>给我们发送注册电子邮件索取详细付款方式。
+            或 <a href="http://www.ikasoft.cn" target="_blank" rel="noopener">点击这里</a> 获得详细付款方式。<br>
+            <strong>网站地址：</strong><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">http://www.ikasoft.cn</a><br>
+            <strong>作者E-mail：</strong><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a><br>
+            <strong>E-mail主题：</strong>索要《文件夹加密隐藏王》详细注册方式<br>
+            <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在 帮助→输入注册码... 处获得）</span>  3.软件名称及版本
+          </li>
+          <li>
+            <strong>【第二步】</strong>按照详细注册方式付费，同时发送注册E-mail给作者。<br>
+            <strong>作者E-mail：</strong><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a><br>
+            <strong>E-mail主题：</strong>注册《文件夹加密隐藏王》<br>
+            <strong>E-mail内容：</strong>1.您的姓名  2.机器码  3.软件名称及版本  4.您的付费金额 <span class="highlight">（以便核对您的付费金额）</span>
+          </li>
+          <li>
+            <strong>【第三步】</strong>接受作者E-mail，并将注册码输入软件，完成注册。<br>
+            <span class="highlight">注意：如果您在注册费寄出10日内未收到作者E-mail请给作者发送E-mail查询；作者会为您核实，并给您答复。</span>
+          </li>
+        </ol>
+
+        <div style="margin-top:var(--space-5); padding:var(--space-4); background:rgba(238,144,56,0.03); border:1px solid rgba(238,144,56,0.08); border-radius:var(--radius-sm);">
+          <p style="font-size:0.875rem; color:rgba(154,169,185,0.7);">
+            <strong>💡 推荐做法：</strong>为防止您在E-mail中输入错误，请使用以下方法：
+            点击软件中 <strong style="color:var(--color-accent);">"发送注册邮件"</strong> 按钮，填写E-mail表单，自动生成E-mail内容，
+            然后拷贝到您要发送的E-mail中，发给作者即可。
+          </p>
+        </div>
+
+        <div class="reg-images">
+          <img src="old/mail.jpg" alt="发送注册邮件截图" loading="lazy">
+          <img src="old/mail2.jpg" alt="邮件填写示例" loading="lazy" width="255" height="179">
+        </div>
+      </div>
+
+      <!-- 免费获取 -->
+      <div class="reg-panel" id="panel-free" role="tabpanel">
+        <h4><span class="icon">🎁</span> 如何成为免费用户</h4>
+        <p style="margin-bottom:var(--space-4); color:rgba(154,169,185,0.7); line-height:1.6;">
+          如果您喜欢我们的软件并愿意帮助推广，可以通过以下方式成为免费用户：
+        </p>
+
+        <table class="free-methods">
+          <thead>
+            <tr>
+              <th>方式</th>
+              <th>详细说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>推荐他人使用</strong></td>
+              <td>如果您成功的将本软件推荐给<strong>两位注册用户</strong>，那么您就可以成为本软件的免费用户。
+              请来信列出这两位注册用户的姓名、机器码即可免费获得注册码。</td>
+            </tr>
+            <tr>
+              <td><strong>在报刊上宣传</strong></td>
+              <td>如果您在某种知名报刊上，刊登了介绍本软件的文章，
+              请将报刊名称、期号告诉我，您将免费获得注册码。</td>
+            </tr>
+            <tr>
+              <td><strong>在网站上宣传</strong></td>
+              <td>如果您有日访问量在<strong>100ip以上</strong>，且您愿意推荐本软件的话，您也可以成为本软件的免费用户，
+              我也会在我的网站上加入您的链接。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:var(--space-5); text-align:center;">
+          <p style="color:rgba(154,169,185,0.55); font-size:0.875rem; margin-bottom:var(--space-3);">
+            如有任何疑问，请联系我们
+          </p>
+          <a href="mailto:lantian329ygf@163.com" class="btn btn-outline" style="display:inline-flex;">发送邮件咨询</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 关于本软件 ==================== -->
+<section id="about" class="section" aria-label="关于本软件">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">关于我们</span>
+      <h2>关于本软件</h2>
+      <p>一款历经十多年市场考验的经典文件夹安全工具</p>
+    </div>
+
+    <div class="about-grid">
+      <div>
+        <table class="about-info-table">
+          <tbody>
+            <tr>
+              <th>软件名称</th>
+              <td>文件夹加密隐藏王2011</td>
+            </tr>
+            <tr>
+              <th>版本号</th>
+              <td>5.0</td>
+            </tr>
+            <tr>
+              <th>版权所有</th>
+              <td>艾卡软件工作室</td>
+            </tr>
+            <tr>
+              <th>技术支持</th>
+              <td><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a></td>
+            </tr>
+            <tr>
+              <th>网址</th>
+              <td><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">http://www.ikasoft.cn</a></td>
+            </tr>
+            <tr>
+              <th>使用平台</th>
+              <td>Win9x / WinMe / WinNT / Win2000 / WinXP / Win7</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="about-desc-box">
+          <h3>功能简介</h3>
+          <p><span class="highlight-desc">《文件夹加密隐藏王》</span>是一款经典的文件夹加密、文件夹隐藏的系统安全工具，是您保护电脑里个人隐私的最佳助手！</p>
+          <p>她为<span class="highlight-desc">绿色软件</span>，无需安装，解压后即可使用，不会给您的系统留下垃圾文件；</p>
+          <p>她运行稳定可靠，不会在后台运行监视程序，<span class="highlight-desc">绝对不影响系统速度</span>；</p>
+          <p>她不会给您的右键菜单添加任何内容，试用不满意直接删除即可，不会给您的系统留下任何残余信息；</p>
+          <p>她具有<span class="highlight-desc">隐蔽性强、安全可靠、使用方便</span>等三大优点，可以彻底的隐藏您的文件夹；</p>
+          <p>她可以隐藏移动磁盘上的文件，即使拿到其它电脑上也是隐藏状态；</p>
+          <p>她是一款极易使用的软件，保证您不用任何人教您，即可自如操作；</p>
+          <p>她加密强度高，即使您在重新安装系统后隐藏文件夹也不会显示；</p>
+          <p>她通过特殊方法将您需要隐藏的文件夹安全彻底的隐藏起来，使您的隐私不被泄漏；</p>
+          <p><span class="highlight-desc">《文件夹加密隐藏王》将是您加密文件夹、隐藏文件夹的理想选择！</span></p>
+
+          <div class="about-trial-note">
+            <strong>使用说明：</strong>
+            未注册的《文件夹加密隐藏王》您只能使用30天，而注册的版本将不会有任何的限制并且可以享受以后的免费升级！
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 底部 ==================== -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>文件夹加密隐藏王</h3>
+        <p>一款经典的文件夹加密、文件夹隐藏的系统安全工具，是您保护电脑里个人隐私的最佳助手。</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>导航</h4>
+        <ul>
+          <li><a href="#features">功能特点</a></li>
+          <li><a href="#howto">使用说明</a></li>
+          <li><a href="#pricing">怎样注册</a></li>
+          <li><a href="#about">关于本软件</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>联系</h4>
+        <ul>
+          <li><a href="mailto:lantian329ygf@163.com">电子邮箱</a></li>
+          <li><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">官方网站</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 艾卡软件工作室 版权所有</span>
+      <span>
+        <a href="mailto:lantian329ygf@163.com">技术支持</a>
+        &nbsp;·&nbsp;
+        <a href="http://www.ikasoft.cn" target="_blank" rel="noopener">ikasoft.cn</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- ==================== 回到顶部 ==================== -->
+<button class="back-to-top" id="backToTop" aria-label="回到顶部" title="回到顶部">↑</button>
+
+<!-- ==================== JavaScript ==================== -->
+<script>
+(function() {
+  'use strict';
+
+  var toggleBtn = document.querySelector('.navbar-toggle');
+  var navLinks = document.querySelector('.navbar-links');
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      var isOpen = navLinks.classList.toggle('open');
+      toggleBtn.setAttribute('aria-expanded', isOpen);
+    });
+
+    navLinks.addEventListener('click', function() {
+      navLinks.classList.remove('open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  var sections = document.querySelectorAll('section[id]');
+  var navAnchors = document.querySelectorAll('.navbar-links a');
+
+  function updateActiveNav() {
+    var scrollPos = window.scrollY + 120;
+
+    sections.forEach(function(section) {
+      var top = section.offsetTop;
+      var bottom = top + section.offsetHeight;
+
+      if (scrollPos >= top && scrollPos < bottom) {
+        var id = section.getAttribute('id');
+        navAnchors.forEach(function(a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+
+  var backToTopBtn = document.getElementById('backToTop');
+
+  window.addEventListener('scroll', function() {
+    backToTopBtn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+
+  backToTopBtn.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  window.switchRegTab = function(tab) {
+    var tabs = document.querySelectorAll('.reg-tab');
+    var panels = {
+      offline: document.getElementById('panel-offline'),
+      free: document.getElementById('panel-free')
+    };
+
+    tabs.forEach(function(t) {
+      var isActive = t.getAttribute('data-tab') === tab;
+      t.classList.toggle('active', isActive);
+      t.setAttribute('aria-selected', isActive);
+    });
+
+    Object.keys(panels).forEach(function(key) {
+      panels[key].classList.toggle('active', key === tab);
+    });
+  };
+
+  if (window.location.hash === '#reg-detail') {
+    setTimeout(function() {
+      document.getElementById('reg-detail').scrollIntoView({ behavior: 'smooth' });
+    }, 300);
+  }
+})();
+</script>
+
+</body>
+</html>
