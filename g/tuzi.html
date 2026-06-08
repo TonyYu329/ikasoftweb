@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>兔子</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+}
+.container {
+    text-align: center;
+    position: relative;
+}
+h1 {
+    font-size: 3rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 20px rgba(255,255,255,0.3);
+    animation: fadeIn 2s ease-out;
+}
+canvas {
+    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(255,182,193,0.3);
+    animation: float 3s ease-in-out infinite;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+.message {
+    color: #ffb6c1;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🐰</h1>
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <div class="message">✨ 软软的小兔子 ✨</div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const cx = canvas.width / 2;
+const cy = canvas.height / 2;
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const t = Date.now() / 1000;
+    
+    // Body
+    ctx.save();
+    ctx.translate(cx, cy);
+    
+    // Body oval
+    ctx.beginPath();
+    ctx.ellipse(0, 30, 45, 55, 0, 0, Math.PI * 2);
+    ctx.fillStyle = '#f5f5f5';
+    ctx.fill();
+    ctx.strokeStyle = '#ddd';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    // Head
+    ctx.beginPath();
+    ctx.arc(0, -30, 35, 0, Math.PI * 2);
+    ctx.fillStyle = '#f5f5f5';
+    ctx.fill();
+    ctx.stroke();
+    
+    // Ears
+    for (let side = -1; side <= 1; side += 2) {
+        ctx.beginPath();
+        ctx.ellipse(side * 15, -70, 12, 30, side * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#f5f5f5';
+        ctx.fill();
+        ctx.stroke();
+        // Inner ear
+        ctx.beginPath();
+        ctx.ellipse(side * 15, -70, 6, 20, side * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffc0cb';
+        ctx.fill();
+    }
+    
+    // Eyes
+    const eyeY = -35;
+    for (let side = -1; side <= 1; side += 2) {
+        // White
+        ctx.beginPath();
+        ctx.arc(side * 14, eyeY, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        // Pupil (follows mouse)
+        ctx.beginPath();
+        ctx.arc(side * 14, eyeY, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#333';
+        ctx.fill();
+        // Highlight
+        ctx.beginPath();
+        ctx.arc(side * 12, eyeY - 2, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+    }
+    
+    // Nose
+    ctx.beginPath();
+    ctx.moveTo(0, -28);
+    ctx.lineTo(-5, -24);
+    ctx.lineTo(5, -24);
+    ctx.closePath();
+    ctx.fillStyle = '#ffb6c1';
+    ctx.fill();
+    
+    // Mouth
+    ctx.beginPath();
+    ctx.moveTo(0, -24);
+    ctx.quadraticCurveTo(-8, -18, -5, -22);
+    ctx.moveTo(0, -24);
+    ctx.quadraticCurveTo(8, -18, 5, -22);
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    // Whiskers
+    for (let side = -1; side <= 1; side += 2) {
+        for (let w = 0; w < 3; w++) {
+            ctx.beginPath();
+            ctx.moveTo(side * 10, -26 + w * 4);
+            ctx.lineTo(side * 35, -30 + w * 6);
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+        }
+    }
+    
+    // Tail
+    ctx.beginPath();
+    ctx.arc(0, 80, 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    
+    // Blush
+    for (let side = -1; side <= 1; side += 2) {
+        ctx.beginPath();
+        ctx.arc(side * 22, -26, 10 + Math.sin(t * 2) * 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 182, 193, 0.4)';
+        ctx.fill();
+    }
+    
+    ctx.restore();
+    requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
