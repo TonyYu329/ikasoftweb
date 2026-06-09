@@ -1,57 +1,55 @@
-import { BULLET_SPEED, GAME_HEIGHT } from '../core/constants.js';
+/**
+ * @description Bullet projectile entity definition.
+ */
 
-export class Bullet {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.speed = BULLET_SPEED;
-        this.radius = 3;
-        this.active = true;
-    }
+import { CANVAS_CONFIG } from '../core/constants.js';
+
+// Default bullet properties
+export const BULLET_DEFAULTS = {
+    machineGunSize: 5,
+    normalSize: 15,
+    machineGunSpeed: 20,
+    normalSpeed: 15
+};
+
+// Bullet array (populated by physics engine)
+let bullets = [];
+
+// Create a new bullet
+export function createBullet(isMachineGun) {
+    if (!isRunning()) return;
     
-    update(dt) {
-        this.y -= this.speed * dt;
-        if (this.y < -10) {
-            this.active = false;
-        }
-    }
+    const x = plane.x + plane.width / 2 - BULLET_DEFAULTS.normalSize / 2;
+    const y = plane.y - 10;
+    const size = isMachineGun ? BULLET_DEFAULTS.machineGunSize : BULLET_DEFAULTS.normalSize;
+    const speed = isMachineGun ? BULLET_DEFAULTS.machineGunSpeed : BULLET_DEFAULTS.normalSpeed;
     
-    render(ctx) {
-        ctx.save();
-        ctx.shadowColor = '#4af';
-        ctx.shadowBlur = 10;
-        ctx.fillStyle = '#4af';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 0.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+    bullets.push({
+        x: x,
+        y: y,
+        width: size,
+        height: size,
+        color: isMachineGun ? 'yellow' : 'aqua',
+        speed: speed
+    });
+}
+
+// Update all bullets (called by physics engine)
+export function updateBullets() {
+    if (!isRunning()) return;
+    
+    for (let i = 0; i < bullets.length; i++) {
+        const bullet = bullets[i];
+        bullet.y -= bullet.speed;
     }
 }
 
-export class BulletManager {
-    constructor() {
-        this.list = [];
-    }
-    
-    fire(x, y) {
-        this.list.push(new Bullet(x, y));
-    }
-    
-    update(dt) {
-        for (const b of this.list) {
-            b.update(dt);
-        }
-        this.list = this.list.filter(b => b.active);
-    }
-    
-    render(ctx) {
-        for (const b of this.list) {
-            b.render(ctx);
-        }
-    }
+// Check if any bullets are still on screen
+export function hasActiveBullets() {
+    return bullets.some(b => b.y > 0);
+}
+
+// Get bullet count
+export function getBulletCount() {
+    return bullets.length;
 }

@@ -1,7 +1,1942 @@
-const Game = require('./game').Game;
+/**
+ * @file index_cjs.js — 太空战机游戏主引擎
+ * @description 使用 Canvas 2D + Web Audio API 实现的太空射击游戏
+ * @date 2026-04-29
+ * @version 4.3.0
+ *
+ * 核心功能：
+ * - 飞船鼠标/触屏控制，自动射击系统
+ * - 不规则 3D 球体陨石渲染（贝塞尔平滑 + 径向渐变 + 陨石坑 + 自旋转）
+ * - 粒子特效、冲击波、热浪等视觉效果
+ * - Web Audio 合成音效（射击/爆炸）
+ * - 移动端触屏控制按钮（子弹 + 导弹）
+ */
+(function () {
+    'use strict';
 
-window.onload = function() {
-    const game = new Game();
-    game.init('gameCanvas');
-    game.start();
-};
+    const CONFIG = {
+        DESIGN_HEIGHT: 600,         // 游戏世界坐标系高度
+        TARGET_DT: 1000 / 60,       // 目标帧间隔（约 60 FPS）
+        DEATH_EXPLOSION_MS: 2000,   // 死亡爆炸动画时长（毫秒）
+        MAX_METEORS: 14,            // 最大同时陨石数
+        MAX_BULLETS: 50,            // 最大同时子弹数
+        MAX_PARTICLES: 400,         // 最大同时粒子数
+        STAR_COUNT: 230,            // 背景星星数量
+        BG_COLOR: '#02040d'         // 背景颜色
+    };
+
+    const DEBUG = false;            // 调试模式：true 时显示冲击波圆圈等调试信息
+
+    let canvas = null;              // 画布元素引用
+    let ctx = null;                 // 画布 2D 上下文
+    let animationFrameId = null;    // 动画帧 ID
+    let gameScale = 1;              // 缩放比例（适配不同屏幕）
+    let gameWidth = 800;            // 游戏世界坐标系宽度
+    let meteorSpawnTimer = 0;       // 陨石生成计时器
+    let fireCooldown = 0;           // 射击冷却时间
+    let mobileControls = null;      // 移动端控制按钮容器（开始游戏后显示）
+    const keys = {};                // 键盘按键状态（方向键移动用）
+    const mouseBtns = { left: false, right: false }; // 鼠标按钮持续按住状态
+
+    // ================================================================
+    // === 游戏状态管理 ================================================
+    // ================================================================
+
+    const state = {
+        current: 'idle',            // 当前状态: idle / running / dying / game_over
+        score: 0,                   // 当前得分
+        startTime: 0,               // 游戏开始时间戳
+        shake: 0,                   // 屏幕震动强度
+        flash: 0,                   // 屏幕闪白强度
+        lastMouseX: gameWidth / 2,          // 鼠标/触屏最后 X 坐标
+        lastMouseY: CONFIG.DESIGN_HEIGHT * 0.75,  // 鼠标/触屏最后 Y 坐标
+        time: 0,                    // 游戏帧计数器
+        deathStartedAt: 0,          // 死亡动画开始时间
+        meteorsDestroyed: 0         // 累计击毁陨石数
+    };
+
+    // ================================================================
+    // === 飞船对象 ====================================================
+    // ================================================================
+
+    const plane = {
+        x: gameWidth / 2 - 28,      // 左上角 X 坐标
+        y: CONFIG.DESIGN_HEIGHT * 0.72,  // 左上角 Y 坐标
+        width: 56,                  // 飞船宽度
+        height: 44,                 // 飞船高度
+        vx: 0,                      // 水平速度（惯性用）
+        vy: 0,                      // 垂直速度
+        tilt: 0,                    // 倾斜角度（鼠标移动时倾斜）
+        propellerAngle: 0,          // 螺旋桨旋转角度
+        flamePhase: 0               // 尾焰动画相位
+    };
+
+    // ================================================================
+    // === 飞船图片预加载 ==============================================
+    // ================================================================
+
+    const planeImage = new Image();
+    let planeImageLoaded = false;
+    planeImage.src = './image/plane128.png';
+    planeImage.onload = function () {
+        planeImageLoaded = true;
+        window._planeImage = planeImage;
+    };
+    planeImage.onerror = function () {
+        // 图片加载失败时自动降级为 Canvas 绘制，游戏不受影响
+    };
+
+    // ================================================================
+    // === 游戏对象数组 ================================================
+    // ================================================================
+
+    let backgroundStars = [];   // 背景星空
+    let meteors = [];           // 陨石列表
+    let bullets = [];           // 子弹列表
+    let particles = [];         // 粒子列表
+    let shockwaves = [];        // 冲击波列表
+    let heatHazes = [];         // 热浪列表
+    let muzzleFlashes = [];     // 枪口闪光列表
+
+    // ================================================================
+    // === 音频系统 ====================================================
+    // ================================================================
+
+    const AUDIO = {
+        ctx: null,              // AudioContext 实例
+        master: null,           // 主音量增益节点
+        enabled: true,          // 音频是否启用
+        lastShotAt: 0           // 上次射击时间（防重复触发）
+    };
+
+    function initCanvas() {
+        canvas = document.getElementById('gameCanvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'gameCanvas';
+            document.body.appendChild(canvas);
+        }
+        ctx = canvas.getContext('2d', { alpha: false });
+        canvas.style.cssText += `;background:${CONFIG.BG_COLOR};touch-action:none;`;
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+    }
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        gameScale = canvas.height / CONFIG.DESIGN_HEIGHT;
+        gameWidth = canvas.width / gameScale;
+    }
+
+    function initBackgroundStars() {
+        backgroundStars = [];
+        for (let i = 0; i < CONFIG.STAR_COUNT; i++) {
+            const depth = Math.random();
+            backgroundStars.push({
+                x: Math.random() * gameWidth,
+                y: Math.random() * CONFIG.DESIGN_HEIGHT,
+                size: 0.4 + depth * 1.9,
+                speed: 0.08 + depth * 0.75,
+                alpha: 0.25 + depth * 0.75,
+                twinkle: Math.random() * Math.PI * 2,
+                hue: depth > 0.82 ? (Math.random() > 0.5 ? '#bfe9ff' : '#ffe6bd') : '#ffffff'
+            });
+        }
+    }
+
+    function ensureAudio() {
+        if (!AUDIO.enabled) return null;
+        if (!AUDIO.ctx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return null;
+            AUDIO.ctx = new AudioContext();
+            AUDIO.master = AUDIO.ctx.createGain();
+            AUDIO.master.gain.value = 0.72;
+            AUDIO.master.connect(AUDIO.ctx.destination);
+        }
+        if (AUDIO.ctx.state === 'suspended') AUDIO.ctx.resume();
+        return AUDIO.ctx;
+    }
+
+    function makeNoiseBuffer(ctx, seconds, decay) {
+        const length = Math.max(1, Math.floor(ctx.sampleRate * seconds));
+        const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < length; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * decay));
+        }
+        return buffer;
+    }
+
+    function connectPanned(gain, x) {
+        const ctxA = AUDIO.ctx;
+        const pan = Math.max(-0.9, Math.min(0.9, (x / gameWidth) * 2 - 1));
+        if (ctxA.createStereoPanner) {
+            const panner = ctxA.createStereoPanner();
+            panner.pan.value = pan;
+            gain.connect(panner);
+            panner.connect(AUDIO.master);
+        } else {
+            gain.connect(AUDIO.master);
+        }
+    }
+
+    function playShootSound(type, x) {
+        const ctxA = ensureAudio();
+        if (!ctxA) return;
+        const now = ctxA.currentTime;
+        const isCannon = type === 'cannon';
+        const age = now - AUDIO.lastShotAt;
+        AUDIO.lastShotAt = now;
+        const fatigue = age < 0.08 ? 0.72 : 1;
+
+        const osc = ctxA.createOscillator();
+        const gain = ctxA.createGain();
+        osc.type = isCannon ? 'square' : 'sawtooth';
+        osc.frequency.setValueAtTime(isCannon ? 520 : 1800, now);
+        osc.frequency.exponentialRampToValueAtTime(isCannon ? 95 : 3200, now + (isCannon ? 0.18 : 0.055));
+        gain.gain.setValueAtTime((isCannon ? 0.36 : 0.12) * fatigue, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + (isCannon ? 0.28 : 0.09));
+        osc.connect(gain);
+        connectPanned(gain, x);
+        osc.start(now);
+        osc.stop(now + (isCannon ? 0.32 : 0.12));
+
+        const noise = ctxA.createBufferSource();
+        noise.buffer = makeNoiseBuffer(ctxA, isCannon ? 0.24 : 0.09, isCannon ? 0.08 : 0.025);
+        const filter = ctxA.createBiquadFilter();
+        filter.type = isCannon ? 'lowpass' : 'bandpass';
+        filter.frequency.value = isCannon ? 1700 : 4300;
+        filter.Q.value = isCannon ? 0.8 : 2.2;
+        const nGain = ctxA.createGain();
+        nGain.gain.setValueAtTime((isCannon ? 0.42 : 0.16) * fatigue, now);
+        nGain.gain.exponentialRampToValueAtTime(0.001, now + (isCannon ? 0.22 : 0.08));
+        noise.connect(filter);
+        filter.connect(nGain);
+        connectPanned(nGain, x);
+        noise.start(now);
+    }
+
+    function playExplosionSound(x, scale) {
+        const ctxA = ensureAudio();
+        if (!ctxA) return;
+        const now = ctxA.currentTime;
+        const power = Math.max(0.55, Math.min(1.6, scale || 1));
+
+        function oscLayer(type, f1, f2, duration, volume) {
+            const osc = ctxA.createOscillator();
+            const gain = ctxA.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(f1, now);
+            osc.frequency.exponentialRampToValueAtTime(f2, now + duration * 0.78);
+            gain.gain.setValueAtTime(volume * power, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            osc.connect(gain);
+            connectPanned(gain, x);
+            osc.start(now);
+            osc.stop(now + duration + 0.04);
+        }
+
+        oscLayer('sine', 82, 28, 0.78, 0.62);
+        oscLayer('triangle', 35, 18, 1.1, 0.42);
+        oscLayer('sawtooth', 190, 48, 0.58, 0.28);
+
+        /* 重低音效果：40-60Hz 低频正弦波，长持续 */
+        try {
+            const bassOsc = ctxA.createOscillator();
+            const bassGain = ctxA.createGain();
+            bassOsc.type = 'sine';
+            bassOsc.frequency.setValueAtTime(55, now);
+            bassOsc.frequency.exponentialRampToValueAtTime(25, now + 0.85);
+            bassGain.gain.setValueAtTime(0.48 * power, now);
+            bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+            // 用低通滤波增强低频质感
+            const bassFilter = ctxA.createBiquadFilter();
+            bassFilter.type = 'lowpass';
+            bassFilter.frequency.setValueAtTime(120, now);
+            bassFilter.frequency.exponentialRampToValueAtTime(40, now + 0.85);
+            bassOsc.connect(bassFilter);
+            bassFilter.connect(bassGain);
+            connectPanned(bassGain, x);
+            bassOsc.start(now);
+            bassOsc.stop(now + 0.95);
+        } catch(e) {}
+
+        const blast = ctxA.createBufferSource();
+        blast.buffer = makeNoiseBuffer(ctxA, 1.05, 0.35);
+        const lowpass = ctxA.createBiquadFilter();
+        lowpass.type = 'lowpass';
+        lowpass.frequency.setValueAtTime(3400, now);
+        lowpass.frequency.exponentialRampToValueAtTime(420, now + 0.9);
+        const gain = ctxA.createGain();
+        gain.gain.setValueAtTime(0.58 * power, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.05);
+        blast.connect(lowpass);
+        lowpass.connect(gain);
+        connectPanned(gain, x);
+        blast.start(now);
+
+        const spark = ctxA.createOscillator();
+        const sparkGain = ctxA.createGain();
+        spark.type = 'square';
+        spark.frequency.setValueAtTime(2400, now);
+        spark.frequency.exponentialRampToValueAtTime(7200, now + 0.16);
+        sparkGain.gain.setValueAtTime(0.11 * power, now);
+        sparkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+        spark.connect(sparkGain);
+        connectPanned(sparkGain, x);
+        spark.start(now);
+        spark.stop(now + 0.26);
+    }
+
+    /**
+     * @description 将屏幕坐标转换为游戏世界坐标
+     * @param {Event} e 鼠标/触屏事件对象
+     * @returns {{x: number, y: number}} 游戏坐标系中的坐标
+     */
+    function screenToCanvas(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left) / gameScale,
+            y: (e.clientY - rect.top) / gameScale
+        };
+    }
+
+    /**
+     * @description 初始化所有输入事件监听（鼠标、键盘、触屏、移动端按钮）
+     */
+    function initInput() {
+        /**
+         * @description 移动飞船到指定游戏坐标，附带惯性倾斜效果
+         * @param {number} x 目标 X 坐标
+         * @param {number} y 目标 Y 坐标
+         */
+        const movePlane = (x, y) => {
+            if (state.current !== 'running') return;
+            const oldX = plane.x;
+            const oldY = plane.y;
+            // 将飞船限制在画布范围内
+            plane.x = Math.max(0, Math.min(gameWidth - plane.width, x - plane.width / 2));
+            plane.y = Math.max(0, Math.min(CONFIG.DESIGN_HEIGHT - plane.height, y - plane.height / 2));
+            plane.vx = plane.x - oldX;
+            plane.vy = plane.y - oldY;
+            // 根据水平移动速度计算倾斜角度
+            plane.tilt += ((plane.vx * 0.035) - plane.tilt) * 0.2;
+        };
+
+        /* ---- 鼠标控制 ---- */
+        canvas.addEventListener('mousemove', (e) => {
+            const p = screenToCanvas(e);
+            state.lastMouseX = p.x;
+            state.lastMouseY = p.y;
+            movePlane(p.x, p.y);
+        });
+
+        /* 鼠标左键 = 机枪，右键 = 导弹（按住连续射击） */
+        canvas.addEventListener('mousedown', (e) => {
+            if (state.current !== 'running') return;
+            e.preventDefault();
+            if (e.button === 0) mouseBtns.left = true;
+            if (e.button === 2) mouseBtns.right = true;
+        });
+        canvas.addEventListener('mouseup', (e) => {
+            if (e.button === 0) mouseBtns.left = false;
+            if (e.button === 2) mouseBtns.right = false;
+        });
+
+        /* 鼠标离开画布时，重置按钮状态，飞船停在边界 */
+        canvas.addEventListener('mouseleave', () => {
+            mouseBtns.left = false;
+            mouseBtns.right = false;
+            if (state.current !== 'running') return;
+            const clampX = Math.max(0, Math.min(gameWidth, state.lastMouseX));
+            const clampY = Math.max(0, Math.min(CONFIG.DESIGN_HEIGHT, state.lastMouseY));
+            movePlane(clampX, clampY);
+        });
+
+        /* 鼠标重新进入画布时恢复实时跟随 */
+        canvas.addEventListener('mouseenter', () => {
+            if (state.current !== 'running') return;
+            // 鼠标重新进入时恢复正常跟踪（由 mousemove 事件驱动）
+        });
+
+        /* ---- 键盘控制 ---- */
+        document.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+        });
+
+        /* 键盘释放时清除按键状态 */
+        document.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+
+        /* ---- 触屏控制（手指跟踪） ---- */
+        canvas.addEventListener('touchmove', (e) => {
+            if (!e.touches[0]) return;
+            e.preventDefault();
+            const p = screenToCanvas(e.touches[0]);
+            state.lastMouseX = p.x;
+            state.lastMouseY = p.y;
+            movePlane(p.x, p.y);
+        }, { passive: false });
+
+        /* 触摸开始 = 移动飞船 + 发射子弹 */
+        canvas.addEventListener('touchstart', (e) => {
+            ensureAudio();
+            if (state.current !== 'running') return;
+            e.preventDefault();
+            if (e.touches[0]) {
+                const p = screenToCanvas(e.touches[0]);
+                state.lastMouseX = p.x;
+                state.lastMouseY = p.y;
+                movePlane(p.x, p.y);
+                shoot('machinegun');
+            }
+        }, { passive: false });
+
+        /* 触摸结束 = 停止移动 */
+        canvas.addEventListener('touchend', () => {
+            // 触摸结束后保持原位，不重置位置
+        });
+
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        ['click', 'keydown', 'touchstart'].forEach((name) => {
+            window.addEventListener(name, ensureAudio, { passive: true });
+        });
+
+        /* ---- 移动端按钮控制 ---- */
+        /** 子弹按钮 —— 发射机枪 */
+        const btnBullet = document.getElementById('btnBullet');
+        if (btnBullet) {
+            btnBullet.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                ensureAudio();
+                if (state.current === 'running') {
+                    shoot('machinegun', { single: true });
+                }
+            });
+            btnBullet.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                ensureAudio();
+                if (state.current === 'running') {
+                    shoot('machinegun', { single: true });
+                }
+            });
+            btnBullet.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+
+        /** 导弹按钮 —— 发射炮弹 */
+        const btnMissile = document.getElementById('btnMissile');
+        if (btnMissile) {
+            btnMissile.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                ensureAudio();
+                if (state.current === 'running') {
+                    shoot('cannon');
+                }
+            });
+            btnMissile.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                ensureAudio();
+                if (state.current === 'running') {
+                    shoot('cannon');
+                }
+            });
+            btnMissile.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+    }
+
+    /**
+     * @description 创建一个新的陨石，包含不规则顶点、陨石坑和颜色调色板
+     */
+    /**
+     * @description 生成大陨石被击中后的固定裂缝几何数据（一次性，避免每帧闪烁）
+     * @param {number} radius 陨石半径
+     * @returns {Array} 裂缝数据数组，每条裂缝包含起点、多段折线终点、颜色、线宽
+     */
+    function generateCrackGeometry(radius) {
+        var r = radius;
+        var cracks = [];
+        var count = 8;
+        for (var ci = 0; ci < count; ci++) {
+            var startA = (ci / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.6;
+            var startR = r * (0.02 + Math.random() * 0.12);
+            var sx = Math.cos(startA) * startR;
+            var sy = Math.sin(startA) * startR;
+            var segments = 6 + Math.floor(Math.random() * 4);
+            var points = [];
+            for (var seg = 0; seg < segments; seg++) {
+                var endA = startA + (Math.random() - 0.5) * 1.0;
+                var endR = startR + ((seg + 1) / segments) * r * 0.96;
+                if (endR > r * 0.98) break;
+                points.push({
+                    x: Math.cos(endA) * endR,
+                    y: Math.sin(endA) * endR
+                });
+            }
+            cracks.push({
+                startX: sx, startY: sy,
+                points: points,
+                color: 'rgba(255,80,20,0.65)',
+                shadow: 'rgba(60,20,10,0.35)',
+                lineWidth: 3 + Math.random() * 2
+            });
+        }
+        return cracks;
+    }
+    function createMeteor() {
+        // 大陨石（40%）半径 30-40，需 2 发子弹击毁，得分 +3
+        // 小陨石（60%）半径 18-26，需 1 发子弹击毁，得分 +1
+        const isLarge = Math.random() < 0.4;
+        const radius = isLarge ? (30 + Math.random() * 12) : (18 + Math.random() * 8);
+        // 多面凹陷形状：顶点少且平直产生多面感，半径更聚焦凹陷
+        const vertexCount = 18 + Math.floor(Math.random() * 11);  // 18-28 个面
+        const vertices = [];
+        for (let i = 0; i < vertexCount; i++) {
+            const a = (i / vertexCount) * Math.PI * 2;
+            // 0.55~0.92 半径变化，产生凹陷面效果，无尖刺
+            const vr = radius * (0.55 + Math.random() * 0.37);
+            vertices.push({ x: Math.cos(a) * vr, y: Math.sin(a) * vr });
+        }
+
+        // 贝塞尔控制点：小偏移（±12%），更接近直线产生多面感
+        const ctrlPoints = [];
+        for (let i = 0; i < vertexCount; i++) {
+            const curr = vertices[i];
+            const next = vertices[(i + 1) % vertexCount];
+            ctrlPoints.push({
+                x: (curr.x + next.x) / 2 + (Math.random() - 0.5) * radius * 0.12,
+                y: (curr.y + next.y) / 2 + (Math.random() - 0.5) * radius * 0.12
+            });
+        }
+
+        // 陨石坑 —— 更深更多更不均匀
+        const craters = [];
+        const craterCount = 6 + Math.floor(radius / 4);
+        for (let i = 0; i < craterCount; i++) {
+            const a = Math.random() * Math.PI * 2;
+            const r = Math.random() * radius * 0.6;
+            craters.push({
+                x: Math.cos(a) * r,
+                y: Math.sin(a) * r,
+                radius: 2 + Math.random() * radius * 0.22,
+                alpha: 0.15 + Math.random() * 0.35
+            });
+        }
+
+        // 表面微纹理斑点（增加数量使岩石凹凸感更强）
+        const specks = [];
+        const speckCount = 12 + Math.floor(Math.random() * 13);  // 12-24
+        for (let i = 0; i < speckCount; i++) {
+            const a = Math.random() * Math.PI * 2;
+            const d2 = Math.random() * radius * 0.8;
+            specks.push({
+                x: Math.cos(a) * d2,
+                y: Math.sin(a) * d2,
+                size: 2 + Math.random() * 12,
+                alpha: 0.12 + Math.random() * 0.22
+            });
+        }
+
+        var paletteIdx = Math.floor(Math.random() * 18);
+        // 18 色调色板：覆盖极宽颜色范围，每颗陨石明显不同
+        var palette = [
+            ['#7a5a3a','#3a2216','#0c0808','#ff6622'],  // 暖棕岩
+            ['#5a4a4a','#282018','#080808','#ff8844'],  // 暗灰岩
+            ['#8a4830','#402018','#0e0808','#ff5518'],  // 铁锈红
+            ['#9a7a40','#483818','#0a0804','#ffcc44'],  // 金黄岩
+            ['#4a443a','#201a16','#060606','#ff7730'],  // 黑曜岩
+            ['#786050','#382a1e','#0c0a08','#ff9940'],  // 暖灰岩
+            ['#4a5a6a','#1a222e','#080a0e','#44aaff'],  // 蓝钢岩
+            ['#5a5a3a','#28281a','#080806','#88cc44'],  // 橄榄绿
+            ['#6a4a6a','#2e1a2e','#0a080a','#cc66ff'],  // 紫灰岩
+            ['#3a6a5a','#1a3028','#060e0a','#44ffaa'],  // 铜绿岩
+            ['#8a7a5a','#4a3828','#0e0a06','#ffcc66'],  // 沙色岩
+            ['#6a3a2a','#3a1a10','#0a0402','#ff8844'],  // 巧克力
+            ['#6a6a6a','#2a2a2a','#0a0a0a','#88bbff'],  // 银灰岩
+            ['#8a2a2a','#4a1010','#0e0000','#ff4444'],  // 绯红岩
+            ['#8a5a20','#4a2a08','#0e0600','#ff8800'],  // 焦橙岩
+            ['#2a5a5a','#122a2a','#040808','#44ffff'],  // 暗青岩
+            ['#3a3a3a','#1a1a1a','#040404','#ffaa55'],  // 炭黑岩
+            ['#7a6a4a','#3a2e1a','#0a0806','#ffcc44']   // 青铜岩
+        ][paletteIdx];
+        // 亮色凸起斑点（金属反光感，一次性生成避免闪烁）
+        const brightSpecks = [];
+        for (let i = 0; i < 6 + Math.floor(Math.random() * 9); i++) {  // 6-14
+            const a = Math.random() * Math.PI * 2;
+            const d = Math.random() * radius * 0.8;
+            brightSpecks.push({
+                x: Math.cos(a) * d,
+                y: Math.sin(a) * d,
+                size: 2 + Math.random() * 5,
+                elong: 1 + Math.random() * 2,
+                alpha: 0.05 + Math.random() * 0.08
+            });
+        }
+        // 细小颗粒（粗糙质感，一次性生成避免闪烁）
+        const fineGrains = [];
+        const grainCount = 30 + Math.floor(radius * 2.5);
+        for (let i = 0; i < grainCount; i++) {
+            const a = Math.random() * Math.PI * 2;
+            const d = Math.random() * radius * 0.9;
+            fineGrains.push({
+                x: Math.cos(a) * d,
+                y: Math.sin(a) * d,
+                shade: Math.random() > 0.5 ? 8 : 42,
+                size: 0.3 + Math.random() * 1.5,
+                alpha: 0.18 + Math.random() * 0.25
+            });
+        }
+
+        // ---- 内部熔岩空腔（大陨石80%概率可见，小陨石30%） ----
+        const hasLavaCavity = isLarge ? (Math.random() < 0.8) : (Math.random() < 0.30);
+        const lavaCavities = [];
+        if (hasLavaCavity) {
+            const cavityCount = 1 + Math.floor(Math.random() * 3);  // 1-3 个空腔
+            for (let ci = 0; ci < cavityCount; ci++) {
+                lavaCavities.push({
+                    x: (Math.random() - 0.5) * radius * 0.7,   // 偏离中心
+                    y: (Math.random() - 0.5) * radius * 0.7,
+                    rx: radius * (0.15 + Math.random() * 0.2),  // 椭圆半长轴
+                    ry: radius * (0.10 + Math.random() * 0.15), // 椭圆半短轴
+                    rot: Math.random() * Math.PI,
+                    glowAlpha: 0.5 + Math.random() * 0.4
+                });
+            }
+        }
+
+        // ---- 矿物裂纹透光线（4-8条） ----
+        const glowCrackCount = 4 + Math.floor(Math.random() * 5);
+        const glowCracks = [];
+        for (let gci = 0; gci < glowCrackCount; gci++) {
+            const startA = Math.random() * Math.PI * 2;
+            const startR = radius * (0.05 + Math.random() * 0.25);
+            const segCount = 3 + Math.floor(Math.random() * 4);
+            const points = [];
+            for (let s = 0; s < segCount; s++) {
+                const a = startA + (Math.random() - 0.5) * 1.2;
+                const r = startR + s * radius * 0.18;
+                points.push({ x: Math.cos(a) * Math.min(r, radius * 0.85), y: Math.sin(a) * Math.min(r, radius * 0.85) });
+            }
+            glowCracks.push({
+                points: points,
+                alpha: 0.2 + Math.random() * 0.4,
+                lineWidth: 0.8 + Math.random() * 1.5
+            });
+        }
+
+        // ---- 漂浮尘埃颗粒（8-15颗） ----
+        const dustCount = 8 + Math.floor(Math.random() * 8);
+        const dustParticles = [];
+        for (let dp = 0; dp < dustCount; dp++) {
+            dustParticles.push({
+                angle: Math.random() * Math.PI * 2,
+                dist: radius * (0.6 + Math.random() * 1.2),
+                size: 0.3 + Math.random() * 0.8,
+                alpha: 0.2 + Math.random() * 0.4,
+                driftSpeed: 0.002 + Math.random() * 0.008,
+                driftAmp: 0.3 + Math.random() * 1.0
+            });
+        }
+
+        // 将辉光色（#rrggbb）转为 RGB 数值供粒子系统使用
+        const glowHex = palette[3];
+        const trailRGB = parseInt(glowHex.slice(1,3),16) + ',' +
+                         parseInt(glowHex.slice(3,5),16) + ',' +
+                         parseInt(glowHex.slice(5,7),16);
+
+        meteors.push({
+            x: radius + Math.random() * (gameWidth - radius * 2),
+            y: -radius * 2,
+            width: radius * 2,
+            height: radius * 2,
+            radius,
+            health: isLarge ? 4 : 1,            // 大陨石 4 点生命，小陨石 1 点
+            isLarge,
+            hit: false,                          // 是否已被击中过（大陨石第一次中弹后显示裂缝）
+            cracks: null,                        // 裂缝几何数据（命中后生成，固定不闪烁）
+            brightSpecks,                        // 亮色凸起（一次性生成）
+            fineGrains,                          // 细小颗粒（一次性生成）
+            lavaCavities,                        // 内部熔岩空腔
+            glowCracks,                          // 矿物发光线裂纹
+            dustParticles,                       // 漂浮尘埃
+            trailRGB,                            // 辉光色 RGB 字符串（粒子拖尾用）
+            speed: 1.7 + Math.random() * 2.6 + Math.min(2.2, state.score * 0.025),
+            rotation: Math.random() * Math.PI * 2,
+            rotationSpeed: (Math.random() - 0.5) * 0.035,
+            vertices,
+            ctrlPoints,
+            craters,
+            specks,
+            palette
+        });
+    }
+
+    /**
+     * @description 射击函数（机枪或导弹）
+     * @param {string} type 射击类型: 'machinegun'（机枪） 或 'cannon'（导弹）
+     * @param {Object} opts 可选参数: { single: true } 表示单发
+     */
+    function shoot(type, opts = {}) {
+        if (bullets.length >= CONFIG.MAX_BULLETS) return;
+        const isCannon = type === 'cannon';
+        const now = performance.now();
+        if (now < fireCooldown) return;
+        fireCooldown = now + (isCannon ? 260 : 80);  // 导弹冷却时间长
+        const x = plane.x + plane.width / 2;
+        const y = plane.y + 4;
+        const spread = isCannon ? [0] : opts.single ? [0] : [-8, 8];
+        spread.forEach((offset) => {
+            bullets.push({
+                x: x + offset,
+                y,
+                width: isCannon ? 18 : 5,        // 导弹宽度为子弹的 3.6 倍
+                height: isCannon ? 40 : 18,       // 导弹高度为子弹的 2.2 倍
+                speed: isCannon ? 12 : 18,
+                color: isCannon ? '255,140,30' : '255,240,80',
+                glow: isCannon ? '#ff8c1e' : '#fff050',
+                type,
+                rotation: Math.random() * Math.PI * 2,
+                trail: []
+            });
+        });
+        muzzleFlashes.push({ x, y: y - 12, life: isCannon ? 11 : 6, maxLife: isCannon ? 11 : 6, radius: isCannon ? 34 : 20 });
+        /* 枪口火花粒子 */
+        const sparkCount = isCannon ? 8 : 4;
+        for (let i = 0; i < sparkCount; i++) {
+            const a = Math.random() * Math.PI * 2;
+            const sp = (isCannon ? 4.5 : 2.5) * (0.6 + Math.random() * 0.8);
+            particles.push({
+                x, y: y - 12,
+                vx: Math.cos(a) * sp,
+                vy: Math.sin(a) * sp - 3,
+                size: (isCannon ? 2.5 : 1.5) * (0.6 + Math.random() * 0.8),
+                color: isCannon ? '255,200,60' : '255,240,100',
+                life: (isCannon ? 14 : 8) * (0.5 + Math.random() * 0.8),
+                maxLife: isCannon ? 14 : 8,
+                type: 'spark'
+            });
+        }
+        while (particles.length > CONFIG.MAX_PARTICLES) particles.shift();
+        playShootSound(type, x);
+    }
+
+    /**
+     * @description 创建爆炸粒子效果
+     * 产生核心火焰、外焰、烟尘、火花、碎片五种粒子，扩散范围大、残留时间长
+     * @param {number} x 爆炸中心 X 坐标
+     * @param {number} y 爆炸中心 Y 坐标
+     * @param {number} scale 爆炸规模系数（1.0 为默认）
+     */
+    function createExplosion(x, y, scale) {
+        scale = scale || 1;
+        // 五种粒子类型：核心光、火焰、烟尘、火花、碎片
+        const bursts = [
+            { count: 36, speed: 8.5, size: 2.6, color: '255,245,205', life: 38, type: 'core' },
+            { count: 52, speed: 6.0, size: 4.5, color: '255,108,22',  life: 60, type: 'flame' },
+            { count: 36, speed: 3.2, size: 8.0, color: '90,88,84',   life: 96, type: 'smoke' },
+            { count: 24, speed: 11.0, size: 2.0, color: '255,210,80', life: 34, type: 'spark' },
+            { count: 16, speed: 7.0, size: 3.2, color: '180,120,60',  life: 52, type: 'debris' }
+        ];
+        bursts.forEach((b) => {
+            for (let i = 0; i < b.count * scale; i++) {
+                const a = Math.random() * Math.PI * 2;
+                const sp = b.speed * (0.35 + Math.random() * 0.95) * scale;
+                particles.push({
+                    x, y,
+                    vx: Math.cos(a) * sp,
+                    vy: Math.sin(a) * sp,
+                    size: b.size * (0.6 + Math.random() * 0.9) * scale,
+                    color: b.color,
+                    life: b.life * (0.75 + Math.random() * 0.55),
+                    maxLife: b.life,
+                    type: b.type
+                });
+            }
+        });
+        // 限制粒子总数不超过上限
+        while (particles.length > CONFIG.MAX_PARTICLES) particles.shift();
+        // 冲击波（仅在 DEBUG 模式下可见）
+        shockwaves.push({ x, y, radius: 6, maxRadius: 115 * scale, life: 28, maxLife: 28 });
+        // 热浪（始终可见的模糊光晕）
+        heatHazes.push({ x, y, radius: 12, maxRadius: 145 * scale, life: 22, maxLife: 22 });
+        // 屏幕特效
+        state.flash = Math.max(state.flash, 0.5 * scale);   // 闪白强度提高
+        state.shake = Math.max(state.shake, 14 * scale);     // 震动强度提高
+        playExplosionSound(x, scale);
+    }
+
+    function updateVisualEffects() {
+        particles.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            const drag = p.type === 'smoke' ? 0.992 : 0.962;
+            p.vx *= drag;
+            p.vy *= drag;
+            if (p.type !== 'spark') p.vy += 0.035;
+            p.life -= 1;
+            if (p.type === 'smoke') p.size *= 1.006;
+        });
+        particles = particles.filter((p) => p.life > 0 && p.size > 0.05);
+        shockwaves.forEach((s) => { s.radius += (s.maxRadius - s.radius) * 0.18; s.life -= 1; });
+        shockwaves = shockwaves.filter((s) => s.life > 0);
+        heatHazes.forEach((h) => { h.radius += (h.maxRadius - h.radius) * 0.22; h.life -= 1; });
+        heatHazes = heatHazes.filter((h) => h.life > 0);
+        muzzleFlashes.forEach((f) => f.life -= 1);
+        muzzleFlashes = muzzleFlashes.filter((f) => f.life > 0);
+        state.shake *= 0.9;
+        state.flash *= 0.86;
+    }
+
+    function beginDeathExplosion(meteorIndex) {
+        if (state.current !== 'running') return;
+        const cx = plane.x + plane.width / 2;
+        const cy = plane.y + plane.height / 2;
+        const meteor = meteors[meteorIndex];
+        state.current = 'dying';
+        state.deathStartedAt = performance.now();
+        bullets = [];
+        muzzleFlashes = [];
+        if (meteor) {
+            createExplosion(meteor.x, meteor.y, 1.35);
+            meteors.splice(meteorIndex, 1);
+        }
+        createExplosion(cx, cy, 2.35);
+        state.flash = Math.max(state.flash, 0.95);
+        state.shake = Math.max(state.shake, 26);
+        // 飞船爆炸时立即隐藏移动端按钮
+        if (mobileControls) mobileControls.style.display = 'none';
+        if (canvas) canvas.style.cursor = 'default';
+    }
+
+    /**
+     * @description 游戏主更新逻辑，处理状态切换、陨石生成、物理运动、碰撞检测
+     */
+    function update() {
+        if (state.current === 'dying') {
+            state.time += 1;
+            meteors.forEach((m) => {
+                m.y += m.speed * 0.35;
+                m.rotation += m.rotationSpeed * 0.6;
+            });
+            updateVisualEffects();
+            window._gameData = { plane, meteors, state, gameScale, gameWidth };
+            if (performance.now() - state.deathStartedAt >= CONFIG.DEATH_EXPLOSION_MS) {
+                gameOver();
+            }
+            return;
+        }
+        if (state.current !== 'running') return;
+        state.time += 1;
+        meteorSpawnTimer += 1;
+        const spawnRate = Math.max(24, 62 - state.score * 0.55);
+        if (meteorSpawnTimer >= spawnRate && meteors.length < CONFIG.MAX_METEORS) {
+            meteorSpawnTimer = 0;
+            createMeteor();
+        }
+
+        plane.propellerAngle += 0.72 + Math.min(0.8, Math.abs(plane.vx) * 0.025);
+        plane.flamePhase += 0.24;
+        plane.vx *= 0.86;
+        plane.vy *= 0.86;
+        plane.tilt *= 0.94;
+
+        /* 方向键移动飞船（叠加到鼠标位置） */
+        const KEY_SPEED = 16;  // 方向键移动速度（原 4，加快 4 倍）
+        if (keys['ArrowUp'] || keys['KeyW']) plane.y -= KEY_SPEED;
+        if (keys['ArrowDown'] || keys['KeyS']) plane.y += KEY_SPEED;
+        if (keys['ArrowLeft'] || keys['KeyA']) plane.x -= KEY_SPEED;
+        if (keys['ArrowRight'] || keys['KeyD']) plane.x += KEY_SPEED;
+        plane.x = Math.max(0, Math.min(gameWidth - plane.width, plane.x));
+        plane.y = Math.max(0, Math.min(CONFIG.DESIGN_HEIGHT - plane.height, plane.y));
+
+        /* 按住鼠标/键盘时连续射击（cooldown 由 shoot 内部控制） */
+        if (mouseBtns.left)  shoot('machinegun');
+        if (mouseBtns.right) shoot('cannon');
+        if (keys['KeyJ'])    shoot('machinegun');
+        if (keys['KeyK'])    shoot('cannon');
+
+        bullets.forEach((b) => {
+            b.trail.push({ x: b.x, y: b.y });
+            if (b.trail.length > (b.type === 'cannon' ? 10 : 7)) b.trail.shift();
+            b.y -= b.speed;
+            b.rotation += b.type === 'cannon' ? 0.08 : 0.18;
+            /* 弹道追踪粒子（每 8 帧产生 1 个） */
+            if (state.time % 8 === 0 && particles.length < CONFIG.MAX_PARTICLES - 5) {
+                const isMissile = b.type === 'cannon';
+                particles.push({
+                    x: b.x + (Math.random() - 0.5) * b.width,
+                    y: b.y + b.height * 0.6,
+                    vx: (Math.random() - 0.5) * 0.8,
+                    vy: 0.4 + Math.random() * 1.2,
+                    size: isMissile ? (2 + Math.random() * 4) : (1 + Math.random() * 2),
+                    color: isMissile ? '160,90,50' : '200,180,100',
+                    life: isMissile ? (20 + Math.random() * 25) : (10 + Math.random() * 12),
+                    maxLife: isMissile ? 45 : 22,
+                    type: isMissile ? 'smoke' : 'spark'
+                });
+            }
+        });
+        bullets = bullets.filter((b) => b.y + b.height > -20);
+
+        meteors.forEach((m) => {
+            m.y += m.speed;
+            m.rotation += m.rotationSpeed;
+            m.rotationSpeed *= 0.998;
+            /* 粒子拖尾：每帧 1 个辉光粒子 + 每 2 帧 1 个烟尘粒子 */
+            if (particles.length < CONFIG.MAX_PARTICLES - 4) {
+                // 辉光拖尾粒子（使用陨石自身辉光色，短寿命，亮眼）
+                const behind = 0.6 + Math.random() * 0.4;
+                particles.push({
+                    x: m.x + (Math.random() - 0.5) * m.radius * 0.5,
+                    y: m.y - m.radius * behind + (Math.random() - 0.5) * m.radius * 0.2,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3 - 0.3,
+                    size: 1.5 + Math.random() * 3,
+                    color: m.trailRGB,
+                    life: 10 + Math.random() * 12,
+                    maxLife: 22,
+                    type: 'trail'
+                });
+                // 每 2 帧 1 个烟尘粒子（淡色，长寿命，增加拖尾层次感）
+                if (state.time % 2 === 0) {
+                    particles.push({
+                        x: m.x + (Math.random() - 0.5) * m.radius * 0.4,
+                        y: m.y - m.radius * (0.5 + Math.random() * 0.4),
+                        vx: (Math.random() - 0.5) * 0.2,
+                        vy: (Math.random() - 0.5) * 0.2 - 0.4,
+                        size: 2.5 + Math.random() * 4,
+                        color: '160,120,80',
+                        life: 18 + Math.random() * 20,
+                        maxLife: 38,
+                        type: 'smoke'
+                    });
+                }
+            }
+        });
+        meteors = meteors.filter((m) => m.y - m.radius < CONFIG.DESIGN_HEIGHT + 80);
+
+        /* ---- 陨石互撞检测 ---- */
+        for (let i = 0; i < meteors.length - 1; i++) {
+            for (let j = i + 1; j < meteors.length; j++) {
+                const a = meteors[i], b = meteors[j];
+                if (!a || !b) continue;
+                const dx = a.x - b.x, dy = a.y - b.y;
+                const minDist = a.radius + b.radius;
+                if (dx * dx + dy * dy < minDist * minDist) {
+                    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+                    const scale = Math.min(1.4, (a.radius + b.radius) / 55);
+                    createExplosion(mx, my, scale);
+                    a.health = 0; b.health = 0;
+                }
+            }
+        }
+        /* 清理互撞销毁的陨石 */
+        for (let i = meteors.length - 1; i >= 0; i--) {
+            if (meteors[i].health <= 0) {
+                state.score += meteors[i].isLarge ? 3 : 1;
+                state.meteorsDestroyed++;
+                meteors.splice(i, 1);
+            }
+        }
+
+        /* ---- 子弹碰撞检测（含导弹 AOE） ---- */
+        for (let bIndex = bullets.length - 1; bIndex >= 0; bIndex--) {
+            const b = bullets[bIndex];
+            const isMissile = b.type === 'cannon';
+
+            if (isMissile) {
+                /* 第一步：先检测导弹是否直接命中陨石（碰撞检测，同子弹逻辑） */
+                let hitIndex = -1;
+                for (let mIndex = meteors.length - 1; mIndex >= 0; mIndex--) {
+                    const m = meteors[mIndex];
+                    const dx = b.x - m.x;
+                    const dy = b.y - m.y;
+                    if (dx * dx + dy * dy < (m.radius + b.width / 2) * (m.radius + b.width / 2)) {
+                        hitIndex = mIndex;
+                        break;
+                    }
+                }
+                if (hitIndex >= 0) {
+                    /* 第二步：直接命中后，在命中点产生爆炸 */
+                    const hitMeteor = meteors[hitIndex];
+                    createExplosion(hitMeteor.x, hitMeteor.y, 1.25);
+                    meteors.splice(hitIndex, 1);
+                    state.meteorsDestroyed++;
+                    /* 第三步：AOE 范围伤害——销毁 180px 内剩余陨石 */
+                    for (let mIndex = meteors.length - 1; mIndex >= 0; mIndex--) {
+                        const m = meteors[mIndex];
+                        const dx = b.x - m.x;
+                        const dy = b.y - m.y;
+                        if (dx * dx + dy * dy < 180 * 180) {
+                            createExplosion(m.x, m.y, 1.25);
+                            state.score += m.isLarge ? 3 : 1;
+                            state.meteorsDestroyed++;
+                            meteors.splice(mIndex, 1);
+                        }
+                    }
+                    bullets.splice(bIndex, 1);
+                    state.flash = Math.max(state.flash, 0.6);
+                    state.shake = Math.max(state.shake, 18);
+                }
+            } else {
+                /* 子弹：降低陨石生命值，生命值为 0 时才销毁 */
+                for (let mIndex = meteors.length - 1; mIndex >= 0; mIndex--) {
+                    const m = meteors[mIndex];
+                    const dx = b.x - m.x;
+                    const dy = b.y - m.y;
+                    if (dx * dx + dy * dy < (m.radius + b.width) * (m.radius + b.width)) {
+                        m.health -= 1;  // 生命值减 1
+                        if (m.health <= 0) {
+                            // 生命值为 0，陨石销毁
+                            createExplosion(m.x, m.y, Math.min(1.25, m.radius / 38));
+                            state.score += m.isLarge ? 3 : 1;
+                            state.meteorsDestroyed++;
+                            meteors.splice(mIndex, 1);
+                        } else {
+                            // 还有生命值，产生小火花效果，大陨石生成固定裂缝几何
+                            m.hit = true;    // 标记为已击中，显示裂缝
+                            m.cracks = generateCrackGeometry(m.radius);  // 一次性生成固定裂缝
+                            createExplosion(m.x, m.y, 0.3);
+                        }
+                        bullets.splice(bIndex, 1);
+                        break;
+                    }
+                }
+            }
+        }
+
+        for (let i = meteors.length - 1; i >= 0; i--) {
+            const m = meteors[i];
+            const cx = plane.x + plane.width / 2;
+            const cy = plane.y + plane.height / 2;
+            const dx = cx - m.x;
+            const dy = cy - m.y;
+            if (dx * dx + dy * dy < (m.radius + 18) * (m.radius + 18)) {
+                beginDeathExplosion(i);
+                return;
+            }
+        }
+
+        updateVisualEffects();
+        /* 暴露数据给 3D 渲染层 */
+        window._gameData = { plane, meteors, state, gameScale, gameWidth };
+    }
+
+    function renderBackground() {
+        const g = ctx.createRadialGradient(gameWidth / 2, CONFIG.DESIGN_HEIGHT * 0.45, 20, gameWidth / 2, CONFIG.DESIGN_HEIGHT / 2, 620);
+        g.addColorStop(0, '#081533');
+        g.addColorStop(0.52, '#030814');
+        g.addColorStop(1, '#000000');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, gameWidth, CONFIG.DESIGN_HEIGHT);
+
+        backgroundStars.forEach((star) => {
+            star.y += star.speed;
+            star.x += Math.sin((state.time + star.y) * 0.002) * star.speed * 0.08;
+            if (star.y > CONFIG.DESIGN_HEIGHT + 4) {
+                star.y = -4;
+                star.x = Math.random() * gameWidth;
+            }
+            const alpha = star.alpha * (0.65 + Math.sin(state.time * 0.035 + star.twinkle) * 0.28);
+            ctx.fillStyle = star.hue === '#ffffff' ? `rgba(255,255,255,${alpha})` : star.hue;
+            ctx.globalAlpha = Math.max(0.1, alpha);
+            ctx.fillRect(star.x, star.y, star.size, star.size);
+            ctx.globalAlpha = 1;
+        });
+    }
+
+    /**
+     * @description 渲染 3D 科幻战机（图片机身 + 动态火焰）
+     * 渲染管线：双引擎火焰 → 机身图片（降级 Canvas 绘制） → 引擎发光 → 导航灯
+     * 支持 optCtx 参数用于装饰 Canvas 渲染
+     * @param {CanvasRenderingContext2D} [optCtx] 可选上下文，默认使用全局 ctx
+     */
+    function drawPlane(optCtx) {
+        const c = optCtx || ctx;
+        const cx = plane.x + plane.width / 2;
+        const cy = plane.y + plane.height / 2;
+        c.save();
+        c.translate(cx, cy);
+        c.rotate(plane.tilt);
+
+        const hw = plane.width / 2;     // 半宽 28
+        const hh = plane.height / 2;    // 半高 22
+        const flameHeight = 28 + Math.sin(plane.flamePhase) * 6 + Math.random() * 7;
+
+        // ========== 第 1 层：双引擎等离子火焰 ==========
+        const engineOffsets = [-9, 9];
+        for (let ei = 0; ei < engineOffsets.length; ei++) {
+            const fx = engineOffsets[ei];
+            for (let i = 0; i < 3; i++) {
+                const grad = c.createLinearGradient(fx, hh - 2, fx, hh + flameHeight * (1 + i * 0.1));
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.2, '#66eeff');
+                grad.addColorStop(0.5, '#2299ff');
+                grad.addColorStop(1, 'rgba(0,100,255,0)');
+                c.fillStyle = grad;
+                c.globalAlpha = 0.7 - i * 0.14;
+                c.beginPath();
+                c.moveTo(fx - 5 + i * 1.5, hh - 3);
+                c.quadraticCurveTo(fx + (Math.random() - 0.5) * 2, hh + flameHeight * (1 + i * 0.1), fx + 5 - i * 1.5, hh - 3);
+                c.closePath();
+                c.fill();
+            }
+        }
+        c.globalAlpha = 1;
+
+        // ========== 第 2 层：机身图片 ==========
+        // 使用 plane128.png
+        c.shadowBlur = 25;
+        c.shadowColor = '#00ccff';
+        c.drawImage(planeImage, -28, -22, 56, 44);
+        c.shadowBlur = 0;
+
+
+        // ========== 第 9 层：引擎发光扩散 ==========
+        c.shadowBlur = 22;
+        c.shadowColor = '#0088ff';
+        for (let s of [-1, 1]) {
+            c.fillStyle = 'rgba(0,136,255,0.10)';
+            c.beginPath();
+            c.ellipse(s * 8, hh + 1, 5, 3, 0, 0, Math.PI * 2);
+            c.fill();
+        }
+        c.shadowBlur = 0;
+
+        // ========== 第 10 层：导航灯/编队灯 ==========
+        const blinkL = Math.sin(state.time * 0.06) > 0;
+        const blinkR = Math.sin(state.time * 0.06 + Math.PI) > 0;
+        // 左翼尖红灯
+        c.fillStyle = blinkL ? 'rgba(255,60,60,0.85)' : 'rgba(255,60,60,0.15)';
+        c.beginPath();
+        c.arc(-hw * 0.9, hh * 0.35, 1.8, 0, Math.PI * 2);
+        c.fill();
+        // 右翼尖绿灯
+        c.fillStyle = blinkR ? 'rgba(60,255,60,0.85)' : 'rgba(60,255,60,0.15)';
+        c.beginPath();
+        c.arc(hw * 0.9, hh * 0.35, 1.8, 0, Math.PI * 2);
+        c.fill();
+        // 尾部黄色信标
+        c.fillStyle = Math.sin(state.time * 0.1) > 0 ? 'rgba(255,200,50,0.7)' : 'rgba(255,200,50,0.12)';
+        c.beginPath();
+        c.arc(0, hh + 2, 1.5, 0, Math.PI * 2);
+        c.fill();
+
+        c.restore();
+    }
+
+    /**
+     * @description 渲染一个不规则 3D 球体陨石
+     * 使用贝塞尔曲线绘制平滑轮廓，径向渐变模拟立体光照，
+     * 陨石坑和微纹理增强岩石质感
+     * @param {Object} m 陨石对象
+     * @param {CanvasRenderingContext2D} [optCtx] 可选上下文，默认使用全局 ctx
+     */
+    function drawMeteor(m, optCtx) {
+        const drawCtx = optCtx || ctx;
+        drawCtx.save();
+        drawCtx.translate(m.x, m.y);
+        const r = m.radius;
+
+        // ---- 漂浮尘埃颗粒（在屏幕空间绘制，让陨石主体遮挡） ----
+        if (m.dustParticles && m.dustParticles.length > 0) {
+            m.dustParticles.forEach(function(dp) {
+                dp.angle += dp.driftSpeed;
+                const dx = Math.cos(dp.angle) * dp.dist + Math.sin(dp.angle * 3) * dp.driftAmp;
+                const dy = Math.sin(dp.angle) * dp.dist + Math.cos(dp.angle * 2.7) * dp.driftAmp;
+                drawCtx.fillStyle = 'rgba(180,150,120,' + dp.alpha + ')';
+                drawCtx.beginPath();
+                drawCtx.arc(dx, dy, dp.size, 0, Math.PI * 2);
+                drawCtx.fill();
+            });
+        }
+
+        // 陨石主体在旋转后绘制
+        drawCtx.rotate(m.rotation);
+        const pts = m.vertices;
+        const ctrl = m.ctrlPoints;
+
+        // ---- 第 1 层：绘制不规则轮廓（贝塞尔曲线） ----
+        drawCtx.beginPath();
+        drawCtx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 0; i < pts.length; i++) {
+            const next = pts[(i + 1) % pts.length];
+            const cp = ctrl[i];
+            drawCtx.quadraticCurveTo(cp.x, cp.y, next.x, next.y);
+        }
+        drawCtx.closePath();
+
+        // ---- 第 2 层：3D 球体渐变 — 5 层光源（左上） ----
+        const grad = drawCtx.createRadialGradient(-r * 0.28, -r * 0.30, 2, 0, 0, r * 1.2);
+        grad.addColorStop(0,   m.palette[0]);        // 镜面高光区（亮白/浅黄）
+        grad.addColorStop(0.2, m.palette[0]);        // 受光面
+        grad.addColorStop(0.5, m.palette[1]);        // 中间调
+        grad.addColorStop(0.82, m.palette[2]);       // 暗面过渡
+        grad.addColorStop(1,   m.palette[2]);        // 阴影面
+        drawCtx.shadowBlur = 10;
+        drawCtx.shadowColor = 'rgba(255,80,20,0.28)';
+        drawCtx.fillStyle = grad;
+        drawCtx.fill();
+        drawCtx.shadowBlur = 0;
+
+        // ---- 第 3 层：内部熔岩空腔发光（中空小行星内部透出暖光） ----
+        if (m.lavaCavities && m.lavaCavities.length > 0) {
+            m.lavaCavities.forEach(function(lc) {
+                const lg = drawCtx.createRadialGradient(lc.x, lc.y, 0, lc.x, lc.y, Math.max(lc.rx, lc.ry));
+                lg.addColorStop(0, 'rgba(255,180,60,' + lc.glowAlpha + ')');
+                lg.addColorStop(0.3, 'rgba(255,100,20,' + (lc.glowAlpha * 0.7) + ')');
+                lg.addColorStop(0.6, 'rgba(200,50,10,' + (lc.glowAlpha * 0.3) + ')');
+                lg.addColorStop(1, 'rgba(80,15,5,0)');
+                drawCtx.fillStyle = lg;
+                drawCtx.beginPath();
+                drawCtx.ellipse(lc.x, lc.y, lc.rx, lc.ry, lc.rot, 0, Math.PI * 2);
+                drawCtx.fill();
+
+                // 熔岩核心亮点
+                const coreGrad = drawCtx.createRadialGradient(lc.x, lc.y, 0, lc.x, lc.y, lc.rx * 0.4);
+                coreGrad.addColorStop(0, 'rgba(255,240,180,' + (lc.glowAlpha * 0.8) + ')');
+                coreGrad.addColorStop(1, 'rgba(255,140,40,0)');
+                drawCtx.fillStyle = coreGrad;
+                drawCtx.fill();
+            });
+        }
+
+        // ---- 第 3b 层：矿物裂纹透光线 ----
+        if (m.glowCracks && m.glowCracks.length > 0) {
+            m.glowCracks.forEach(function(gc) {
+                if (gc.points.length < 2) return;
+                // 裂纹外发光
+                drawCtx.strokeStyle = m.palette[3];  // 熔岩辉光色
+                drawCtx.globalAlpha = gc.alpha * 0.5;
+                drawCtx.lineWidth = gc.lineWidth + 3;
+                drawCtx.beginPath();
+                drawCtx.moveTo(gc.points[0].x, gc.points[0].y);
+                for (let pi = 1; pi < gc.points.length; pi++) {
+                    drawCtx.lineTo(gc.points[pi].x, gc.points[pi].y);
+                }
+                drawCtx.stroke();
+                // 裂纹主线
+                drawCtx.globalAlpha = gc.alpha;
+                drawCtx.lineWidth = gc.lineWidth;
+                drawCtx.strokeStyle = '#ffcc66';
+                drawCtx.beginPath();
+                drawCtx.moveTo(gc.points[0].x, gc.points[0].y);
+                for (let pi = 1; pi < gc.points.length; pi++) {
+                    drawCtx.lineTo(gc.points[pi].x, gc.points[pi].y);
+                }
+                drawCtx.stroke();
+                drawCtx.globalAlpha = 1;
+            });
+        }
+
+        // ---- 第 4 层：陨石坑（透视椭圆模拟球面曲率） ----
+        m.craters.forEach((c) => {
+            // 根据陨石坑距中心距离计算透视扁率（边缘更扁）
+            const dist = Math.sqrt(c.x * c.x + c.y * c.y) / r;
+            const flatten = 0.5 + 0.5 * (1 - dist * dist);  // 中心正圆，边缘 1:0.5
+            const cr = c.radius * 0.8;  // 坑尺寸缩小 20%
+            const angle = Math.atan2(c.y, c.x);
+
+            // 4a. 陨石坑暗色凹陷（透视椭圆）
+            drawCtx.fillStyle = `rgba(5,3,2,${c.alpha + 0.12})`;
+            drawCtx.beginPath();
+            drawCtx.ellipse(c.x, c.y, cr * 1.1, cr * 1.1 * flatten, 0, 0, Math.PI * 2);
+            drawCtx.fill();
+
+            // 4b. 陨石坑内侧亮弧（受光侧）
+            drawCtx.beginPath();
+            drawCtx.ellipse(c.x - cr * 0.12, c.y - cr * 0.12, cr * 1.0, cr * 1.0 * flatten, angle, 0, Math.PI * 2);
+            drawCtx.strokeStyle = `rgba(255,180,120,${c.alpha * 0.4})`;
+            drawCtx.lineWidth = 0.8;
+            drawCtx.stroke();
+
+            // 4c. 陨石坑底部暗点（最深的部分）
+            drawCtx.fillStyle = `rgba(5,3,2,${c.alpha + 0.2})`;
+            drawCtx.beginPath();
+            drawCtx.ellipse(c.x + cr * 0.05, c.y + cr * 0.05, cr * 0.5, cr * 0.5 * flatten, 0, 0, Math.PI * 2);
+            drawCtx.fill();
+        });
+
+        // ---- 第 5 层：表面凹凸纹理 — 使用预先存储的固定数据（不闪烁） ----
+        // 5a. 暗色斑点（原有斑点，渲染时加量）
+        if (m.specks) {
+            m.specks.forEach((sp) => {
+                drawCtx.fillStyle = `rgba(0,0,0,${sp.alpha * 1.2})`;
+                drawCtx.beginPath();
+                drawCtx.ellipse(sp.x, sp.y, sp.size * 1.2, sp.size * 0.8, sp.x * 0.1, 0, Math.PI * 2);
+                drawCtx.fill();
+            });
+        }
+        // 5b. 亮色凸起（受光面的岩石凸起，一次性生成不闪烁）
+        if (m.brightSpecks) {
+            m.brightSpecks.forEach((sp) => {
+                drawCtx.fillStyle = `rgba(200,180,150,${sp.alpha})`;
+                drawCtx.beginPath();
+                drawCtx.ellipse(sp.x, sp.y, sp.size, sp.elong, sp.x * 0.05, 0, Math.PI * 2);
+                drawCtx.fill();
+            });
+        }
+        // 5c. 细小颗粒（粗糙质感，一次性生成不闪烁）
+        if (m.fineGrains) {
+            m.fineGrains.forEach((g) => {
+                drawCtx.fillStyle = `rgba(${g.shade}, ${g.shade - 5}, ${g.shade - 8}, ${g.alpha})`;
+                drawCtx.beginPath();
+                drawCtx.arc(g.x, g.y, g.size, 0, Math.PI * 2);
+                drawCtx.fill();
+            });
+        }
+
+        // ---- 第 6 层：金属质感高光（更集中尖锐的金属反光） ----
+        const specSoft = drawCtx.createRadialGradient(
+            -r * 0.12, -r * 0.16, 0,
+            -r * 0.12, -r * 0.16, r * 0.25
+        );
+        specSoft.addColorStop(0, 'rgba(255,200,150,0.22)');
+        specSoft.addColorStop(0.4, 'rgba(255,180,130,0.08)');
+        specSoft.addColorStop(1, 'rgba(255,180,130,0)');
+        drawCtx.fillStyle = specSoft;
+        drawCtx.beginPath();
+        drawCtx.arc(-r * 0.12, -r * 0.16, r * 0.25, 0, Math.PI * 2);
+        drawCtx.fill();
+
+        // ---- 第 7 层：底部阴影弧（增强球体立体感） ----
+        const shadowGrad = drawCtx.createRadialGradient(
+            0, r * 0.3, r * 0.4,
+            0, 0, r * 1.0
+        );
+        shadowGrad.addColorStop(0, 'rgba(0,0,0,0)');
+        shadowGrad.addColorStop(0.7, 'rgba(0,0,0,0.08)');
+        shadowGrad.addColorStop(1, 'rgba(0,0,0,0.22)');
+        drawCtx.fillStyle = shadowGrad;
+        drawCtx.beginPath();
+        drawCtx.arc(0, 0, r * 1.02, 0, Math.PI * 2);
+        drawCtx.fill();
+
+        // ---- 第 8 层：边缘轮廓线（深色轮廓增强立体感） ----
+        drawCtx.strokeStyle = `hsla(30, 20%, 35%, 0.18)`;
+        drawCtx.lineWidth = 1.2;
+        drawCtx.beginPath();
+        drawCtx.arc(0, 0, r, 0, Math.PI * 2);
+        drawCtx.stroke();
+
+        // ---- 击中裂纹：带熔岩发光效果 ----
+        if (m.isLarge && m.hit && m.cracks && m.cracks.length > 0) {
+            m.cracks.forEach(function(crack) {
+                // 外发光层（熔岩暖光）
+                drawCtx.strokeStyle = 'rgba(255,80,20,0.25)';
+                drawCtx.lineWidth = crack.lineWidth + 4;
+                drawCtx.beginPath();
+                drawCtx.moveTo(crack.startX, crack.startY);
+                crack.points.forEach(function(p) { drawCtx.lineTo(p.x, p.y); });
+                drawCtx.stroke();
+                // 阴影层
+                drawCtx.strokeStyle = crack.shadow;
+                drawCtx.lineWidth = crack.lineWidth + 1;
+                drawCtx.beginPath();
+                drawCtx.moveTo(crack.startX + 1, crack.startY + 1);
+                crack.points.forEach(function(p) { drawCtx.lineTo(p.x + 1, p.y + 1); });
+                drawCtx.stroke();
+                // 主裂纹层（发光橙）
+                drawCtx.strokeStyle = crack.color;
+                drawCtx.lineWidth = crack.lineWidth;
+                drawCtx.beginPath();
+                drawCtx.moveTo(crack.startX, crack.startY);
+                crack.points.forEach(function(p) { drawCtx.lineTo(p.x, p.y); });
+                drawCtx.stroke();
+                // 核心亮线
+                drawCtx.strokeStyle = 'rgba(255,200,80,0.7)';
+                drawCtx.lineWidth = Math.max(0.5, crack.lineWidth * 0.4);
+                drawCtx.beginPath();
+                drawCtx.moveTo(crack.startX, crack.startY);
+                crack.points.forEach(function(p) { drawCtx.lineTo(p.x, p.y); });
+                drawCtx.stroke();
+            });
+        }
+
+        drawCtx.restore();
+    }
+
+    function drawBullets() {
+        bullets.forEach((b) => {
+            const isMissile = b.type === 'cannon';
+            const hw = b.width / 2, hh = b.height / 2;
+
+            if (isMissile) {
+                /* 导弹：尖头锥形 + 尾部火焰 + 绚丽烟尘尾迹 */
+                // 尾迹烟尘（从近到远渐变，由橙红渐变为灰白）
+                b.trail.forEach((t, i) => {
+                    const a = (i + 1) / b.trail.length;  // 0~1，旧→新
+                    const invA = 1 - a;                    // 1~0，旧→新
+                    const r = hw * (0.5 + invA * 1.8);     // 烟圈半径：越旧越大
+                    const alpha = Math.max(0, a * 0.35);
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = `hsla(${30 + invA * 20}, ${80 - invA * 40}%, ${50 + invA * 30}%, ${a * 0.2})`;
+                    ctx.beginPath();
+                    ctx.arc(t.x, t.y - 6, r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = `hsla(30, 100%, 60%, ${a * 0.1})`;
+                    ctx.beginPath();
+                    ctx.arc(t.x, t.y - 6, r * 0.4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                ctx.save();
+                ctx.translate(b.x, b.y);
+
+                /* 弹头前方冲击波锥 */
+                const shockLen = 5 + Math.sin(state.time * 0.45) * 2;
+                ctx.save();
+                const shockGrad = ctx.createLinearGradient(0, -hh - shockLen, 0, -hh);
+                shockGrad.addColorStop(0, 'rgba(255,255,255,0)');
+                shockGrad.addColorStop(0.6, 'rgba(255,200,100,0.15)');
+                shockGrad.addColorStop(1, 'rgba(255,255,255,0.35)');
+                ctx.fillStyle = shockGrad;
+                ctx.beginPath();
+                ctx.moveTo(0, -hh - shockLen);
+                ctx.lineTo(-hw * 0.35, -hh);
+                ctx.lineTo(hw * 0.35, -hh);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+
+                // 导弹发光
+                ctx.shadowBlur = 24;
+                ctx.shadowColor = '#ff8c1e';
+
+                // 导弹弹体（锥形）
+                ctx.beginPath();
+                ctx.moveTo(0, -hh);                // 弹头尖端
+                ctx.lineTo(-hw * 0.4, hh * 0.2);    // 左侧
+                ctx.lineTo(-hw * 0.3, hh);           // 左尾
+                ctx.lineTo(hw * 0.3, hh);            // 右尾
+                ctx.lineTo(hw * 0.4, hh * 0.2);      // 右侧
+                ctx.closePath();
+
+                const bodyGrad = ctx.createLinearGradient(0, -hh, 0, hh);
+                bodyGrad.addColorStop(0, '#ffd060');
+                bodyGrad.addColorStop(0.35, '#ff8c1e');
+                bodyGrad.addColorStop(0.7, '#cc4020');
+                bodyGrad.addColorStop(1, '#661010');
+                ctx.fillStyle = bodyGrad;
+                ctx.fill();
+
+                /* 导弹 2 层尾焰 */
+                ctx.shadowBlur = 0;
+                const fl = 7 + Math.sin(state.time * 0.4) * 4 + Math.random() * 3;
+                const fg0 = ctx.createLinearGradient(0, hh - 2, 0, hh + fl);
+                fg0.addColorStop(0, '#ffffff');
+                fg0.addColorStop(0.3, '#88ccff');
+                fg0.addColorStop(1, 'rgba(0,150,255,0)');
+                ctx.fillStyle = fg0;
+                ctx.beginPath();
+                ctx.moveTo(-hw * 0.12, hh - 2);
+                ctx.quadraticCurveTo(0, hh + fl, hw * 0.12, hh - 2);
+                ctx.closePath(); ctx.fill();
+                const fg1 = ctx.createLinearGradient(0, hh - 2, 0, hh + fl * 0.7);
+                fg1.addColorStop(0, 'rgba(255,220,90,0.9)');
+                fg1.addColorStop(0.5, 'rgba(255,100,20,0.5)');
+                fg1.addColorStop(1, 'rgba(255,50,0,0)');
+                ctx.fillStyle = fg1;
+                ctx.beginPath();
+                ctx.moveTo(-hw * 0.22, hh - 2);
+                ctx.quadraticCurveTo((Math.random()-0.5)*3, hh+fl*0.7, hw*0.22, hh-2);
+                ctx.closePath(); ctx.fill();
+                ctx.restore();
+            } else {
+                /* 能量弹：梭形弹体 + 多层辉光 + 旋转能量环 */
+                /* 第 1 层：大型青色光晕 */
+                ctx.save();
+                ctx.translate(b.x, b.y);
+                const g1 = ctx.createRadialGradient(0, 0, 0, 0, 0, b.width * 2.2);
+                g1.addColorStop(0, 'rgba(0,200,255,0.30)');
+                g1.addColorStop(0.5, 'rgba(0,150,255,0.08)');
+                g1.addColorStop(1, 'rgba(0,100,255,0)');
+                ctx.fillStyle = g1;
+                ctx.beginPath();
+                ctx.arc(0, 0, b.width * 2.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                /* 第 2 层：旋转能量环 × 2 */
+                ctx.save();
+                for (let r = 0; r < 2; r++) {
+                    ctx.rotate(state.time * (0.2 + r * 0.15) + r * Math.PI / 2);
+                    ctx.strokeStyle = `rgba(0,220,255,${0.35 - r * 0.12})`;
+                    ctx.lineWidth = 0.7 - r * 0.15;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, b.width * 1.8, b.height * 0.25, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                ctx.restore();
+
+                /* 第 3 层：梭形弹体 */
+                ctx.shadowBlur = 18;
+                ctx.shadowColor = 'rgba(0,200,255,0.7)';
+                const bg = ctx.createLinearGradient(0, -b.height/2, 0, b.height/2);
+                bg.addColorStop(0, '#ffffff');
+                bg.addColorStop(0.15, '#ddeeff');
+                bg.addColorStop(0.4, 'rgb(0,180,255)');
+                bg.addColorStop(0.75, 'rgba(0,100,220,0.5)');
+                bg.addColorStop(1, 'rgba(0,50,180,0)');
+                ctx.fillStyle = bg;
+                ctx.beginPath();
+                ctx.moveTo(0, -b.height * 0.7);
+                ctx.quadraticCurveTo(b.width * 0.5, -b.height * 0.15, b.width * 0.2, b.height * 0.4);
+                ctx.quadraticCurveTo(0, b.height * 0.5, -b.width * 0.2, b.height * 0.4);
+                ctx.quadraticCurveTo(-b.width * 0.5, -b.height * 0.15, 0, -b.height * 0.7);
+                ctx.closePath();
+                ctx.fill();
+
+                /* 第 4 层：尾部光束拖尾 */
+                ctx.shadowBlur = 0;
+                const tg = ctx.createLinearGradient(0, b.height * 0.3, 0, b.height * 1.6);
+                tg.addColorStop(0, 'rgba(0,180,255,0.6)');
+                tg.addColorStop(1, 'rgba(0,100,255,0)');
+                ctx.fillStyle = tg;
+                ctx.beginPath();
+                ctx.moveTo(-b.width * 0.15, b.height * 0.3);
+                ctx.lineTo(-b.width * 0.05, b.height * 1.6);
+                ctx.lineTo(b.width * 0.05, b.height * 1.6);
+                ctx.lineTo(b.width * 0.15, b.height * 0.3);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.restore();
+            }
+        });
+    }
+
+    function drawParticles() {
+        particles.forEach((p) => {
+            const alpha = Math.max(0, p.life / p.maxLife);
+            ctx.globalAlpha = alpha;
+            if (p.type === 'trail') {
+                // 辉光拖尾粒子：高饱和、亮色、半透明
+                ctx.fillStyle = `rgba(${p.color},${alpha * 0.55 + 0.15})`;
+            } else if (p.type === 'smoke') {
+                // 烟尘粒子：淡色、低可见度
+                ctx.fillStyle = `rgba(${p.color},${alpha * 0.35})`;
+            } else {
+                // 火花/爆炸等：全可见度
+                ctx.fillStyle = `rgba(${p.color},${alpha})`;
+            }
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+    }
+
+    function drawEffects() {
+        // 冲击波圆圈：仅在 DEBUG 模式下显示
+        if (DEBUG) {
+            shockwaves.forEach((s) => {
+                const a = s.life / s.maxLife;
+                ctx.strokeStyle = `rgba(255,230,190,${0.52 * a})`;
+                ctx.lineWidth = 3 + (1 - a) * 8;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+        }
+        // 热浪（半透明渐变圆，非描边圆圈，始终显示）
+        heatHazes.forEach((h) => {
+            const a = h.life / h.maxLife;
+            const grad = ctx.createRadialGradient(h.x, h.y, 0, h.x, h.y, h.radius);
+            grad.addColorStop(0, `rgba(255,255,255,${0.06 * a})`);
+            grad.addColorStop(0.55, `rgba(255,130,30,${0.05 * a})`);
+            grad.addColorStop(1, 'rgba(255,130,30,0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(h.x, h.y, h.radius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        muzzleFlashes.forEach((f) => {
+            const a = f.life / f.maxLife;
+            const grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.radius);
+            grad.addColorStop(0, `rgba(255,255,255,${0.9 * a})`);
+            grad.addColorStop(0.38, `rgba(255,210,60,${0.55 * a})`);
+            grad.addColorStop(1, 'rgba(255,100,20,0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    /**
+     * @description 渲染一帧画面：背景、特效、陨石、子弹、飞船、粒子、闪白
+     */
+    function render() {
+        ctx.save();
+        ctx.scale(gameScale, gameScale);
+        if (state.shake > 0.05) {
+            ctx.translate((Math.random() - 0.5) * state.shake, (Math.random() - 0.5) * state.shake);
+        }
+        renderBackground();
+        drawEffects();
+        if (state.current === 'running' || state.current === 'dying' || state.current === 'game_over') {
+            // 2D 陨石（含拖尾）始终绘制 — 拖尾从 3D 球体后方延伸可见
+            meteors.forEach(function (m) { drawMeteor(m); });
+            if (state.current === 'running') {
+                drawPlane();
+            }
+            drawBullets();
+            drawParticles();
+        }
+        if (state.flash > 0.01) {
+            ctx.fillStyle = `rgba(255,245,220,${state.flash})`;
+            ctx.fillRect(0, 0, gameWidth, CONFIG.DESIGN_HEIGHT);
+        }
+        ctx.restore();
+    }
+
+    function updateHUD() {
+        if (state.current !== 'running') return;
+        /* 分数（含闪烁动画） */
+        const liveScore = document.getElementById('liveScore');
+        if (liveScore) {
+            const prev = liveScore.textContent;
+            liveScore.textContent = state.score;
+            if (String(state.score) !== prev && state.score > 0) {
+                liveScore.classList.remove('score-flash');
+                void liveScore.offsetWidth;
+                liveScore.classList.add('score-flash');
+            }
+        }
+        const liveTime = document.getElementById('liveTime');
+        if (liveTime) {
+            const elapsed = Date.now() - state.startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            liveTime.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        /* 护盾 + 危险状态 */
+        const shieldFill = document.getElementById('shieldFill');
+        const liveShield = document.getElementById('liveShield');
+        if (shieldFill) {
+            let pct = 1;
+            if (state.current === 'dying') {
+                const elapsed = performance.now() - state.deathStartedAt;
+                pct = Math.max(0, 1 - elapsed / CONFIG.DEATH_EXPLOSION_MS);
+            }
+            shieldFill.style.width = `${pct * 100}%`;
+            if (pct < 0.3) shieldFill.classList.add('danger');
+            else shieldFill.classList.remove('danger');
+            if (liveShield) liveShield.textContent = `${Math.round(pct * 100)}%`;
+        }
+        /* 导弹状态 */
+        const liveMissile = document.getElementById('liveMissile');
+        if (liveMissile) {
+            const now = performance.now();
+            const ready = now >= fireCooldown;
+            liveMissile.textContent = ready ? '●' : '○';
+            liveMissile.style.color = ready ? '#ff44aa' : 'rgba(200,216,232,0.35)';
+        }
+        /* 击毁数（含闪烁） */
+        const liveKills = document.getElementById('liveKills');
+        if (liveKills) {
+            const prevK = liveKills.textContent;
+            liveKills.textContent = state.meteorsDestroyed;
+            if (String(state.meteorsDestroyed) !== prevK && state.meteorsDestroyed > 0) {
+                liveKills.classList.remove('score-flash');
+                void liveKills.offsetWidth;
+                liveKills.classList.add('score-flash');
+            }
+        }
+    }
+
+    function buildHUD() {
+        let hud = document.getElementById('hudContainer');
+        if (!hud) {
+            hud = document.createElement('div');
+            hud.id = 'hudContainer';
+            document.body.appendChild(hud);
+        }
+        hud.innerHTML = `
+            <div class="hud-left">
+                <div class="hud-row">
+                    <span class="hud-label">SCORE</span>
+                    <span class="hud-value" id="liveScore">0</span>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">TIME</span>
+                    <span class="hud-value" id="liveTime">00:00</span>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">FPS</span>
+                    <span class="hud-value" id="liveFPS">60</span>
+                </div>
+            </div>
+            <div class="hud-right">
+                <div class="hud-row">
+                    <span class="hud-label">SHIELD</span>
+                    <span class="hud-value" id="liveShield">100%</span>
+                    <div class="shield-bar">
+                        <div class="shield-fill" id="shieldFill"></div>
+                    </div>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">MISSILE</span>
+                    <span class="hud-value" id="liveMissile">●</span>
+                </div>
+                <div class="hud-row hud-meteors">
+                    <span class="hud-label">KILLS</span>
+                    <span class="hud-value" id="liveKills">0</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function resetEntities() {
+        meteors = [];
+        bullets = [];
+        particles = [];
+        shockwaves = [];
+        heatHazes = [];
+        muzzleFlashes = [];
+meteorSpawnTimer = 0;
+        state.shake = 0;
+        state.flash = 0;
+        state.deathStartedAt = 0;
+        plane.x = gameWidth / 2 - plane.width / 2;
+        plane.y = CONFIG.DESIGN_HEIGHT * 0.72;
+        plane.vx = 0;
+        plane.vy = 0;
+        plane.tilt = 0;
+    }
+
+    function startGameLoop() {
+        let accumulator = 0;
+        let lastTime = performance.now();
+        let fpsFrames = [], fpsTick = 0;
+        function loop(now) {
+            const delta = Math.min(50, now - lastTime);
+            lastTime = now;
+            fpsFrames.push(delta);
+            if (fpsFrames.length > 30) fpsFrames.shift();
+            if (++fpsTick >= 15) {
+                const avg = fpsFrames.reduce((a, b) => a + b, 0) / fpsFrames.length;
+                const fps = Math.round(1000 / avg);
+                const fpsEl = document.getElementById('liveFPS');
+                if (fpsEl) {
+                    fpsEl.textContent = String(fps);
+                    fpsEl.classList.remove('fps-good', 'fps-ok', 'fps-bad');
+                    fpsEl.classList.add(fps >= 60 ? 'fps-good' : fps >= 30 ? 'fps-ok' : 'fps-bad');
+                }
+                fpsTick = 0;
+            }
+            accumulator += delta;
+            while (accumulator >= CONFIG.TARGET_DT) {
+                update();
+                accumulator -= CONFIG.TARGET_DT;
+            }
+            updateHUD();
+            render();
+            animationFrameId = requestAnimationFrame(loop);
+        }
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(loop);
+    }
+
+    /**
+     * @description 开始新游戏，重置实体状态、隐藏覆盖层、显示移动端按钮、启动游戏循环
+     */
+    function startGame() {
+        ensureAudio();
+        // 停止开始界面装饰循环（2D 和 3D）
+        if (window._stop3dDecor) window._stop3dDecor();
+        resetEntities();
+        state.current = 'running';
+        state.score = 0;
+        state.meteorsDestroyed = 0;
+        state.startTime = Date.now();
+        state.deathStartedAt = 0;
+        buildHUD();
+        const startScreen = document.getElementById('startScreen');
+        if (startScreen) startScreen.style.display = 'none';
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        if (gameOverScreen) gameOverScreen.style.display = 'none';
+        // 显示移动端控制按钮（子弹 + 导弹）
+        if (mobileControls) mobileControls.style.display = 'flex';
+        if (canvas) canvas.style.cursor = 'none';
+        // 启动游戏循环（只有一次，避免重复启动）
+        if (!animationFrameId) {
+            startGameLoop();
+        }
+    }
+
+    /**
+     * @description 游戏结束处理：显示分数、生存时间、弹出 Game Over 覆盖层
+     */
+    function gameOver() {
+        state.current = 'game_over';
+        if (canvas) canvas.style.cursor = 'default';
+
+        const elapsed = Date.now() - state.startTime;
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        const timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        // 更新最高分（localStorage）
+        const highScore = parseInt(localStorage.getItem('spacewar_highscore') || '0', 10);
+        const isNewRecord = state.score > highScore;
+        if (isNewRecord) {
+            localStorage.setItem('spacewar_highscore', String(state.score));
+        }
+
+        // 更新 Game Over 覆盖层内容
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        if (gameOverScreen) {
+            const title = gameOverScreen.querySelector('.overlay-title');
+            if (title) title.textContent = 'GAME OVER';
+
+            const subtitle = gameOverScreen.querySelector('.overlay-subtitle');
+            if (subtitle) {
+                subtitle.innerHTML = `
+                    <div class="stat-row">得分 <span class="stat-val">${state.score}</span></div>
+                    <div class="stat-row">生存 <span class="stat-val">${timeStr}</span></div>
+                    <div class="stat-row">击毁 <span class="stat-val">${state.meteorsDestroyed}</span></div>
+                    <div class="stat-row stat-high">最高 <span class="stat-val">${Math.max(highScore, state.score)}</span></div>
+                `;
+            }
+            gameOverScreen.style.display = 'flex';
+        }
+        if (mobileControls) mobileControls.style.display = 'none';
+    }
+    function resetGame() {
+        startGame();
+    }
+    /**
+     * @description 初始化开始界面 3D 装饰 Canvas，在 idle 状态下运行独立渲染循环
+     *              显示一颗缓慢自转的大型 3D 陨石和一艘静态展示的 3D 科幻战机
+     */
+    function initDecorCanvas() {
+        // 获取或创建装饰 Canvas（若 HTML 中已存在则复用）
+        let decorCanvas = document.getElementById('decorCanvas');
+        if (!decorCanvas) {
+            decorCanvas = document.createElement('canvas');
+            decorCanvas.id = 'decorCanvas';
+            const startScreen = document.getElementById('startScreen');
+            if (startScreen) {
+                startScreen.insertBefore(decorCanvas, startScreen.firstChild);
+            } else {
+                return; // 无开始界面，跳过装饰
+            }
+        }
+        decorCanvas.width = gameWidth;
+        decorCanvas.height = CONFIG.DESIGN_HEIGHT;
+
+        const decorCtx = decorCanvas.getContext('2d');
+
+        // 装饰用大型陨石（缓慢自转，固定在右上方展示）
+        const dr = 50;
+        const dvc = 16;
+        const dvs = [];
+        for (let i = 0; i < dvc; i++) {
+            const a = (i / dvc) * Math.PI * 2;
+            const rr = dr * (0.88 + Math.random() * 0.12);
+            dvs.push({ x: Math.cos(a) * rr, y: Math.sin(a) * rr });
+        }
+        const dcs = [];
+        for (let i = 0; i < dvc; i++) {
+            const curr = dvs[i], next = dvs[(i + 1) % dvc];
+            dcs.push({ x: (curr.x + next.x) / 2 + (Math.random() - 0.5) * dr * 0.05, y: (curr.y + next.y) / 2 + (Math.random() - 0.5) * dr * 0.05 });
+        }
+        const dcraters = [];
+        for (let i = 0; i < 8; i++) {
+            const a = Math.random() * Math.PI * 2, rd = Math.random() * dr * 0.6;
+            dcraters.push({ x: Math.cos(a) * rd, y: Math.sin(a) * rd, radius: 3 + Math.random() * dr * 0.12, alpha: 0.15 + Math.random() * 0.25 });
+        }
+        const decorMeteor = {
+            x: gameWidth * 0.78, y: CONFIG.DESIGN_HEIGHT * 0.30,
+            radius: dr, rotation: 0, rotationSpeed: 0.004,
+            vertices: dvs, ctrlPoints: dcs, craters: dcraters,
+            isLarge: true, hit: false, health: 2, cracks: null, speed: 0,
+            specks: [], brightSpecks: [], fineGrains: [],
+            palette: ['#9b4c26', '#4a1f13', '#1c0d08']
+        };
+
+        // 装饰用飞船位置（左下方展示，微微倾斜）
+        const decorPlaneX = gameWidth * 0.28;
+        const decorPlaneY = CONFIG.DESIGN_HEIGHT * 0.55;
+        const decorTilt = 0.08;
+
+        let decorAnimId = null;
+        let decorTimer = 0;
+
+        /**
+         * @description 装饰渲染循环：每帧更新陨石旋转并重绘陨石和飞船
+         */
+        function decorLoop() {
+            // 仅在 idle（开始界面）状态下运行
+            if (state.current !== 'idle') {
+                if (decorCanvas) decorCanvas.style.display = 'none';
+                decorAnimId = null;
+                return;
+            }
+            decorCanvas.style.display = '';
+            decorTimer++;
+
+            decorCtx.clearRect(0, 0, decorCanvas.width, decorCanvas.height);
+
+            // 更新陨石自转
+            decorMeteor.rotation += decorMeteor.rotationSpeed;
+
+            // 渲染 3D 陨石
+            drawMeteor(decorMeteor, decorCtx);
+
+            // 渲染 3D 飞船 — 临时覆盖 plane 属性以控制展示位置
+            const savedX = plane.x, savedY = plane.y;
+            const savedTilt = plane.tilt;
+            const savedFlame = plane.flamePhase;
+
+            plane.x = decorPlaneX;
+            plane.y = decorPlaneY;
+            plane.tilt = decorTilt;
+            plane.flamePhase = decorTimer * 0.05;
+
+            drawPlane(decorCtx);
+
+            plane.x = savedX;
+            plane.y = savedY;
+            plane.tilt = savedTilt;
+            plane.flamePhase = savedFlame;
+
+            decorAnimId = requestAnimationFrame(decorLoop);
+        }
+
+        // 启动装饰循环
+        decorAnimId = requestAnimationFrame(decorLoop);
+
+        // 暴露停止函数，供 startGame 调用以清理装饰循环
+        window._stopDecor = function () {
+            if (decorAnimId) {
+                cancelAnimationFrame(decorAnimId);
+                decorAnimId = null;
+            }
+            if (decorCanvas) decorCanvas.style.display = 'none';
+        };
+    }
+
+    function initAllModules() {
+        initCanvas();
+        initBackgroundStars();
+        initInput();
+        mobileControls = document.getElementById('mobileControls');
+        window.startGame = startGame;
+        window.resetGame = resetGame;
+        window.gameOver = gameOver;
+        console.log('[Space War] 太空战机准备就绪。单击「开始游戏」启动。');
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAllModules);
+    } else {
+        initAllModules();
+    }
+})();

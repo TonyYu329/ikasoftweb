@@ -1,75 +1,734 @@
-@import 'base.css';
-@import 'overlays.css';
+/**
+ * @description 太空战机游戏 — Neon Space 霓虹太空主题样式表
+ * @date 2026-05-17
+ *
+ * 设计方向：暗色赛博朋克 + 霓虹光效
+ * 字体：Orbitron（标题）、Share Tech Mono（HUD）、Exo 2（正文）
+ *
+ * 设计 Token 系统：
+ *   --clr-primary: 青色 #4ff（主色，发光）
+ *   --clr-accent: 品红 #ff44aa（强调色）
+ *   --clr-gold: 金色 #ffd700（分数/成就）
+ *   --clr-danger: 红橙 #ff4422（警告/危险）
+ */
 
-/* Game-specific styles */
-#gameCanvas {
-    display: block;
-    margin: 0 auto;
+/* ============================================================
+   === 设计 Token ==============================================
+   ============================================================ */
+
+:root {
+    /* ---- 调色板 ---- */
+    --clr-bg: #02040d;
+    --clr-surface: rgba(10, 14, 40, 0.85);
+    --clr-primary: #4ff;
+    --clr-secondary: #4488ff;
+    --clr-accent: #ff44aa;
+    --clr-danger: #ff4422;
+    --clr-gold: #ffd700;
+    --clr-text: #c8d8e8;
+    --clr-text-dim: rgba(200, 216, 232, 0.5);
+
+    /* ---- 字体 ---- */
+    --font-display: 'Orbitron', monospace;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-body: 'Exo 2', sans-serif;
+
+    /* ---- 间距（4px 基准） ---- */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+
+    /* ---- 动画 ---- */
+    --dur-fast: 150ms;
+    --dur-normal: 300ms;
+    --dur-slow: 500ms;
+    --ease-glow: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.screen-overlay {
+/* ============================================================
+   === 基础样式 ================================================
+   ============================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: var(--clr-bg);
+    background-image: radial-gradient(ellipse at 50% 30%, #0a0e28 0%, #02040d 70%);
+    touch-action: none;
+    font-family: var(--font-body);
+    color: var(--clr-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+canvas {
+    display: block;
+    cursor: crosshair;
+}
+
+::selection {
+    background: rgba(79, 255, 255, 0.3);
+    color: #fff;
+}
+
+/* ============================================================
+   === 游戏画布 ================================================
+   ============================================================ */
+
+#gameCanvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
+    pointer-events: auto;
 }
 
-.screen-content {
-    text-align: center;
-    color: #fff;
-}
+/* ============================================================
+   === UI 容器 =================================================
+   ============================================================ */
 
-.screen-content h1 {
-    font-size: 48px;
-    margin-bottom: 20px;
-}
-
-.screen-content p {
-    font-size: 18px;
-    color: #aaa;
-    margin-bottom: 30px;
-}
-
-.btn {
-    padding: 12px 40px;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background: linear-gradient(135deg, #4a90d9, #357abd);
-    color: #fff;
-    transition: transform 0.2s;
-}
-
-.btn:hover {
-    transform: scale(1.05);
-}
-
-.hud {
+.game-ui {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* ============================================================
+   === 装饰 Canvas（开始界面 3D 背景） ==========================
+   ============================================================ */
+
+#decorCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    padding: 15px 25px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85;
+}
+
+/* ============================================================
+   === HUD 抬头显示 ============================================
+   ============================================================ */
+
+.game-hud {
+    position: absolute;
+    top: var(--space-md);
+    left: var(--space-md);
+    right: var(--space-md);
     display: flex;
     justify-content: space-between;
-    color: #fff;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 18px;
+    align-items: flex-start;
     pointer-events: none;
     z-index: 10;
+    font-family: var(--font-mono);
+    font-size: clamp(13px, 2vw, 16px);
+    text-shadow: 0 0 8px rgba(79, 255, 255, 0.4);
 }
 
-.hud-lives {
-    color: #ff6b6b;
+.game-hud .hud-left,
+.game-hud .hud-right {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.hud-score {
-    color: #4fc3f7;
+.game-hud .hud-left {
+    min-width: 110px;
+}
+
+.game-hud .hud-left .hud-row {
+    display: grid;
+    grid-template-columns: 54px 48px;
+    gap: 6px;
+    align-items: center;
+}
+
+.hud-label {
+    color: var(--clr-text-dim);
+    font-size: 0.75em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.hud-value {
+    color: var(--clr-primary);
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+}
+
+.game-hud .hud-right {
+    align-items: flex-end;
+}
+
+.game-hud .hud-right .hud-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 分数使用金色 */
+#liveScore {
+    color: var(--clr-gold);
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+/* 护盾条 */
+.shield-bar {
+    width: 80px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 68, 170, 0.4);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.shield-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--clr-accent), #ff88cc);
+    border-radius: 2px;
+    transition: width 0.2s ease;
+    box-shadow: 0 0 6px rgba(255, 68, 170, 0.5);
+}
+
+/* 导弹状态文字 */
+#liveMissile {
+    color: var(--clr-accent);
+    text-shadow: 0 0 6px rgba(255, 68, 170, 0.6);
+    transition: color 0.15s ease;
+}
+
+/* FPS 颜色指示 */
+.fps-good { color: #00ccff !important; text-shadow: 0 0 6px rgba(0,200,255,0.5) !important; }
+.fps-ok   { color: #ffcc00 !important; text-shadow: 0 0 6px rgba(255,200,0,0.5) !important; }
+.fps-bad  { color: #ff4444 !important; text-shadow: 0 0 6px rgba(255,50,50,0.5) !important;
+            animation: fps-warn 0.5s ease-in-out infinite; }
+
+@keyframes fps-warn {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* 分数闪烁动画 */
+.score-flash {
+    animation: score-pop 0.35s ease-out;
+}
+@keyframes score-pop {
+    0%   { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,1); }
+    100% { color: var(--clr-gold); text-shadow: 0 0 8px rgba(255,215,0,0.5); }
+}
+
+/* 护盾条分段 */
+.shield-bar {
+    background: repeating-linear-gradient(90deg,
+        rgba(255,255,255,0.06) 0px,
+        rgba(255,255,255,0.06) 9px,
+        rgba(255,255,255,0.01) 9px,
+        rgba(255,255,255,0.01) 10px
+    );
+}
+.shield-fill.danger {
+    background: linear-gradient(90deg, #ff3322, #ff6644) !important;
+    animation: danger-pulse 0.6s ease-in-out infinite;
+}
+@keyframes danger-pulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(255,50,30,0.5); }
+    50% { box-shadow: 0 0 20px rgba(255,50,30,0.9); }
+}
+
+/* 击杀数 */
+.hud-meteors .hud-value {
+    color: var(--clr-secondary);
+}
+
+/* ============================================================
+   === 开始界面 ================================================
+   ============================================================ */
+
+.start-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at 50% 35%, rgba(10,14,40,0.75) 0%, rgba(2,4,13,0.85) 80%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 2.5vh, 24px);
+    pointer-events: auto;
+    padding: 20px;
+    z-index: 2;
+}
+
+/* 标题 — Orbitron 900 + 霓虹呼吸 */
+.start-screen .overlay-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(40px, 10vw, 96px);
+    color: var(--clr-primary);
+    text-shadow:
+        0 0 10px rgba(79, 255, 255, 0.6),
+        0 0 30px rgba(79, 255, 255, 0.3),
+        0 0 60px rgba(79, 255, 255, 0.15);
+    text-align: center;
+    letter-spacing: 6px;
+    z-index: 2;
+    animation: neon-pulse 3s ease-in-out infinite;
+}
+
+/* subtitle — 键盘操作提示 */
+.start-screen .overlay-subtitle {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: clamp(12px, 2vw, 16px);
+    color: var(--clr-text-dim);
+    text-align: center;
+    letter-spacing: 3px;
+    z-index: 2;
+    max-width: min(480px, 85vw);
+    line-height: 1.6;
+}
+
+.start-screen .overlay-version {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: rgba(200, 216, 232, 0.45);
+    text-align: center;
+    letter-spacing: 2px;
+    z-index: 2;
+    margin: 0;
+}
+
+
+/* ============================================================
+   === 按钮 ====================================================
+   ============================================================ */
+
+.game-button {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(14px, 2.5vw, 18px);
+    color: var(--clr-primary);
+    background: rgba(79, 255, 255, 0.08);
+    border: 1.5px solid rgba(79, 255, 255, 0.5);
+    padding: clamp(10px, 1.8vh, 14px) clamp(28px, 7vw, 44px);
+    min-height: 48px;
+    min-width: 170px;
+    cursor: pointer;
+    letter-spacing: clamp(3px, 0.6vw, 5px);
+    text-transform: uppercase;
+    border-radius: 4px;
+    transition: all var(--dur-normal) var(--ease-glow);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    z-index: 2;
+    position: relative;
+}
+
+.game-button::before {
+    content: '';
+    position: absolute;
+    top: -1.5px; left: -1.5px; right: -1.5px; bottom: -1.5px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-accent));
+    opacity: 0;
+    z-index: -1;
+    transition: opacity var(--dur-normal) var(--ease-glow);
+}
+
+.game-button:hover {
+    background: rgba(79, 255, 255, 0.15);
+    border-color: var(--clr-primary);
+    box-shadow:
+        0 0 15px rgba(79, 255, 255, 0.3),
+        0 0 40px rgba(79, 255, 255, 0.1);
+}
+
+.game-button:hover::before {
+    opacity: 0.4;
+}
+
+.game-button:active {
+    transform: scale(0.96);
+    background: rgba(79, 255, 255, 0.25);
+}
+
+/* ============================================================
+   === 游戏结束界面 ============================================
+   ============================================================ */
+
+.game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at 50% 40%, rgba(80, 0, 20, 0.85) 0%, rgba(2, 4, 13, 0.95) 70%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-lg);
+    pointer-events: auto;
+    padding: 20px;
+    z-index: 3;
+    animation: fadeIn var(--dur-slow) ease-out;
+}
+
+.game-over-screen .overlay-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(32px, 8vw, 64px);
+    color: var(--clr-danger);
+    text-shadow:
+        0 0 10px rgba(255, 68, 34, 0.6),
+        0 0 30px rgba(255, 68, 34, 0.3);
+    text-align: center;
+    letter-spacing: 4px;
+    animation: glitch 1.5s ease-in-out infinite;
+}
+
+.overlay-subtitle {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: clamp(14px, 2.5vw, 18px);
+    text-align: center;
+    max-width: min(400px, 80vw);
+}
+
+/* 统计行 */
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-xl);
+    padding: 6px 16px;
+    color: var(--clr-text);
+    background: rgba(255, 255, 255, 0.04);
+    border-left: 2px solid rgba(79, 255, 255, 0.2);
+    border-radius: 2px;
+    font-size: clamp(13px, 2vw, 16px);
+    letter-spacing: 1px;
+    animation: scaleIn var(--dur-normal) var(--ease-glow) both;
+}
+
+.stat-row:nth-child(1) { animation-delay: 0.1s; }
+.stat-row:nth-child(2) { animation-delay: 0.2s; }
+.stat-row:nth-child(3) { animation-delay: 0.3s; }
+.stat-row:nth-child(4) { animation-delay: 0.4s; }
+
+.stat-val {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--clr-primary);
+}
+
+.stat-high .stat-val {
+    color: var(--clr-gold);
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* Game Over 界面中的按钮使用危险色 */
+.game-over-screen .game-button {
+    color: var(--clr-danger);
+    border-color: rgba(255, 68, 34, 0.5);
+    background: rgba(255, 68, 34, 0.08);
+    animation: scaleIn var(--dur-normal) var(--ease-glow) 0.5s both;
+}
+
+.game-over-screen .game-button:hover {
+    background: rgba(255, 68, 34, 0.15);
+    box-shadow:
+        0 0 15px rgba(255, 68, 34, 0.3),
+        0 0 40px rgba(255, 68, 34, 0.1);
+}
+
+.game-over-screen .game-button::before {
+    background: linear-gradient(135deg, var(--clr-gold), var(--clr-danger));
+}
+
+/* ============================================================
+   === 移动端控制按钮 ==========================================
+   ============================================================ */
+
+.mobile-controls {
+    display: none;
+    position: fixed;
+    bottom: clamp(20px, 6vh, 48px);
+    left: 50%;
+    transform: translateX(-50%);
+    gap: clamp(140px, 28vw, 192px);
+    z-index: 200;
+    pointer-events: none;
+}
+
+.mobile-btn {
+    width: clamp(76px, 14vw, 92px);
+    height: clamp(76px, 14vw, 92px);
+    border-radius: 50%;
+    border: 1px solid rgba(79, 255, 255, 0.35);
+    background: transparent;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+    flex-shrink: 0;
+    transition: all var(--dur-fast) ease;
+    box-shadow: 0 0 24px rgba(79, 255, 255, 0.08), inset 0 0 30px rgba(79, 255, 255, 0.02);
+    overflow: hidden;
+}
+.mobile-btn svg { width: 64px; height: 64px; }
+
+/* 主动发光光晕 */
+.mobile-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, rgba(79, 255, 255, 0.06) 0%, transparent 70%);
+    animation: btn-breath 3s ease-in-out infinite;
+    pointer-events: none;
+}
+/* 点击波纹 */
+.mobile-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(79, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+.mobile-btn:active::after {
+    width: 170%;
+    height: 170%;
+}
+
+/* 子弹按钮 — 金色能量 */
+.bullet-btn {
+    border-color: rgba(255, 200, 50, 0.5);
+    box-shadow: 0 0 30px rgba(255, 200, 50, 0.15), inset 0 0 30px rgba(255, 200, 30, 0.03);
+}
+.bullet-btn::before {
+    background: radial-gradient(circle at 50% 50%, rgba(255, 200, 50, 0.10) 0%, transparent 70%);
+    animation: bullet-glow 2.5s ease-in-out infinite;
+}
+.bullet-btn svg {
+    filter: drop-shadow(0 0 8px rgba(255, 220, 50, 0.8));
+}
+
+/* 导弹按钮 — 橙红烈焰 */
+.missile-btn {
+    border-color: rgba(255, 80, 40, 0.5);
+    box-shadow: 0 0 30px rgba(255, 80, 30, 0.18), inset 0 0 30px rgba(255, 60, 20, 0.04);
+}
+.missile-btn::before {
+    background: radial-gradient(circle at 50% 50%, rgba(255, 80, 30, 0.13) 0%, transparent 70%);
+    animation: missile-glow 2.5s ease-in-out infinite;
+}
+.missile-btn svg {
+    filter: drop-shadow(0 0 8px rgba(255, 100, 30, 0.8));
+}
+
+.mobile-btn:active {
+    transform: scale(0.84);
+}
+
+.bullet-btn:active {
+    border-color: rgba(255, 230, 50, 0.95);
+    background: radial-gradient(ellipse at 50% 50%, rgba(255, 200, 30, 0.25) 0%, rgba(4, 8, 20, 0.95) 100%);
+    box-shadow: 0 0 50px rgba(255, 230, 50, 0.5), inset 0 0 40px rgba(255, 200, 30, 0.1);
+}
+
+.missile-btn:active {
+    border-color: rgba(255, 80, 50, 0.95);
+    background: radial-gradient(ellipse at 50% 50%, rgba(255, 80, 30, 0.28) 0%, rgba(4, 8, 20, 0.95) 100%);
+    box-shadow: 0 0 50px rgba(255, 80, 50, 0.5), inset 0 0 40px rgba(255, 60, 20, 0.12);
+}
+
+/* ============================================================
+   === 动画关键帧 ==============================================
+   ============================================================ */
+
+/* 标题霓虹呼吸 */
+@keyframes neon-pulse {
+    0%, 100% {
+        text-shadow:
+            0 0 10px rgba(79, 255, 255, 0.6),
+            0 0 30px rgba(79, 255, 255, 0.3),
+            0 0 60px rgba(79, 255, 255, 0.15);
+    }
+    50% {
+        text-shadow:
+            0 0 15px rgba(79, 255, 255, 0.9),
+            0 0 40px rgba(79, 255, 255, 0.5),
+            0 0 80px rgba(79, 255, 255, 0.25),
+            0 0 120px rgba(79, 255, 255, 0.1);
+    }
+}
+
+/* 扫描线 */
+@keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+/* 按钮呼吸发光 */
+@keyframes btn-breath {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+}
+@keyframes bullet-glow {
+    0%, 100% { opacity: 0.2; transform: scale(0.95); }
+    50% { opacity: 0.9; transform: scale(1.05); }
+}
+@keyframes missile-glow {
+    0%, 100% { opacity: 0.25; transform: scale(0.95); }
+    50% { opacity: 0.9; transform: scale(1.05); }
+}
+
+/* 淡入 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 缩放弹入 */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Glitch 故障闪烁 */
+@keyframes glitch {
+    0%, 90%, 100% { opacity: 1; transform: skew(0); }
+    92% { opacity: 0.8; transform: skew(-1deg); }
+    94% { opacity: 1; transform: skew(1deg); }
+    96% { opacity: 0.9; transform: skew(0); }
+}
+
+/* 移动端按钮发光 */
+@keyframes btn-glow {
+    0%, 100% { box-shadow: 0 0 12px rgba(79, 255, 255, 0.15); }
+    50% { box-shadow: 0 0 30px rgba(79, 255, 255, 0.35); }
+}
+
+@keyframes bullet-glow {
+    0%, 100% { box-shadow: 0 0 12px rgba(255, 230, 50, 0.12); }
+    50% { box-shadow: 0 0 30px rgba(255, 230, 50, 0.35); }
+}
+
+@keyframes missile-glow {
+    0%, 100% { box-shadow: 0 0 12px rgba(255, 80, 50, 0.12); }
+    50% { box-shadow: 0 0 30px rgba(255, 80, 50, 0.35); }
+}
+
+/* ============================================================
+   === 无障碍：尊重减少动效偏好 ================================
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    body::after {
+        animation: none !important;
+    }
+}
+
+/* ============================================================
+   === 响应式适配 ==============================================
+   ============================================================ */
+
+/* 小屏幕（手机竖屏） */
+@media (max-width: 480px) {
+    .game-hud {
+        top: var(--space-sm);
+        left: var(--space-sm);
+        right: var(--space-sm);
+        font-size: 12px;
+    }
+
+    .shield-bar {
+        width: 60px;
+        height: 5px;
+    }
+
+    .mobile-controls {
+        bottom: 16px;
+        gap: 128px;
+    }
+
+    .mobile-btn {
+        width: 64px;
+        height: 64px;
+    }
+
+    .mobile-btn svg {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* 中等屏幕（平板） */
+@media (max-width: 800px) and (min-width: 481px) {
+    .mobile-btn {
+        width: 78px;
+        height: 78px;
+    }
+}
+
+/* 大屏幕：限制装饰范围 */
+@media (min-width: 1024px) {
+    #decorCanvas {
+        max-height: 70vh;
+        top: 15vh;
+    }
 }
