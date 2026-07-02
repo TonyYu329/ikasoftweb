@@ -15,11 +15,11 @@
   ],
   "routes": [
     {
-      "pattern": "ikasoft.cn/*",
+      "pattern": "ikasoft.cn",
       "custom_domain": true
     },
     {
-      "pattern": "www.ikasoft.cn/*",
+      "pattern": "www.ikasoft.cn",
       "custom_domain": true
     }
   ]
