@@ -5,12 +5,21 @@
   "observability": {
     "enabled": true
   },
+  "main": "_worker.js",
+  "assets": {
+    "directory": ".",
+    "binding": "STATIC_ASSETS"
+  },
   "compatibility_flags": [
     "nodejs_compat"
   ],
   "routes": [
     {
       "pattern": "ikasoft.cn/*",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.ikasoft.cn/*",
       "custom_domain": true
     }
   ]
