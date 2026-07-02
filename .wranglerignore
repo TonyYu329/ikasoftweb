@@ -1,0 +1,6 @@
+.git/
+old/
+*.md
+wrangler.jsonc
+_worker.js
+.wrangler/
