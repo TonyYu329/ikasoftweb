@@ -17,7 +17,7 @@
 |----|------|
 | 官方网站 | http://www.ikasoft.cn |
 | 软件名称 | 文件夹加密隐藏王 V6.1.0（FolderHide 重构版） |
-| 下载包 | `soft/FolderHide_V6.1.0_x64.zip`（5,362,006 B，绿色版） |
+| 下载包 | `soft/FolderHide_V6.1.0_x64.zip`（5,361,163 B，绿色版） |
 | 运行平台 | Windows 10 / 11（x64） |
 | 版权所有 | 艾卡软件工作室 |
 | 技术支持 | lantian329ygf@163.com |
@@ -27,7 +27,7 @@
 
 | 渠道 | 链接 | 说明 |
 |------|------|------|
-| 仓库内分发 | [`soft/FolderHide_V6.1.0_x64.zip`](soft/FolderHide_V6.1.0_x64.zip) | 与官网所有下载按钮同源，5,362,006 B |
+| 仓库内分发 | [`soft/FolderHide_V6.1.0_x64.zip`](soft/FolderHide_V6.1.0_x64.zip) | 与官网所有下载按钮同源，5,361,163 B |
 | 官网下载区 | `index.html#download` | 首屏、导航、下载区、注册区、页脚共 5 处入口 |
 | 桌面源码 | `D:\Study\AICode\folderhide` | 独立仓库，本仓库只托管官网与分发包 |
 
@@ -101,7 +101,7 @@ python -m http.server 8080
 |------|------|------|
 | 2026-06-09 | V0.1.0 | 官网 V0.1.0 上线基线，含 `g/` 游戏资源（master 分支） |
 | 2026-10-24 | 规范化 | 新增 `.agent/AGENTS.md` AI 编码指引、扩充 README、建立 `修改记录.md` |
-| 2026-10-25 | 官网 V6.1.0 | 软件介绍全站对齐 folderhide V6.1.0（Hero/功能/使用说明/注册/关于），新增 `#download` 下载区与导航下载入口，新增 `soft/FolderHide_V6.1.0_x64.zip`（5,362,006 B）；README 增加顶部醒目下载直链与下载渠道表；首次写入 Obsidian 记忆库（项目区 `FHWeb官网`） |
+| 2026-10-25 | 官网 V6.1.0 | 软件介绍全站对齐 folderhide V6.1.0（Hero/功能/使用说明/注册/关于），新增 `#download` 下载区与导航下载入口，新增 `soft/FolderHide_V6.1.0_x64.zip`（5,361,163 B）；README 增加顶部醒目下载直链与下载渠道表；首次写入 Obsidian 记忆库（项目区 `FHWeb官网`） |
 
 ## 维护约定
 

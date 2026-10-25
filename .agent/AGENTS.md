@@ -36,7 +36,7 @@ FHWeb/
 ├── 修改记录.md                 # 每次修改的流水记录（时间精确到秒）
 ├── .agent/AGENTS.md           # 本文件，AI 编码指引
 ├── soft/                      # 软件分发包（官网全部下载按钮指向此处）
-│   └── FolderHide_V6.1.0_x64.zip   # V6.1.0 绿色版（5,362,006 B）
+│   └── FolderHide_V6.1.0_x64.zip   # V6.1.0 绿色版（5,361,163 B，2026-10-25 15:47 重新打包）
 ├── old/                       # 旧版官网页面与注册说明素材
 │   ├── about.html / how.html / reg.html / freeREG.html   # 旧版页面（历史留存）
 │   ├── mail.jpg / mail2.jpg   # 注册邮件示例截图（现 index.html 注册区仍在引用，勿删）
