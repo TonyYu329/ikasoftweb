@@ -9,8 +9,12 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
 # Git内部文件，绝对不要上传
 .git/
 .wrangler/
 *.md
 old/
+
+# 临时/验证文件（用完即删，不入库）
+.traetemp/

@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>文件夹加密隐藏王 — 经典的文件夹加密、文件夹隐藏系统安全工具</title>
-<meta name="description" content="《文件夹加密隐藏王》是一款经典的文件夹加密、文件夹隐藏的系统安全工具，是您保护电脑里个人隐私的最佳助手。绿色软件，无需安装，解压即用。">
-<meta name="keywords" content="文件夹加密隐藏王, 文件夹加密, 文件夹隐藏, 加密软件, 隐藏文件夹, 艾卡软件工作室">
+<title>文件夹加密隐藏王 V6.1.0 — 文件夹加密、文件夹隐藏系统安全工具（绿色免费下载）</title>
+<meta name="description" content="《文件夹加密隐藏王》V6.1.0 全新重构版：回收站伪装隐藏 + AES-256-GCM 清单加密，绿色单文件免安装，解压即用。Windows 10/11 x64，30 天全功能试用，官网直接下载。">
+<meta name="keywords" content="文件夹加密隐藏王, FolderHide, 文件夹加密, 文件夹隐藏, 加密软件, 隐藏文件夹, 绿色软件下载, 艾卡软件工作室">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -334,6 +334,131 @@ a:focus-visible {
   background: var(--color-accent);
   color: var(--text-primary);
 }
+
+/* 大号下载按钮 */
+.btn-lg {
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.btn-lg svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}
+
+.hero-download-note {
+  margin-top: var(--space-4);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* 导航下载入口 */
+.navbar-links a.nav-download {
+  color: var(--color-accent);
+  border: 1px solid rgba(238, 144, 56, 0.35);
+}
+
+.navbar-links a.nav-download:hover,
+.navbar-links a.nav-download.active {
+  background: rgba(238, 144, 56, 0.1);
+  color: var(--color-gold-hover);
+}
+
+/* ===================== 下载区 ===================== */
+#download {
+  border-top: 1px solid rgba(26, 42, 58, 0.4);
+}
+
+.download-card {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-8);
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 1px rgba(238, 144, 56, 0.18), 0 0 40px rgba(238, 144, 56, 0.08);
+}
+
+.download-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.download-version {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-accent);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.download-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: var(--space-5) 0 var(--space-6);
+}
+
+.download-meta span {
+  padding: 3px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(26, 42, 58, 0.7);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.download-card .btn {
+  min-width: 300px;
+  justify-content: center;
+}
+
+.download-file {
+  margin-top: var(--space-4);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  word-break: break-all;
+}
+
+.download-file code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--color-text-secondary);
+}
+
+.download-notes {
+  list-style: none;
+  max-width: 560px;
+  margin: var(--space-8) auto 0;
+  text-align: left;
+}
+
+.download-notes li {
+  position: relative;
+  padding-left: var(--space-4);
+  font-size: 0.8125rem;
+  color: rgba(154, 169, 185, 0.7);
+  line-height: 1.7;
+}
+
+.download-notes li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.download-notes strong { color: var(--color-text-secondary); }
 
 /* Hero 右侧示意图 */
 .hero-visual {
@@ -1197,6 +1322,9 @@ a:focus-visible {
   .hero-text h1 { font-size: 1.75rem; }
   .btn { width: 100%; justify-content: center; }
   .hero-actions { flex-direction: column; }
+  .download-card { padding: var(--space-8) var(--space-5); }
+  .download-card .btn { min-width: 0; }
+  .download-version { font-size: 1.75rem; }
 }
 </style>
 </head>
@@ -1219,6 +1347,7 @@ a:focus-visible {
     <ul class="navbar-links" role="list">
       <li><a href="#features" class="active">功能特点</a></li>
       <li><a href="#howto">使用说明</a></li>
+      <li><a href="#download" class="nav-download">下载 V6.1.0</a></li>
       <li><a href="#pricing">怎样注册</a></li>
       <li><a href="#about">关于本软件</a></li>
     </ul>
@@ -1233,33 +1362,41 @@ a:focus-visible {
         <span class="hero-badge" style="background:transparent; border-color:rgba(26,42,58,0.4); letter-spacing:0.05em; font-size:0.6875rem;">
           艾卡软件工作室 出品
         </span>
+        <span class="hero-badge green" style="font-size:0.6875rem;">
+          V6.1.0 · 全新重构版
+        </span>
       </div>
       <h1>文件夹加密隐藏王</h1>
-      <p class="hero-subtitle">经典的文件夹加密、文件夹隐藏的系统安全工具</p>
+      <p class="hero-subtitle">经典的文件夹加密、文件夹隐藏工具 · 全新 V6.1.0</p>
       <p class="hero-desc">
-        她是一款经典的文件夹加密与隐藏工具，是您保护电脑里个人隐私的最佳助手。
-        绿色软件，无需安装，解压后即可使用，不会给您的系统留下垃圾文件。
+        V6.1.0 重构版（FolderHide）将您的私密文件夹移动并伪装到磁盘回收站目录，
+        配合加密记录清单与密码锁保护，让他人无法发现、也无法打开。
+        绿色单文件，解压即用，无需安装，无需 .NET 运行时。
       </p>
 
       <div class="hero-badges">
         <span class="hero-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          隐蔽性强
+          回收站伪装隐藏
         </span>
         <span class="hero-badge green">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          无需安装 解压即用
+          绿色单文件 解压即用
         </span>
         <span class="hero-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          安全可靠
+          AES-256-GCM 加密
         </span>
       </div>
 
       <div class="hero-actions">
-        <a href="#pricing" class="btn btn-primary">立即注册</a>
+        <a href="soft/FolderHide_V6.1.0_x64.zip" class="btn btn-primary btn-lg" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          立即下载 V6.1.0
+        </a>
         <a href="#features" class="btn btn-secondary">了解更多</a>
       </div>
+      <p class="hero-download-note">Windows 10 / 11 (x64) · 绿色免安装 zip 约 5.1 MB · 30 天全功能试用</p>
     </div>
 
     <div class="hero-visual">
@@ -1305,50 +1442,87 @@ a:focus-visible {
   </div>
 </section>
 
+<!-- ==================== 下载 ==================== -->
+<section id="download" class="section" aria-label="软件下载">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-label">免费下载</span>
+      <h2>下载文件夹加密隐藏王 V6.1.0</h2>
+      <p>绿色免安装，解压后双击即可运行，30 天全功能试用</p>
+    </div>
+
+    <div class="download-card">
+      <h3>文件夹加密隐藏王（FolderHide）</h3>
+      <div class="download-version">V6.1.0</div>
+      <div class="download-meta">
+        <span>Windows 10 / 11 (x64)</span>
+        <span>绿色免安装</span>
+        <span>zip 约 5.1 MB</span>
+        <span>单 exe 约 11.5 MB</span>
+        <span>30 天全功能试用</span>
+      </div>
+
+      <a href="soft/FolderHide_V6.1.0_x64.zip" class="btn btn-primary btn-lg" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        立即下载 V6.1.0（x64 绿色版）
+      </a>
+
+      <p class="download-file">下载文件：<code>FolderHide_V6.1.0_x64.zip</code></p>
+
+      <ul class="download-notes">
+        <li>解压到任意可写目录（如 <strong>D:\Tools</strong>），双击 <strong>FolderHide.exe</strong> 即可运行，首次启动自动开始 30 天试用。</li>
+        <li>解压后请勿单独删除包内的 <strong>setup.stamp</strong>；<strong>data.dat</strong>（清单）等文件由软件运行时自动生成，请勿手工复制分发。</li>
+        <li>设置抽屉中的「⚙设置」可切换主题、背景样式、图标大小等；所有设置自动保存到 exe 同目录的 <strong>settings.cfg</strong>。</li>
+        <li>忘记密码时请联系作者索取找回版，用内置密码进入找回模式，扫描并恢复已隐藏的文件夹（不会改写原清单）。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <!-- ==================== 功能特点 ==================== -->
 <section id="features" class="section" aria-label="功能特点">
   <div class="section-inner">
     <div class="section-header">
       <span class="section-label">核心优势</span>
-      <h2>为什么选择文件夹加密隐藏王？</h2>
-      <p>她具有隐蔽性强、安全可靠、使用方便等三大优点</p>
+      <h2>为什么选择文件夹加密隐藏王 V6.1.0？</h2>
+      <p>回收站伪装、加密清单、双锁定模式与全新界面，隐私保护一步到位</p>
     </div>
 
     <div class="features-grid">
       <div class="feature-card">
+        <div class="feature-icon">🗑️</div>
+        <h3>回收站伪装隐藏</h3>
+        <p>文件夹被移动并伪装到磁盘回收站目录，在资源管理器中显示为回收站、无法直接打开，原位置不留痕迹。</p>
+      </div>
+
+      <div class="feature-card green">
+        <div class="feature-icon">�</div>
+        <h3>清单加密保护</h3>
+        <p>PBKDF2（60 万次迭代）+ AES-256-GCM 认证加密，防篡改、防暴力破解，<strong>密码本身不落盘</strong>。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>双重锁定模式</h3>
+        <p>可选密码模式，或本机免登录模式（DPAPI 机器绑定）；连续输错 5 次触发 30 秒冷却。</p>
+      </div>
+
+      <div class="feature-card green">
+        <div class="feature-icon">🎨</div>
+        <h3>深浅主题 · 液态玻璃</h3>
+        <p>深色 / 浅色原地切换，毛玻璃、液态玻璃、亚克力三种背景样式，透明度与图标大小连续可调。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>列表 / 卡片双视图</h3>
+        <p>高密度列表支持表头全选与批量隐藏、显示、删除；卡片视图便于快速浏览，两种视图一键切换并自动记忆。</p>
+      </div>
+
+      <div class="feature-card green">
         <div class="feature-icon">🌿</div>
-        <h3>绿色软件</h3>
-        <p>她为绿色软件，<strong>无需安装，解压后即可使用</strong>，不会给您的系统留下垃圾文件。</p>
-      </div>
-
-      <div class="feature-card green">
-        <div class="feature-icon">🛡️</div>
-        <h3>隐蔽性强</h3>
-        <p>她通过特殊方法将您需要隐藏的文件夹安全彻底的隐藏起来，使您的隐私不被泄漏。</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>不影响系统速度</h3>
-        <p>她运行稳定可靠，不会在后台运行监视程序，<strong>绝对不影响系统速度</strong>。</p>
-      </div>
-
-      <div class="feature-card green">
-        <div class="feature-icon">🧹</div>
-        <h3>无残留</h3>
-        <p>她不会给您的右键菜单添加任何内容，试用不满意直接删除即可，不留任何残余信息。</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">💾</div>
-        <h3>移动磁盘支持</h3>
-        <p>她可以隐藏移动磁盘上的文件，即使拿到其它电脑上也是隐藏状态。</p>
-      </div>
-
-      <div class="feature-card green">
-        <div class="feature-icon">🔐</div>
-        <h3>加密强度高</h3>
-        <p>她加密强度高，即使您在重新安装系统后，隐藏文件夹也不会显示。</p>
+        <h3>绿色单文件</h3>
+        <p>Native AOT 编译，<strong>单个 exe 约 11.5 MB</strong>，免安装、无需 .NET 运行时，也不在后台常驻监视。</p>
       </div>
     </div>
   </div>
@@ -1360,18 +1534,17 @@ a:focus-visible {
     <div class="section-header">
       <span class="section-label">快速上手</span>
       <h2>文件夹加密隐藏王非常容易使用！</h2>
-      <p>保证您不用任何人教您，即可自如操作</p>
+      <p>解压、设密码、拖入文件夹、一键隐藏，四步完成</p>
     </div>
 
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-number">1</div>
         <div class="step-content">
-          <h3>隐藏文件夹</h3>
+          <h3>解压并运行</h3>
           <ol>
-            <li>在软件左侧目录中选中您要隐藏的文件夹。</li>
-            <li>点击工具栏中的 <strong>添加</strong> 按钮添加到右侧的列表中。</li>
-            <li>选中右侧列表中的文件夹，点击工具栏中的 <strong>隐藏</strong> 按钮即可。</li>
+            <li>将 <strong>FolderHide_V6.1.0_x64.zip</strong> 解压到任意可写目录（如 <strong>D:\Tools</strong>）。</li>
+            <li>双击 <strong>FolderHide.exe</strong>，首次启动自动开始 30 天试用。</li>
           </ol>
         </div>
       </div>
@@ -1379,10 +1552,10 @@ a:focus-visible {
       <div class="step-card">
         <div class="step-number">2</div>
         <div class="step-content">
-          <h3>解除隐藏</h3>
+          <h3>设置访问密码</h3>
           <ol>
-            <li>在软件右侧文件夹隐藏列表中选中您要解除隐藏的文件夹。</li>
-            <li>点击工具栏中的 <strong>解除隐藏</strong> 按钮即可。</li>
+            <li>点击工具栏的 <strong>🔑 密码</strong> 设置访问密码。</li>
+            <li>密码留空即为<strong>本机免登录模式</strong>（DPAPI 机器绑定），换机后无法打开。</li>
           </ol>
         </div>
       </div>
@@ -1390,10 +1563,10 @@ a:focus-visible {
       <div class="step-card">
         <div class="step-number">3</div>
         <div class="step-content">
-          <h3>打开目录</h3>
+          <h3>添加并隐藏</h3>
           <ol>
-            <li>当您的隐藏文件夹解除隐藏后，选中该隐藏项目。</li>
-            <li>点击工具栏的 <strong>"打开"</strong> 按钮来打开隐藏目录。</li>
+            <li>在左侧「我的电脑」目录树选中文件夹，点 <strong>➕添加</strong> 加入右侧列表，或直接从资源管理器拖入。</li>
+            <li>选中条目点 <strong>隐藏</strong>；列表 / 卡片视图可切换，表头「☐ 全选」支持批量隐藏。</li>
           </ol>
         </div>
       </div>
@@ -1401,10 +1574,10 @@ a:focus-visible {
       <div class="step-card">
         <div class="step-number">4</div>
         <div class="step-content">
-          <h3>搜索隐藏目录</h3>
+          <h3>恢复与找回</h3>
           <ol>
-            <li>当您的文件夹列表被破坏，或您找不到隐藏的文件夹时使用此功能。</li>
-            <li>此功能可以帮您<strong>找回您的文件夹</strong>。</li>
+            <li>选中条目点 <strong>显示</strong>，文件夹即还原到原始位置。</li>
+            <li>忘记密码时联系作者索取<strong>找回版</strong>，用内置密码扫描磁盘恢复已隐藏目录（只读原清单，不改写）。</li>
           </ol>
         </div>
       </div>
@@ -1418,7 +1591,7 @@ a:focus-visible {
     <div class="section-header">
       <span class="section-label">注册购买</span>
       <h2>怎样注册</h2>
-      <p>未注册的《文件夹加密隐藏王》您只能使用30天，而注册的版本将不会有任何的限制并且可以享受以后的免费升级</p>
+      <p>V6.1.0 未注册时可免费全功能试用 30 天，注册后不再有任何限制，并可享受以后的免费升级</p>
     </div>
 
     <div class="pricing-grid">
@@ -1426,14 +1599,14 @@ a:focus-visible {
         <div class="pricing-header">
           <h3>试用版</h3>
           <div class="pricing-price">免费</div>
-          <p class="pricing-desc">30天全功能体验</p>
+          <p class="pricing-desc">30 天全功能体验</p>
         </div>
         <ul class="pricing-features">
           <li>所有功能完整试用</li>
-          <li>30天免费使用期</li>
-          <li>体验全部加密隐藏功能</li>
+          <li>30 天免费使用期</li>
+          <li>绿色免安装，解压即用</li>
         </ul>
-        <a href="#howto" class="pricing-btn secondary">免费下载试用</a>
+        <a href="soft/FolderHide_V6.1.0_x64.zip" class="pricing-btn primary" download>⬇ 下载 V6.1.0 试用版</a>
       </div>
 
       <div class="pricing-card featured">
@@ -1444,9 +1617,9 @@ a:focus-visible {
         </div>
         <ul class="pricing-features">
           <li>解除 30 天试用限制</li>
-          <li>享受以后的免费升级</li>
+          <li>机器码绑定，离线注册码校验</li>
           <li>所有功能无任何限制</li>
-          <li>重新安装系统后可继续使用</li>
+          <li>享受以后的免费升级</li>
         </ul>
         <a href="#reg-detail" class="pricing-btn primary" onclick="switchRegTab('offline')">立即注册</a>
       </div>
@@ -1469,7 +1642,7 @@ a:focus-visible {
             <strong>网站地址：</strong><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">http://www.ikasoft.cn</a><br>
             <strong>作者E-mail：</strong><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a><br>
             <strong>E-mail主题：</strong>索要《文件夹加密隐藏王》详细注册方式<br>
-            <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在 帮助→输入注册码... 处获得）</span>  3.软件名称及版本
+            <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在软件「⚙设置」→「注册」处获取）</span>  3.软件名称及版本（V6.1.0）
           </li>
           <li>
             <strong>【第二步】</strong>按照详细注册方式付费，同时发送注册E-mail给作者。<br>
@@ -1486,8 +1659,8 @@ a:focus-visible {
         <div style="margin-top:var(--space-5); padding:var(--space-4); background:rgba(238,144,56,0.03); border:1px solid rgba(238,144,56,0.08); border-radius:var(--radius-sm);">
           <p style="font-size:0.875rem; color:rgba(154,169,185,0.7);">
             <strong>💡 推荐做法：</strong>为防止您在E-mail中输入错误，请使用以下方法：
-            点击软件中 <strong style="color:var(--color-accent);">"发送注册邮件"</strong> 按钮，填写E-mail表单，自动生成E-mail内容，
-            然后拷贝到您要发送的E-mail中，发给作者即可。
+            在软件 <strong style="color:var(--color-accent);">「⚙设置」→「注册」</strong> 处复制机器码，
+            粘贴到邮件正文中发给作者即可，无需手工抄写。
           </p>
         </div>
 
@@ -1547,7 +1720,7 @@ a:focus-visible {
     <div class="section-header">
       <span class="section-label">关于我们</span>
       <h2>关于本软件</h2>
-      <p>一款历经十多年市场考验的经典文件夹安全工具</p>
+      <p>经典品牌的 V6.1.0 全新重构版：绿色单文件、免安装、开箱即用</p>
     </div>
 
     <div class="about-grid">
@@ -1556,11 +1729,23 @@ a:focus-visible {
           <tbody>
             <tr>
               <th>软件名称</th>
-              <td>文件夹加密隐藏王2011</td>
+              <td>文件夹加密隐藏王（FolderHide 重构版）</td>
             </tr>
             <tr>
               <th>版本号</th>
-              <td>5.0</td>
+              <td>6.1.0</td>
+            </tr>
+            <tr>
+              <th>文件大小</th>
+              <td>单 exe 约 11.5 MB（zip 包约 5.1 MB）</td>
+            </tr>
+            <tr>
+              <th>使用平台</th>
+              <td>Windows 10 / 11（x64）</td>
+            </tr>
+            <tr>
+              <th>授权方式</th>
+              <td>30 天全功能试用 · 机器码 + 注册码</td>
             </tr>
             <tr>
               <th>版权所有</th>
@@ -1574,10 +1759,6 @@ a:focus-visible {
               <th>网址</th>
               <td><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">http://www.ikasoft.cn</a></td>
             </tr>
-            <tr>
-              <th>使用平台</th>
-              <td>Win9x / WinMe / WinNT / Win2000 / WinXP / Win7</td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -1585,20 +1766,18 @@ a:focus-visible {
       <div>
         <div class="about-desc-box">
           <h3>功能简介</h3>
-          <p><span class="highlight-desc">《文件夹加密隐藏王》</span>是一款经典的文件夹加密、文件夹隐藏的系统安全工具，是您保护电脑里个人隐私的最佳助手！</p>
-          <p>她为<span class="highlight-desc">绿色软件</span>，无需安装，解压后即可使用，不会给您的系统留下垃圾文件；</p>
-          <p>她运行稳定可靠，不会在后台运行监视程序，<span class="highlight-desc">绝对不影响系统速度</span>；</p>
-          <p>她不会给您的右键菜单添加任何内容，试用不满意直接删除即可，不会给您的系统留下任何残余信息；</p>
-          <p>她具有<span class="highlight-desc">隐蔽性强、安全可靠、使用方便</span>等三大优点，可以彻底的隐藏您的文件夹；</p>
-          <p>她可以隐藏移动磁盘上的文件，即使拿到其它电脑上也是隐藏状态；</p>
-          <p>她是一款极易使用的软件，保证您不用任何人教您，即可自如操作；</p>
-          <p>她加密强度高，即使您在重新安装系统后隐藏文件夹也不会显示；</p>
-          <p>她通过特殊方法将您需要隐藏的文件夹安全彻底的隐藏起来，使您的隐私不被泄漏；</p>
+          <p><span class="highlight-desc">《文件夹加密隐藏王》V6.1.0</span> 是基于经典版本的全新重构版（FolderHide）：将文件夹移动并伪装到磁盘回收站目录，配合加密记录清单与密码锁保护，让他人无法发现和访问您的私密文件夹。</p>
+          <p>她采用 <span class="highlight-desc">AES-256-GCM 认证加密</span>（PBKDF2 60 万次迭代派生密钥）保护隐藏清单，防篡改、防暴力破解，密码本身不落盘。</p>
+          <p>支持<span class="highlight-desc">密码模式与本机免登录模式</span>（DPAPI 机器绑定）双重锁定；连续输错 5 次自动进入 30 秒冷却。</p>
+          <p>全新 Nova 风格界面：<span class="highlight-desc">深色 / 浅色</span>原地切换，毛玻璃、液态玻璃、亚克力三种背景样式，背景透明度、字体、图标大小均可调，设置自动保存。</p>
+          <p>隐藏清单支持 <span class="highlight-desc">列表 / 卡片双视图</span>：列表可表头全选并批量隐藏、显示、删除，卡片视图便于快速浏览，切换选择自动记忆。</p>
+          <p>她为<span class="highlight-desc">绿色单文件</span>：Native AOT 编译，单个 exe 约 11.5 MB，免安装、无需 .NET 运行时，也不在后台常驻监视，不会拖慢系统。</p>
+          <p>数据完整性闸门与多锚点首跑时间校验可识别清单被删除或篡改的情况，删单个记录无法重置试用期。</p>
           <p><span class="highlight-desc">《文件夹加密隐藏王》将是您加密文件夹、隐藏文件夹的理想选择！</span></p>
 
           <div class="about-trial-note">
             <strong>使用说明：</strong>
-            未注册的《文件夹加密隐藏王》您只能使用30天，而注册的版本将不会有任何的限制并且可以享受以后的免费升级！
+            未注册的《文件夹加密隐藏王》V6.1.0 可免费全功能试用 30 天，注册后不再有任何限制，并可享受以后的免费升级！
           </div>
         </div>
       </div>
@@ -1611,8 +1790,8 @@ a:focus-visible {
   <div class="footer-inner">
     <div class="footer-grid">
       <div class="footer-brand">
-        <h3>文件夹加密隐藏王</h3>
-        <p>一款经典的文件夹加密、文件夹隐藏的系统安全工具，是您保护电脑里个人隐私的最佳助手。</p>
+        <h3>文件夹加密隐藏王 V6.1.0</h3>
+        <p>全新重构版：回收站伪装隐藏 + AES-256-GCM 清单加密，绿色单文件免安装，Windows 10 / 11 x64。</p>
       </div>
 
       <div class="footer-col">
@@ -1620,6 +1799,7 @@ a:focus-visible {
         <ul>
           <li><a href="#features">功能特点</a></li>
           <li><a href="#howto">使用说明</a></li>
+          <li><a href="soft/FolderHide_V6.1.0_x64.zip" download>下载 V6.1.0</a></li>
           <li><a href="#pricing">怎样注册</a></li>
           <li><a href="#about">关于本软件</a></li>
         </ul>
