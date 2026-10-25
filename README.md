@@ -51,7 +51,8 @@ FHWeb/
 ├── .agent/AGENTS.md           # AI 编码指引
 ├── soft/                      # 软件分发包（官网下载链接指向此处）
 │   └── FolderHide_V6.1.0_x64.zip   # V6.1.0 绿色版（约 5.1 MB）
-├── old/                       # 旧版页面与注册说明素材（mail*.jpg 现仍被引用）
+├── image/                     # 官网截图素材（reg1.png、reg2.png 注册邮件示例）
+├── old/                       # 旧版页面与注册说明素材（历史留存，已不被官网引用）
 └── g/                         # Space War 太空战机小游戏
     ├── index.html             # 游戏当前版（V4.3.0）
     ├── huahua/nana/tuzi/xiaokeai/xueer.html  # 5 个角色旧版

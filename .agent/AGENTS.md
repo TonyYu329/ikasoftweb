@@ -37,9 +37,12 @@ FHWeb/
 ├── .agent/AGENTS.md           # 本文件，AI 编码指引
 ├── soft/                      # 软件分发包（官网全部下载按钮指向此处）
 │   └── FolderHide_V6.1.0_x64.zip   # V6.1.0 绿色版（5,361,163 B，2026-10-25 15:47 重新打包）
+├── image/                     # 官网截图素材
+│   ├── reg1.png               # 注册邮件发送示例（2026-10-25 起被注册区引用）
+│   └── reg2.png               # 注册邮件填写示例（2026-10-25 起被注册区引用）
 ├── old/                       # 旧版官网页面与注册说明素材
 │   ├── about.html / how.html / reg.html / freeREG.html   # 旧版页面（历史留存）
-│   ├── mail.jpg / mail2.jpg   # 注册邮件示例截图（现 index.html 注册区仍在引用，勿删）
+│   ├── mail.jpg / mail2.jpg   # 旧版注册邮件截图（2026-10-25 起已不被官网引用，历史留存）
 │   └── FOLDER0.gif/png、reg.png
 ├── g/                         # Space War 太空战机小游戏
 │   ├── index.html             # ★游戏当前维护版（引用 merged.css + index_cjs.js + index_3d.js）
@@ -65,7 +68,7 @@ FHWeb/
 - 所有颜色必须使用 `:root` 中的 CSS 变量（`--bg-*`、`--color-gold*`、`--text-*`、`--color-border`、`--color-success/error`），禁止新增硬编码色值；令牌以 `DESIGN-蓝橙色-tony.md` 为唯一真源。
 - 设计语言特征：卡片直角（`--radius-lg: 0`）、金色 CTA 带微弱发光（`--shadow-glow`）、分割线低对比（`#1a2a3a`）；勿擅自改成圆角/大投影/蓝色强调。
 - 单页锚点导航：`#download`（免费下载）、`#features`（功能特点）、`#howto`（使用说明）、`#pricing`（怎样注册）、`#about`（关于本软件），导航中「下载 V6.1.0」为描边胶囊入口；导航高亮、移动端汉堡菜单、回到顶部按钮逻辑在文件末尾内联 IIFE 中。
-- 注册区为双 tab 面板：`#panel-offline`（线下注册，含 `old/mail.jpg`、`old/mail2.jpg` 截图）与 `#panel-free`（免费注册）；改注册流程时两处文案同步核对。
+- 注册区为双 tab 面板：`#panel-offline`（线下注册，含 `image/reg1.png`、`image/reg2.png` 两张邮件截图，自适应宽度 `flex: 1 1 300px`）与 `#panel-free`（免费注册）；改注册流程时两处文案同步核对。
 - 语义化与可访问性：`<section>` 带 `aria-label`，`<nav role="navigation">`，图标按钮带 `aria-label`/`title`。
 - 文案事实口径（2026-10-25 起按 V6.1.0）：软件名《文件夹加密隐藏王》V6.1.0（folderhide 项目 README/发布物为准，产品名 FolderHide）、平台 Windows 10 / 11 x64、zip 约 5.1 MB / 单 exe 约 11.5 MB、30 天全功能试用、技术支持邮箱 lantian329ygf@163.com、官网 http://www.ikasoft.cn；旧版《文件夹加密隐藏王2011》V5.0 / Win9x~Win7 文案已下线，仅在 `old/` 历史页面保留。
 - `index.html` 现状为 **LF 行尾**；其余文件（含 g/ 目录、md 文档）为 **CRLF**。修改既有文件时保持其原有行尾，不整文件转换。
@@ -76,7 +79,7 @@ FHWeb/
 - `huahua.html` 等 5 个角色页是独立内联实现，改角色页时不要假设它们共享 `index_cjs.js`。
 - 无 npm 依赖，three.js 只使用本地副本，禁止改为 CDN 引入。
 - 主站目前没有任何指向 `g/` 游戏的链接（2026-10-24 核实）；如需上下线入口，先与用户确认。
-- `old/` 目录虽名为 old，但 `mail.jpg`、`mail2.jpg` 仍被现官网引用，删除任何素材前必须全仓 grep 引用。
+- `old/` 目录虽名为 old，但其中 `mail.jpg`、`mail2.jpg` 已于 2026-10-25 被 `image/reg1.png`、`image/reg2.png` 取代，不再被官网引用；删除任何素材前仍须全仓 grep 引用。
 
 ### 通用
 
