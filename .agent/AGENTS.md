@@ -13,7 +13,7 @@
 | 字体 | Google Fonts CDN（官网 Inter；游戏 Orbitron / Share Tech Mono / Exo 2） |
 | 设计规范 | `DESIGN-蓝橙色-tony.md`：暗蓝底色（主背景 `#05152c`、卡片 `#0f2636`）+ 暖金唯一强调色（`#ee9038`），全部颜色走 CSS 自定义属性 |
 | 服务入口 | 无服务端；官网入口 `index.html`，游戏入口 `g/index.html` |
-| 软件本体 | 官网介绍的为《文件夹加密隐藏王》V6.1.0（folderhide 项目 C#/.NET 10 AOT 重构版，产品名 FolderHide）；分发包由 `soft/` 目录提供下载，桌面版源码仍是独立项目 `D:\Study\AICode\folderhide`，不在本仓库 |
+| 软件本体 | 官网介绍的为《文件夹加密隐藏王》V6.2.1（folderhide 项目 C#/.NET 10 AOT 重构版，产品名 FolderHide）；分发包由 `soft/` 目录提供下载，桌面版源码仍是独立项目 `D:\Study\AICode\folderhide`，不在本仓库 |
 | 代码仓库 | `git@github.com:TonyYu329/ikasoftweb.git`（master 分支；官网 V0.1.0 基线 2026-06-09） |
 
 ## 构建、测试与校验
@@ -23,7 +23,7 @@
 - **游戏验证**：浏览器打开 `g/index.html`，开始界面应显示「Space War · 版本号 V4.3.0」；键盘方向键/WASD 移动、J 或左键射击、K 或右键导弹；移动端有触控按钮。
 - **缓存破坏**：游戏页静态资源用 `?v=x.y.z` 查询串（当前 `g/index.html` 引用 `merged.css?v=4.2.1`、`index_cjs.js?v=4.2.1`、`index_3d.js?v=4.2.1`）；改动 JS/CSS 后必须同步升版本号。
 - **界面类改动必须截图验证**：改完后在浏览器实际渲染并截图/像素/DOM 断言确认，禁止"代码写了即视为完成"。
-- **下载链接校验**：官网下载按钮统一指向 `soft/FolderHide_V6.1.0_x64.zip`（相对路径 + `download` 属性）；发布新版本时替换 zip 并同步 Hero、`#download`、`#pricing`、页脚四处文案与文件名。
+- **下载链接校验**：官网下载按钮统一指向 `soft/FolderHide_V6.2.1_x64.zip`（相对路径 + `download` 属性）；发布新版本时替换 zip 并同步导航、Hero、`#download`、`#pricing`、页脚五处入口文案与文件名。
 - **校验口径**：HTML 结构与可访问性（aria-label、role）人工核对；无自动化测试套件。
 
 ## 目录结构
@@ -36,7 +36,7 @@ FHWeb/
 ├── 修改记录.md                 # 每次修改的流水记录（时间精确到秒）
 ├── .agent/AGENTS.md           # 本文件，AI 编码指引
 ├── soft/                      # 软件分发包（官网全部下载按钮指向此处）
-│   └── FolderHide_V6.1.0_x64.zip   # V6.1.0 绿色版（5,361,163 B，2026-10-25 15:47 重新打包）
+│   └── FolderHide_V6.2.1_x64.zip   # V6.2.1 绿色版（5,508,379 B，2026-11-02 13:56 打包；旧 V6.1.0 包保留不删）
 ├── image/                     # 官网截图素材
 │   ├── reg1.png               # 注册邮件发送示例（2026-10-25 起被注册区引用）
 │   └── reg2.png               # 注册邮件填写示例（2026-10-25 起被注册区引用）
@@ -67,10 +67,10 @@ FHWeb/
 
 - 所有颜色必须使用 `:root` 中的 CSS 变量（`--bg-*`、`--color-gold*`、`--text-*`、`--color-border`、`--color-success/error`），禁止新增硬编码色值；令牌以 `DESIGN-蓝橙色-tony.md` 为唯一真源。
 - 设计语言特征：卡片直角（`--radius-lg: 0`）、金色 CTA 带微弱发光（`--shadow-glow`）、分割线低对比（`#1a2a3a`）；勿擅自改成圆角/大投影/蓝色强调。
-- 单页锚点导航：`#download`（免费下载）、`#features`（功能特点）、`#howto`（使用说明）、`#pricing`（怎样注册）、`#about`（关于本软件），导航中「下载 V6.1.0」为描边胶囊入口；导航高亮、移动端汉堡菜单、回到顶部按钮逻辑在文件末尾内联 IIFE 中。
+- 单页锚点导航：`#download`（免费下载）、`#features`（功能特点）、`#howto`（使用说明）、`#pricing`（怎样注册）、`#about`（关于本软件），导航中「下载 V6.2.1」为描边胶囊入口（直接下载 zip）；导航高亮、移动端汉堡菜单、回到顶部按钮逻辑在文件末尾内联 IIFE 中。
 - 注册区为双 tab 面板：`#panel-offline`（线下注册，含 `image/reg1.png`、`image/reg2.png` 两张邮件截图，自适应宽度 `flex: 1 1 300px`）与 `#panel-free`（免费注册）；改注册流程时两处文案同步核对。
 - 语义化与可访问性：`<section>` 带 `aria-label`，`<nav role="navigation">`，图标按钮带 `aria-label`/`title`。
-- 文案事实口径（2026-10-25 起按 V6.1.0）：软件名《文件夹加密隐藏王》V6.1.0（folderhide 项目 README/发布物为准，产品名 FolderHide）、平台 Windows 10 / 11 x64、zip 约 5.1 MB / 单 exe 约 11.5 MB、30 天全功能试用、技术支持邮箱 lantian329ygf@163.com、官网 http://www.ikasoft.cn；旧版《文件夹加密隐藏王2011》V5.0 / Win9x~Win7 文案已下线，仅在 `old/` 历史页面保留。
+- 文案事实口径（2026-11-02 起按 V6.2.1）：软件名《文件夹加密隐藏王》V6.2.1（folderhide 项目 README/发布物为准，产品名 FolderHide）、平台 Windows 10 / 11 x64、zip 约 5.3 MB（5,508,379 B）/ 单 exe 约 11.8 MB（12,377,088 B）、30 天全功能试用、技术支持邮箱 lantian329ygf@163.com、官网 http://www.ikasoft.cn；V6.2.0 起取消「找回版」，忘记密码改为向作者索取短效救援令牌；V6.2.1 卡片视图支持框选多选与拖拽排序。旧版《文件夹加密隐藏王2011》V5.0 / Win9x~Win7 文案已下线，仅在 `old/` 历史页面保留。
 - 对外文案脱敏（2026-10-25 用户明确要求）：官网面向最终用户，**不得介绍技术实现方案**；禁止出现「回收站伪装 / AES / PBKDF2 / DPAPI 机器绑定 / Native AOT / .NET 运行时 / 清单 / setup.stamp / data.dat / settings.cfg / 完整性闸门 / 多锚点」等字样，改用「彻底隐藏」「高强度加密保护」「两种锁定模式」「绿色单文件」等结果导向表述。
 - `index.html` 现状为 **LF 行尾**；其余文件（含 g/ 目录、md 文档）为 **CRLF**。修改既有文件时保持其原有行尾，不整文件转换。
 
@@ -90,7 +90,7 @@ FHWeb/
 
 ## 架构说明
 
-- **官网**：单页锚点滚动站点，无路由、无后端。结构为 固定导航 → Hero（V6.1.0 简介 + 醒目下载按钮）→ 免费下载（`#download`）→ 功能特点（6 张卡片）→ 使用说明（4 步）→ 怎样注册（试用/注册对比 + 双注册方式 tab）→ 关于本软件（信息表 + 功能简介）→ 页脚 → 回到顶部；全部交互（汉堡菜单、tab 切换、滚动高亮、回到顶部）由文件末尾内联 `<script>` IIFE 实现。
+- **官网**：单页锚点滚动站点，无路由、无后端。结构为 固定导航 → Hero（V6.2.1 简介 + 醒目下载按钮）→ 免费下载（`#download`）→ 功能特点（6 张卡片）→ 使用说明（4 步）→ 怎样注册（试用/注册对比 + 双注册方式 tab）→ 关于本软件（信息表 + 功能简介）→ 页脚 → 回到顶部；全部交互（汉堡菜单、tab 切换、滚动高亮、回到顶部）由文件末尾内联 `<script>` IIFE 实现。
 - **游戏**：双层 Canvas 架构——`#gameCanvas`（2D 主渲染）与透明的 `#canvas3d`（WebGL 叠加）叠放；HUD/开始/结束界面为 DOM 覆盖层（`.game-ui`）；移动端 `.mobile-controls` 提供子弹/导弹虚拟按钮。
 - **资源关系**：官网与游戏相互独立，唯一跨目录引用是 `index.html` → `old/mail*.jpg` 两张图。
 
