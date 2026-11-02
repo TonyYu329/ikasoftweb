@@ -1614,11 +1614,11 @@ a:focus-visible {
     <!-- 注册详情 -->
     <div id="reg-detail" class="reg-info">
       <div class="reg-tabs" role="tablist">
-        <button class="reg-tab active" role="tab" aria-selected="true" data-tab="offline" onclick="switchRegTab('offline')">📧 非在线注册</button>
+        <button class="reg-tab active" role="tab" aria-selected="true" data-tab="offline" onclick="switchRegTab('offline')">📧 在线注册</button>
         <button class="reg-tab" role="tab" aria-selected="false" data-tab="free" onclick="switchRegTab('free')">🎁 免费获取</button>
       </div>
 
-      <!-- 非在线注册 -->
+      <!-- 在线注册 -->
       <div class="reg-panel active" id="panel-offline" role="tabpanel">
         <h4><span class="icon">📧</span> 在线注册步骤</h4>
         <ol class="reg-steps">
@@ -1882,6 +1882,33 @@ a:focus-visible {
       panels[key].classList.toggle('active', key === tab);
     });
   };
+
+  // 所有邮件入口统一预填标题与正文；mailto 参数由 JS 生成，避免长串重复与 HTML 属性中的 & 转义问题
+  (function initMailtoLinks() {
+    var recipient = 'lantian329ygf@163.com';
+    var subject = '咨询：文件夹加密隐藏王 V6.2.1 购买与注册';
+    var body = [
+      '您好，我想咨询《文件夹加密隐藏王》V6.2.1 的购买与注册事宜。',
+      '',
+      '软件名称：文件夹加密隐藏王',
+      '版本：V6.2.1',
+      '',
+      '请告知购买方式与价格。',
+      '',
+      '我的机器码是：________________（请在此填写）',
+      '',
+      '我的联系方式：________________',
+      '',
+      '谢谢！'
+    ].join('\r\n');
+    var href = 'mailto:' + recipient +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(body);
+
+    document.querySelectorAll('a[href^="mailto:"]').forEach(function(link) {
+      link.setAttribute('href', href);
+    });
+  })();
 
   if (window.location.hash === '#reg-detail') {
     setTimeout(function() {

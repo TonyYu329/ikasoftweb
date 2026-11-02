@@ -68,7 +68,7 @@ FHWeb/
 - 所有颜色必须使用 `:root` 中的 CSS 变量（`--bg-*`、`--color-gold*`、`--text-*`、`--color-border`、`--color-success/error`），禁止新增硬编码色值；令牌以 `DESIGN-蓝橙色-tony.md` 为唯一真源。
 - 设计语言特征：卡片直角（`--radius-lg: 0`）、金色 CTA 带微弱发光（`--shadow-glow`）、分割线低对比（`#1a2a3a`）；勿擅自改成圆角/大投影/蓝色强调。
 - 单页锚点导航：`#download`（免费下载）、`#features`（功能特点）、`#howto`（使用说明）、`#pricing`（怎样注册）、`#about`（关于本软件），导航中「下载 V6.2.1」为描边胶囊入口（直接下载 zip）；导航高亮、移动端汉堡菜单、回到顶部按钮逻辑在文件末尾内联 IIFE 中。
-- 注册区为双 tab 面板：`#panel-offline`（线下注册，含 `image/reg1.png`、`image/reg2.png` 两张邮件截图，自适应宽度 `flex: 1 1 300px`）与 `#panel-free`（免费注册）；改注册流程时两处文案同步核对。
+- 注册区为双 tab 面板：`#panel-offline`（在线注册，含 `image/reg1.png`、`image/reg2.png` 两张邮件截图，自适应宽度 `flex: 1 1 300px`）与 `#panel-free`（免费注册）；改注册流程时两处文案同步核对。
 - 语义化与可访问性：`<section>` 带 `aria-label`，`<nav role="navigation">`，图标按钮带 `aria-label`/`title`。
 - 文案事实口径（2026-11-02 起按 V6.2.1）：软件名《文件夹加密隐藏王》V6.2.1（folderhide 项目 README/发布物为准，产品名 FolderHide）、平台 Windows 10 / 11 x64、zip 约 5.3 MB（5,508,462 B）/ 单 exe 约 11.8 MB（12,378,112 B）、30 天全功能试用、技术支持邮箱 lantian329ygf@163.com、官网 http://www.ikasoft.cn；V6.2.0 起取消「找回版」，忘记密码改为向作者索取短效救援令牌；V6.2.1 卡片视图支持框选多选与拖拽排序。旧版《文件夹加密隐藏王2011》V5.0 / Win9x~Win7 文案已下线，仅在 `old/` 历史页面保留。官网不展示任何价格（2026-11-02 起移除试用版/注册版价格行，保留注册流程与两种注册方式）。
 - 对外文案脱敏（2026-10-25 用户明确要求）：官网面向最终用户，**不得介绍技术实现方案**；禁止出现「回收站伪装 / AES / PBKDF2 / DPAPI 机器绑定 / Native AOT / .NET 运行时 / 清单 / setup.stamp / data.dat / settings.cfg / 完整性闸门 / 多锚点」等字样，改用「彻底隐藏」「高强度加密保护」「两种锁定模式」「绿色单文件」等结果导向表述。
