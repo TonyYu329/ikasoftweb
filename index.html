@@ -416,6 +416,13 @@ a:focus-visible {
   color: var(--color-text-secondary);
 }
 
+.download-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
 .download-card .btn {
   min-width: 300px;
   justify-content: center;
@@ -1135,7 +1142,7 @@ a:focus-visible {
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           立即下载 V6.2.1
         </a>
-        <a href="#buy" class="btn btn-outline btn-lg">
+        <a href="#buy" class="btn btn-primary btn-lg">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
           立即购买
         </a>
@@ -1255,15 +1262,17 @@ a:focus-visible {
         <span>30 天全功能试用</span>
       </div>
 
-      <a href="soft/FolderHide_V6.2.1_x64.zip" class="btn btn-primary btn-lg" download>
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        立即下载 V6.2.1（x64 绿色版）
-      </a>
+      <div class="download-actions">
+        <a href="soft/FolderHide_V6.2.1_x64.zip" class="btn btn-primary btn-lg" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          立即下载 V6.2.1（x64 绿色版）
+        </a>
 
-      <a href="#buy" class="btn btn-outline btn-lg" style="margin-top:var(--space-3);">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        立即购买
-      </a>
+        <a href="#buy" class="btn btn-primary btn-lg">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          立即购买
+        </a>
+      </div>
 
       <p class="download-file">下载文件：<code>FolderHide_V6.2.1_x64.zip</code></p>
 
