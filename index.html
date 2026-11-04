@@ -29,9 +29,9 @@
   --color-gold: #ee9038;
   --color-gold-hover: #f3a13e;
   --color-gold-deep: #d47828;
-  /* 购买按钮的近似色 —— 与下载按钮同亮度、同版式，仅色相略偏暖 */
-  --color-gold-alt: #f2a04a;
-  --color-gold-alt-hover: #f7ad58;
+  /* 购买按钮的区分色 —— 与下载按钮同亮度、同版式，色相明显不同（青蓝） */
+  --color-accent-2: #1f9be0;
+  --color-accent-2-hover: #38abec;
 
   /* 文本色 */
   --text-primary: #e8edf3;
@@ -315,13 +315,14 @@ a:focus-visible {
   color: var(--text-primary);
 }
 
-/* 购买主按钮：与下载主按钮完全同尺寸/同字重/同阴影，仅底色略偏暖 */
+/* 购买主按钮：与下载主按钮完全同尺寸/同字重/同圆角/同亮度，仅底色与光晕换为青蓝系 */
 .btn-primary.btn-buy {
-  background: var(--color-gold-alt);
+  background: var(--color-accent-2);
+  box-shadow: 0 0 0 1px rgba(31, 155, 224, 0.35), 0 0 20px 3px rgba(31, 155, 224, 0.18);
 }
 
 .btn-primary.btn-buy:hover {
-  background: var(--color-gold-alt-hover);
+  background: var(--color-accent-2-hover);
 }
 
 .btn-secondary {
@@ -1277,7 +1278,7 @@ a:focus-visible {
       <div class="download-actions">
         <a href="soft/FolderHide_V6.2.1_x64.zip" class="btn btn-primary btn-lg" download>
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          立即下载 V6.2.1（x64 绿色版）
+          立即下载 V6.2.1
         </a>
 
         <a href="#buy" class="btn btn-primary btn-buy btn-lg">

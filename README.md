@@ -107,7 +107,7 @@ python -m http.server 8080
 | 2026-11-02 | 同版本重发 | V6.2.1 分发包重发（5,508,462 B，包内 `FolderHide.exe` 12,378,112 B）；下载链接与体积口径同步，官网展示文案无需调整 |
 | 2026-11-02 | 同版本重发 | V6.2.1 再次重发（5,508,752 B，包内 `FolderHide.exe` 12,378,624 B）；下载链接与体积口径同步，官网展示文案无需调整 |
 | 2026-11-04 | 页面精简 | 全站去除「重构版」字样；页面重构为「产品介绍 → 立即下载 → 立即购买 → 关于我们」四段式，删除 `#howto` 使用说明与 `#pricing` 试用/注册对比及免费获取面板；购买入口统一为「立即购买」并锚定新 `#buy` 区块（三平台卡片 + 邮件注册说明），下载区新增「立即购买」按钮；导航与页脚同步为 4 项 |
-| 2026-11-05 | 按钮与邮件修复 | 「立即下载」「立即购买」统一为同尺寸、同字重、同阴影的实心主按钮，仅底色略作区分（下载 `#ee9038`、购买 `#f2a04a`，新增 `--color-gold-alt` 与 `.btn-buy`）；邮件入口改为 `data-mail-user` / `data-mail-domain` 两段属性 + JS 运行时拼接 `mailto:`，规避 Cloudflare Email Obfuscation 把静态地址改写成 `/cdn-cgi/l/email-protection#…` 或显示为 `[email protected]` |
+| 2026-11-05 | 按钮与邮件修复 | 「立即下载」「立即购买」统一为同尺寸、同字重、同发光强度的实心主按钮，颜色明显区分（下载金色 `#ee9038`、购买青蓝 `#1f9be0`，新增 `--color-accent-2` 与 `.btn-buy`）；下载按钮文案统一为「立即下载 V6.2.1」（去掉「（x64 绿色版）」后缀）；邮件入口改为 `data-mail-user` / `data-mail-domain` 两段属性 + JS 运行时拼接 `mailto:`，规避 Cloudflare Email Obfuscation 把静态地址改写成 `/cdn-cgi/l/email-protection#…` 或显示为 `[email protected]` |
 
 ## 维护约定
 
