@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>文件夹加密隐藏王 V6.2.1 — 文件夹加密、文件夹隐藏系统安全工具（绿色免费下载）</title>
-<meta name="description" content="《文件夹加密隐藏王》V6.2.1 全新重构版：强隐蔽的文件夹隐藏与专业级加密保护，绿色单文件免安装，解压即用。Windows 10/11 x64，30 天全功能试用，官网直接下载。">
+<meta name="description" content="《文件夹加密隐藏王》V6.2.1：强隐蔽的文件夹隐藏与专业级加密保护，绿色单文件免安装，解压即用。Windows 10/11 x64，30 天全功能试用，官网直接下载。">
 <meta name="keywords" content="文件夹加密隐藏王, FolderHide, 文件夹加密, 文件夹隐藏, 加密软件, 隐藏文件夹, 绿色软件下载, 艾卡软件工作室">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -338,8 +338,9 @@ a:focus-visible {
 /* 大号下载按钮 */
 .btn-lg {
   padding: 1rem 2.5rem;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .btn-lg svg {
@@ -660,283 +661,57 @@ a:focus-visible {
 
 .feature-card p strong { color: var(--color-text-secondary); }
 
-/* ===================== 使用说明 ===================== */
-#howto {
+/* ===================== 立即购买 ===================== */
+#buy {
   border-top: 1px solid rgba(26, 42, 58, 0.4);
 }
 
-.steps-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-5);
-  max-width: 960px;
+.buy-block {
+  max-width: 800px;
   margin: 0 auto;
-}
-
-.step-card {
-  display: flex;
-  gap: var(--space-4);
-  padding: var(--space-6);
+  padding: var(--space-8);
   background: var(--color-surface);
   border: 1px solid rgba(26, 42, 58, 0.4);
   border-radius: var(--radius-lg);
-  transition: all var(--duration-normal) var(--ease-out);
 }
 
-.step-card:hover {
-  border-color: rgba(26, 42, 58, 0.7);
-  box-shadow: var(--shadow-card-hover);
-}
-
-.step-number {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: rgba(238, 144, 56, 0.1);
-  border: 1px solid rgba(238, 144, 56, 0.15);
-  color: var(--color-accent);
+.buy-title {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 700;
-  flex-shrink: 0;
+  gap: var(--space-2);
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--color-gold);
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-4);
 }
 
-.step-content h3 {
-  font-size: 0.9375rem;
+.buy-title .icon { font-size: 1.25rem; }
+
+.mail-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: var(--space-2);
+  margin: var(--space-6) 0 var(--space-4);
 }
 
-.step-content p,
-.step-content li {
-  font-size: 0.8125rem;
+.buy-tip {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background: rgba(238, 144, 56, 0.03);
+  border: 1px solid rgba(238, 144, 56, 0.08);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
   color: rgba(154, 169, 185, 0.7);
   line-height: 1.7;
 }
 
-.step-content ul {
-  list-style: none;
-  padding: 0;
-}
+.buy-tip strong { color: var(--color-accent); }
 
-.step-content ul li {
-  padding-left: var(--space-4);
-  position: relative;
-}
-
-.step-content ul li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 9px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--color-accent);
-}
-
-.step-content ol {
-  padding-left: var(--space-4);
-}
-
-.step-content ol li {
-  margin-bottom: var(--space-1);
-}
-
-.step-content strong { color: var(--color-text-secondary); }
-
-/* ===================== 注册 ===================== */
-#pricing {
-  border-top: 1px solid rgba(26, 42, 58, 0.4);
-}
-
-.pricing-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-6);
-  max-width: 720px;
-  margin: 0 auto var(--space-8);
-}
-
-.pricing-card {
-  background: var(--color-surface);
-  border: 1px solid rgba(26, 42, 58, 0.4);
-  border-radius: var(--radius-lg);
-  padding: var(--space-8);
-  position: relative;
-  transition: all var(--duration-normal) var(--ease-out);
-}
-
-.pricing-card:hover {
-  border-color: rgba(26, 42, 58, 0.8);
-  box-shadow: var(--shadow-card-hover);
-}
-
-.pricing-card.featured {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 1px var(--color-accent), 0 0 24px rgba(238, 144, 56, 0.06);
-}
-
-.pricing-card.featured::before {
-  content: '推荐';
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 3px 16px;
-  background: var(--color-accent);
-  color: var(--text-primary);
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: var(--radius-full);
-  box-shadow: 0 0 0 1px rgba(212, 120, 40, 0.3), 0 0 12px 2px rgba(238, 144, 56, 0.15);
-}
-
-.pricing-header {
-  text-align: center;
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-6);
-  border-bottom: 1px solid rgba(26, 42, 58, 0.4);
-}
-
-.pricing-header h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-2);
-}
-
-.pricing-desc {
-  font-size: 0.8125rem;
-  color: rgba(154, 169, 185, 0.55);
-  margin-top: var(--space-2);
-}
-
-.pricing-features {
-  list-style: none;
-  margin-bottom: var(--space-6);
-}
-
-.pricing-features li {
-  padding: var(--space-2) 0;
-  font-size: 0.875rem;
-  color: rgba(154, 169, 185, 0.75);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.pricing-features li::before {
-  content: '→';
-  color: var(--color-accent);
-  font-weight: 500;
-}
-
-.pricing-btn {
-  display: block;
-  text-align: center;
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: var(--radius-md);
-  transition: all var(--duration-fast) var(--ease-out);
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  text-decoration: none;
-}
-
-.pricing-btn.primary {
-  background: var(--color-accent);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-glow);
-}
-
-.pricing-btn.primary:hover {
-  background: var(--color-gold-hover);
-  transform: translateY(-1px);
-  color: var(--text-primary);
-}
-
-.pricing-btn.secondary {
-  background: rgba(26, 42, 58, 0.3);
-  color: var(--color-text-secondary);
-  border: 1px solid rgba(26, 42, 58, 0.5);
-}
-
-.pricing-btn.secondary:hover {
-  background: rgba(26, 42, 58, 0.5);
-  color: var(--text-primary);
-}
-
-/* ===================== 注册说明 ===================== */
-.reg-info {
-  max-width: 800px;
-  margin: 0 auto;
-  background: var(--color-surface);
-  border: 1px solid rgba(26, 42, 58, 0.4);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.reg-tabs {
-  display: flex;
-  border-bottom: 1px solid rgba(26, 42, 58, 0.4);
-}
-
-.reg-tab {
-  flex: 1;
-  padding: var(--space-3) var(--space-5);
-  text-align: center;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: rgba(154, 169, 185, 0.55);
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-family: inherit;
-  transition: all var(--duration-fast);
-  position: relative;
-}
-
-.reg-tab:hover { color: var(--color-text-secondary); }
-
-.reg-tab.active {
-  color: var(--color-accent);
-  background: rgba(238, 144, 56, 0.04);
-}
-
-.reg-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 20%;
-  right: 20%;
-  height: 1px;
-  background: var(--color-accent);
-}
-
-.reg-panel {
-  display: none;
-  padding: var(--space-8);
-}
-
-.reg-panel.active { display: block; }
-
-.reg-panel h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-4);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
+/* 购买截图 */
 .reg-images {
   display: flex;
   gap: var(--space-4);
@@ -954,18 +729,6 @@ a:focus-visible {
   background: #fff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
-
-.reg-note {
-  margin-top: var(--space-4);
-  padding: var(--space-4);
-  background: rgba(248, 113, 113, 0.06);
-  border: 1px solid rgba(248, 113, 113, 0.1);
-  border-radius: var(--radius-sm);
-  font-size: 0.8125rem;
-  color: rgba(154, 169, 185, 0.7);
-}
-
-.reg-note strong { color: var(--color-warning); }
 
 /* 在线购买方式 */
 .buy-grid {
@@ -1035,32 +798,6 @@ a:focus-visible {
 .mail-reg a:hover { color: var(--text-primary); }
 
 .mail-reg .highlight { color: var(--color-gold); font-weight: 600; }
-
-.free-methods {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.free-methods th,
-.free-methods td {
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid rgba(26, 42, 58, 0.4);
-  text-align: left;
-  font-size: 0.875rem;
-}
-
-.free-methods th {
-  background: rgba(26, 42, 58, 0.2);
-  font-weight: 600;
-  color: var(--color-text-secondary);
-}
-
-.free-methods td {
-  color: rgba(154, 169, 185, 0.7);
-  line-height: 1.6;
-}
-
-.free-methods td strong { color: var(--color-text-secondary); }
 
 /* ===================== 关于本软件 ===================== */
 #about {
@@ -1315,20 +1052,7 @@ a:focus-visible {
 
   .features-grid { grid-template-columns: 1fr; }
 
-  .steps-grid { grid-template-columns: 1fr; }
-
-  .pricing-grid { grid-template-columns: 1fr; }
-
-  .pricing-card.featured { order: -1; }
-
-  .reg-tabs { flex-direction: column; }
-  .reg-tab { padding: var(--space-3) var(--space-4); }
-  .reg-tab.active::after { display: none; }
-
   .buy-grid { grid-template-columns: 1fr; }
-
-  .free-methods th,
-  .free-methods td { padding: var(--space-2); font-size: 0.8125rem; }
 
   .footer-grid { grid-template-columns: 1fr; gap: var(--space-8); }
   .footer-bottom { flex-direction: column; text-align: center; }
@@ -1363,11 +1087,10 @@ a:focus-visible {
     </button>
 
     <ul class="navbar-links" role="list">
-      <li><a href="#features" class="active">功能特点</a></li>
-      <li><a href="#howto">使用说明</a></li>
-      <li><a href="soft/FolderHide_V6.2.1_x64.zip" class="nav-download" download>下载 V6.2.1</a></li>
-      <li><a href="#pricing">怎样注册</a></li>
-      <li><a href="#about">关于本软件</a></li>
+      <li><a href="#features" class="active">产品介绍</a></li>
+      <li><a href="#download">立即下载</a></li>
+      <li><a href="#buy">立即购买</a></li>
+      <li><a href="#about">关于我们</a></li>
     </ul>
   </div>
 </nav>
@@ -1381,13 +1104,13 @@ a:focus-visible {
           艾卡软件工作室 出品
         </span>
         <span class="hero-badge green" style="font-size:0.6875rem;">
-          V6.2.1 · 全新重构版
+          V6.2.1 · 全新版本
         </span>
       </div>
       <h1>文件夹加密隐藏王</h1>
       <p class="hero-subtitle">经典的文件夹加密、文件夹隐藏工具 · 全新 V6.2.1</p>
       <p class="hero-desc">
-        V6.2.1 重构版（FolderHide）把您的私密文件夹彻底隐藏起来，
+        V6.2.1（FolderHide）把您的私密文件夹彻底隐藏起来，
         再配上一把只属于您的密码锁，让他人既无从发现，也无法打开。
         绿色单文件，解压即用，无需安装。
       </p>
@@ -1412,7 +1135,10 @@ a:focus-visible {
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           立即下载 V6.2.1
         </a>
-        <a href="#features" class="btn btn-secondary">了解更多</a>
+        <a href="#buy" class="btn btn-outline btn-lg">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          立即购买
+        </a>
       </div>
       <p class="hero-download-note">Windows 10 / 11 (x64) · 绿色免安装 zip 约 5.3 MB · 30 天全功能试用</p>
     </div>
@@ -1460,48 +1186,11 @@ a:focus-visible {
   </div>
 </section>
 
-<!-- ==================== 下载 ==================== -->
-<section id="download" class="section" aria-label="软件下载">
-  <div class="section-inner">
-    <div class="section-header">
-      <span class="section-label">免费下载</span>
-      <h2>下载文件夹加密隐藏王 V6.2.1</h2>
-      <p>绿色免安装，解压后双击即可运行，30 天全功能试用</p>
-    </div>
-
-    <div class="download-card">
-      <h3>文件夹加密隐藏王（FolderHide）</h3>
-      <div class="download-version">V6.2.1</div>
-      <div class="download-meta">
-        <span>Windows 10 / 11 (x64)</span>
-        <span>绿色免安装</span>
-        <span>zip 约 5.3 MB</span>
-        <span>单 exe 约 11.8 MB</span>
-        <span>30 天全功能试用</span>
-      </div>
-
-      <a href="soft/FolderHide_V6.2.1_x64.zip" class="btn btn-primary btn-lg" download>
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        立即下载 V6.2.1（x64 绿色版）
-      </a>
-
-      <p class="download-file">下载文件：<code>FolderHide_V6.2.1_x64.zip</code></p>
-
-      <ul class="download-notes">
-        <li>解压到任意可写目录（如 <strong>D:\Tools</strong>），双击 <strong>FolderHide.exe</strong> 即可运行，首次启动自动开始 30 天试用。</li>
-        <li>请在解压后的目录内直接运行，不要单独拷贝其中某个文件分发；如需更换位置，整个文件夹一起移动即可。</li>
-        <li>「⚙设置」中可切换主题、背景样式、图标大小等，所有设置自动保存，下次启动保持不变。</li>
-        <li>忘记密码时请联系作者索取救援令牌（绑定本机、有效期短），凭令牌进入找回模式，恢复已隐藏的文件夹。</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
 <!-- ==================== 功能特点 ==================== -->
-<section id="features" class="section" aria-label="功能特点">
+<section id="features" class="section" aria-label="产品介绍">
   <div class="section-inner">
     <div class="section-header">
-      <span class="section-label">核心优势</span>
+      <span class="section-label">产品介绍</span>
       <h2>为什么选择文件夹加密隐藏王 V6.2.1？</h2>
       <p>彻底隐藏、专业加密、两种锁定模式与全新界面，隐私保护一步到位</p>
     </div>
@@ -1546,206 +1235,109 @@ a:focus-visible {
   </div>
 </section>
 
-<!-- ==================== 使用说明 ==================== -->
-<section id="howto" class="section" aria-label="使用说明">
+<!-- ==================== 下载 ==================== -->
+<section id="download" class="section" aria-label="立即下载">
   <div class="section-inner">
     <div class="section-header">
-      <span class="section-label">快速上手</span>
-      <h2>文件夹加密隐藏王非常容易使用！</h2>
-      <p>解压、设密码、拖入文件夹、一键隐藏，四步完成</p>
+      <span class="section-label">立即下载</span>
+      <h2>下载文件夹加密隐藏王 V6.2.1</h2>
+      <p>绿色免安装，解压后双击即可运行，30 天全功能试用</p>
     </div>
 
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-number">1</div>
-        <div class="step-content">
-          <h3>解压并运行</h3>
-          <ol>
-            <li>将 <strong>FolderHide_V6.2.1_x64.zip</strong> 解压到任意可写目录（如 <strong>D:\Tools</strong>）。</li>
-            <li>双击 <strong>FolderHide.exe</strong>，首次启动自动开始 30 天试用。</li>
-          </ol>
-        </div>
+    <div class="download-card">
+      <h3>文件夹加密隐藏王（FolderHide）</h3>
+      <div class="download-version">V6.2.1</div>
+      <div class="download-meta">
+        <span>Windows 10 / 11 (x64)</span>
+        <span>绿色免安装</span>
+        <span>zip 约 5.3 MB</span>
+        <span>单 exe 约 11.8 MB</span>
+        <span>30 天全功能试用</span>
       </div>
 
-      <div class="step-card">
-        <div class="step-number">2</div>
-        <div class="step-content">
-          <h3>设置访问密码</h3>
-          <ol>
-            <li>点击工具栏的 <strong>🔑 密码</strong> 设置访问密码。</li>
-            <li>密码留空即为<strong>本机免登录模式</strong>，仅本机可用，换机后无法打开。</li>
-          </ol>
-        </div>
-      </div>
+      <a href="soft/FolderHide_V6.2.1_x64.zip" class="btn btn-primary btn-lg" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        立即下载 V6.2.1（x64 绿色版）
+      </a>
 
-      <div class="step-card">
-        <div class="step-number">3</div>
-        <div class="step-content">
-          <h3>添加并隐藏</h3>
-          <ol>
-            <li>在左侧「我的电脑」目录树选中文件夹，点 <strong>➕添加</strong> 加入右侧列表，或直接从资源管理器拖入。</li>
-            <li>选中条目点 <strong>隐藏</strong>；列表 / 卡片视图可切换，表头「☐ 全选」支持批量隐藏。</li>
-          </ol>
-        </div>
-      </div>
+      <a href="#buy" class="btn btn-outline btn-lg" style="margin-top:var(--space-3);">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        立即购买
+      </a>
 
-      <div class="step-card">
-        <div class="step-number">4</div>
-        <div class="step-content">
-          <h3>恢复与找回</h3>
-          <ol>
-            <li>选中条目点 <strong>显示</strong>，文件夹即还原到原始位置。</li>
-            <li>忘记密码时联系作者索取<strong>救援令牌</strong>（绑定本机、有效期短），凭令牌进入找回模式，恢复已隐藏的文件夹。</li>
-          </ol>
-        </div>
-      </div>
+      <p class="download-file">下载文件：<code>FolderHide_V6.2.1_x64.zip</code></p>
+
+      <ul class="download-notes">
+        <li>解压到任意可写目录（如 <strong>D:\Tools</strong>），双击 <strong>FolderHide.exe</strong> 即可运行，首次启动自动开始 30 天试用。</li>
+        <li>请在解压后的目录内直接运行，不要单独拷贝其中某个文件分发；如需更换位置，整个文件夹一起移动即可。</li>
+        <li>「⚙设置」中可切换主题、背景样式、图标大小等，所有设置自动保存，下次启动保持不变。</li>
+        <li>忘记密码时请联系作者索取救援令牌（绑定本机、有效期短），凭令牌进入找回模式，恢复已隐藏的文件夹。</li>
+      </ul>
     </div>
   </div>
 </section>
 
-<!-- ==================== 怎样注册 ==================== -->
-<section id="pricing" class="section" aria-label="怎样注册">
+<!-- ==================== 立即购买 ==================== -->
+<section id="buy" class="section" aria-label="立即购买">
   <div class="section-inner">
     <div class="section-header">
-      <span class="section-label">注册购买</span>
-      <h2>怎样注册</h2>
-      <p>V6.2.1 未注册时可免费全功能试用 30 天，注册后不再有任何限制，并可享受以后的免费升级</p>
+      <span class="section-label">购买注册</span>
+      <h2>立即购买</h2>
+      <p>选择您常用的平台直接下单，付款后按下方说明发送机器码即可获取注册码</p>
     </div>
 
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="pricing-header">
-          <h3>试用版</h3>
-          <p class="pricing-desc">30 天全功能体验</p>
-        </div>
-        <ul class="pricing-features">
-          <li>所有功能完整试用</li>
-          <li>30 天免费使用期</li>
-          <li>绿色免安装，解压即用</li>
-        </ul>
-        <a href="soft/FolderHide_V6.2.1_x64.zip" class="pricing-btn primary" download>⬇ 下载 V6.2.1 试用版</a>
+    <div class="buy-block">
+      <h4 class="buy-title"><span class="icon">🛒</span> 立即购买</h4>
+      <div class="buy-grid">
+        <a class="buy-card" href="https://h5.m.taobao.com/awp/core/detail.htm?ft=t&amp;id=1098577044534" target="_blank" rel="noopener">
+          <span class="buy-icon">🛍️</span>
+          <span class="buy-name">淘宝</span>
+          <span class="buy-desc">官方店铺下单</span>
+        </a>
+        <a class="buy-card" href="https://m.tb.cn/h.jhxmkAX?tk=iunt6bZhZcq" target="_blank" rel="noopener">
+          <span class="buy-icon">🐟</span>
+          <span class="buy-name">闲鱼</span>
+          <span class="buy-desc">平台直接购买</span>
+        </a>
+        <a class="buy-card" href="https://mobile.yangkeduo.com/goods.html?goods_id=1025398232553&amp;refer_page_app=mms&amp;refer_page_name=mms_goods_list_new&amp;refer_page_id=10357_1793777501465_1379930096" target="_blank" rel="noopener">
+          <span class="buy-icon">📦</span>
+          <span class="buy-name">拼多多</span>
+          <span class="buy-desc">平台直接购买</span>
+        </a>
       </div>
+      <p class="buy-hint">付款后按下面步骤把机器码发送给作者即可获取注册码；建议在手机端打开购买链接。</p>
 
-      <div class="pricing-card featured">
-        <div class="pricing-header">
-          <h3>注册版</h3>
-          <p class="pricing-desc">一次购买，永久使用，享受免费升级</p>
-        </div>
-        <ul class="pricing-features">
-          <li>解除 30 天试用限制</li>
-          <li>机器码绑定，离线注册码校验</li>
-          <li>所有功能无任何限制</li>
-          <li>享受以后的免费升级</li>
-        </ul>
-        <a href="#reg-detail" class="pricing-btn primary" onclick="switchRegTab('offline')">立即注册</a>
-      </div>
-    </div>
-
-    <!-- 注册详情 -->
-    <div id="reg-detail" class="reg-info">
-      <div class="reg-tabs" role="tablist">
-        <button class="reg-tab active" role="tab" aria-selected="true" data-tab="offline" onclick="switchRegTab('offline')">📧 在线注册</button>
-        <button class="reg-tab" role="tab" aria-selected="false" data-tab="free" onclick="switchRegTab('free')">🎁 免费获取</button>
-      </div>
-
-      <!-- 在线注册 -->
-      <div class="reg-panel active" id="panel-offline" role="tabpanel">
-        <h4><span class="icon">🛒</span> 在线购买</h4>
-        <p class="buy-hint">选择您常用的平台直接下单，付款后按下面步骤把机器码发送给作者即可获取注册码；建议在手机端打开购买链接。</p>
-        <div class="buy-grid">
-          <a class="buy-card" href="https://h5.m.taobao.com/awp/core/detail.htm?ft=t&amp;id=1098577044534" target="_blank" rel="noopener">
-            <span class="buy-icon">🛍️</span>
-            <span class="buy-name">淘宝</span>
-            <span class="buy-desc">官方店铺下单</span>
-          </a>
-          <a class="buy-card" href="https://m.tb.cn/h.jhxmkAX?tk=iunt6bZhZcq" target="_blank" rel="noopener">
-            <span class="buy-icon">🐟</span>
-            <span class="buy-name">闲鱼</span>
-            <span class="buy-desc">平台直接购买</span>
-          </a>
-          <a class="buy-card" href="https://mobile.yangkeduo.com/goods.html?goods_id=1025398232553&amp;refer_page_app=mms&amp;refer_page_name=mms_goods_list_new&amp;refer_page_id=10357_1793777501465_1379930096" target="_blank" rel="noopener">
-            <span class="buy-icon">📦</span>
-            <span class="buy-name">拼多多</span>
-            <span class="buy-desc">平台直接购买</span>
-          </a>
-        </div>
-
-        <h4><span class="icon">📧</span> 邮件注册的方式</h4>
-        <div class="mail-reg">
-          <p>给我们发送注册电子邮件注册</p>
-          <p>
-            <strong>作者E-mail：</strong><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a><br>
-            <strong>E-mail主题：</strong>注册《文件夹加密隐藏王》<br>
-            <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在软件「⚙设置」→「注册」处获取）</span>  3.软件名称及版本（V6.2.1）
-          </p>
-          <p>获得注册码后，将注册码输入软件，点击激活，完成注册。</p>
-        </div>
-
-        <div style="margin-top:var(--space-5); padding:var(--space-4); background:rgba(238,144,56,0.03); border:1px solid rgba(238,144,56,0.08); border-radius:var(--radius-sm);">
-          <p style="font-size:0.875rem; color:rgba(154,169,185,0.7);">
-            <strong>💡 推荐做法：</strong>为防止您在E-mail中输入错误，请使用以下方法：
-            在软件 <strong style="color:var(--color-accent);">「⚙设置」→「注册」</strong> 处复制机器码，
-            粘贴到邮件正文中发给作者即可，无需手工抄写。
-          </p>
-        </div>
-
-        <div class="reg-images">
-          <img src="image/reg1.png" alt="发送注册邮件截图" loading="lazy" width="1496" height="921">
-          <img src="image/reg2.png" alt="邮件填写示例" loading="lazy" width="1524" height="927">
-        </div>
-      </div>
-
-      <!-- 免费获取 -->
-      <div class="reg-panel" id="panel-free" role="tabpanel">
-        <h4><span class="icon">🎁</span> 如何成为免费用户</h4>
-        <p style="margin-bottom:var(--space-4); color:rgba(154,169,185,0.7); line-height:1.6;">
-          如果您喜欢我们的软件并愿意帮助推广，可以通过以下方式成为免费用户：
+      <h4 class="mail-title"><span class="icon">📧</span> 邮件注册的方式</h4>
+      <div class="mail-reg">
+        <p>给我们发送注册电子邮件注册</p>
+        <p>
+          <strong>作者E-mail：</strong><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a><br>
+          <strong>E-mail主题：</strong>注册《文件夹加密隐藏王》<br>
+          <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在软件「⚙设置」→「注册」处获取）</span>  3.软件名称及版本（V6.2.1）
         </p>
+        <p>获得注册码后，将注册码输入软件，点击激活，完成注册。</p>
+      </div>
 
-        <table class="free-methods">
-          <thead>
-            <tr>
-              <th>方式</th>
-              <th>详细说明</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>推荐他人使用</strong></td>
-              <td>如果您成功的将本软件推荐给<strong>两位注册用户</strong>，那么您就可以成为本软件的免费用户。
-              请来信列出这两位注册用户的姓名、机器码即可免费获得注册码。</td>
-            </tr>
-            <tr>
-              <td><strong>在报刊上宣传</strong></td>
-              <td>如果您在某种知名报刊上，刊登了介绍本软件的文章，
-              请将报刊名称、期号告诉我，您将免费获得注册码。</td>
-            </tr>
-            <tr>
-              <td><strong>在网站上宣传</strong></td>
-              <td>如果您有日访问量在<strong>100ip以上</strong>，且您愿意推荐本软件的话，您也可以成为本软件的免费用户，
-              我也会在我的网站上加入您的链接。</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="buy-tip">
+        <strong>💡 推荐做法：</strong>为防止您在E-mail中输入错误，请使用以下方法：
+        在软件 <strong>「⚙设置」→「注册」</strong> 处复制机器码，粘贴到邮件正文中发给作者即可，无需手工抄写。
+      </div>
 
-        <div style="margin-top:var(--space-5); text-align:center;">
-          <p style="color:rgba(154,169,185,0.55); font-size:0.875rem; margin-bottom:var(--space-3);">
-            如有任何疑问，请联系我们
-          </p>
-          <a href="mailto:lantian329ygf@163.com" class="btn btn-outline" style="display:inline-flex;">发送邮件咨询</a>
-        </div>
+      <div class="reg-images">
+        <img src="image/reg1.png" alt="发送注册邮件截图" loading="lazy" width="1496" height="921">
+        <img src="image/reg2.png" alt="邮件填写示例" loading="lazy" width="1524" height="927">
       </div>
     </div>
   </div>
 </section>
 
 <!-- ==================== 关于本软件 ==================== -->
-<section id="about" class="section" aria-label="关于本软件">
+<section id="about" class="section" aria-label="关于我们">
   <div class="section-inner">
     <div class="section-header">
       <span class="section-label">关于我们</span>
-      <h2>关于本软件</h2>
-      <p>经典品牌的 V6.2.1 全新重构版：绿色单文件、免安装、开箱即用</p>
+      <h2>关于我们</h2>
+      <p>经典品牌的 V6.2.1 版本：绿色单文件、免安装、开箱即用</p>
     </div>
 
     <div class="about-grid">
@@ -1754,7 +1346,7 @@ a:focus-visible {
           <tbody>
             <tr>
               <th>软件名称</th>
-              <td>文件夹加密隐藏王（FolderHide 重构版）</td>
+              <td>文件夹加密隐藏王（FolderHide）</td>
             </tr>
             <tr>
               <th>版本号</th>
@@ -1791,7 +1383,7 @@ a:focus-visible {
       <div>
         <div class="about-desc-box">
           <h3>功能简介</h3>
-          <p><span class="highlight-desc">《文件夹加密隐藏王》V6.2.1</span> 是基于经典版本的全新重构版（FolderHide）：把您的私密文件夹彻底隐藏起来，再配上一把只属于您的密码锁，让他人既无从发现，也无法访问。</p>
+          <p><span class="highlight-desc">《文件夹加密隐藏王》V6.2.1</span> 是基于经典版本的升级版本（FolderHide）：把您的私密文件夹彻底隐藏起来，再配上一把只属于您的密码锁，让他人既无从发现，也无法访问。</p>
           <p>采用 <span class="highlight-desc">业界公认的强加密方案</span>保护您的隐藏记录，防篡改、防暴力破解，密码本身不以明文形式保存。</p>
           <p>支持<span class="highlight-desc">密码模式与本机免登录模式</span>两种锁定方式；连续输错 5 次自动进入 30 秒冷却。</p>
           <p>全新 Nova 风格界面：<span class="highlight-desc">深色 / 浅色</span>原地切换，毛玻璃、液态玻璃、亚克力三种背景样式，背景透明度、字体、图标大小均可调，设置自动保存。</p>
@@ -1816,17 +1408,16 @@ a:focus-visible {
     <div class="footer-grid">
       <div class="footer-brand">
         <h3>文件夹加密隐藏王 V6.2.1</h3>
-        <p>全新重构版：彻底隐藏私密文件夹 + 专业级加密保护，绿色单文件免安装，Windows 10 / 11 x64。</p>
+        <p>全新版本：彻底隐藏私密文件夹 + 专业级加密保护，绿色单文件免安装，Windows 10 / 11 x64。</p>
       </div>
 
       <div class="footer-col">
         <h4>导航</h4>
         <ul>
-          <li><a href="#features">功能特点</a></li>
-          <li><a href="#howto">使用说明</a></li>
-          <li><a href="soft/FolderHide_V6.2.1_x64.zip" download>下载 V6.2.1</a></li>
-          <li><a href="#pricing">怎样注册</a></li>
-          <li><a href="#about">关于本软件</a></li>
+          <li><a href="#features">产品介绍</a></li>
+          <li><a href="#download">立即下载</a></li>
+          <li><a href="#buy">立即购买</a></li>
+          <li><a href="#about">关于我们</a></li>
         </ul>
       </div>
 
@@ -1904,24 +1495,6 @@ a:focus-visible {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  window.switchRegTab = function(tab) {
-    var tabs = document.querySelectorAll('.reg-tab');
-    var panels = {
-      offline: document.getElementById('panel-offline'),
-      free: document.getElementById('panel-free')
-    };
-
-    tabs.forEach(function(t) {
-      var isActive = t.getAttribute('data-tab') === tab;
-      t.classList.toggle('active', isActive);
-      t.setAttribute('aria-selected', isActive);
-    });
-
-    Object.keys(panels).forEach(function(key) {
-      panels[key].classList.toggle('active', key === tab);
-    });
-  };
-
   // 所有邮件入口统一预填标题与正文；mailto 参数由 JS 生成，避免长串重复与 HTML 属性中的 & 转义问题
   (function initMailtoLinks() {
     var recipient = 'lantian329ygf@163.com';
@@ -1948,12 +1521,6 @@ a:focus-visible {
       link.setAttribute('href', href);
     });
   })();
-
-  if (window.location.hash === '#reg-detail') {
-    setTimeout(function() {
-      document.getElementById('reg-detail').scrollIntoView({ behavior: 'smooth' });
-    }, 300);
-  }
 })();
 </script>
 
