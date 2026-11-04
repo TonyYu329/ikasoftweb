@@ -1332,7 +1332,7 @@ a:focus-visible {
       <div class="mail-reg">
         <p>给我们发送注册电子邮件注册</p>
         <p>
-          <strong>作者E-mail：</strong><a href="mailto:lantian329ygf&#64;163.com">lantian329ygf&#64;163.com</a><br>
+          <strong>作者E-mail：</strong><a href="mailto:" data-mail-user="lantian329ygf" data-mail-domain="163.com">lantian329ygf&#64;163.com</a><br>
           <strong>E-mail主题：</strong>注册《文件夹加密隐藏王》<br>
           <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在软件「⚙设置」→「注册」处获取）</span>  3.软件名称及版本（V6.2.1）
         </p>
@@ -1391,7 +1391,7 @@ a:focus-visible {
             </tr>
             <tr>
               <th>技术支持</th>
-              <td><a href="mailto:lantian329ygf&#64;163.com">lantian329ygf&#64;163.com</a></td>
+              <td><a href="mailto:" data-mail-user="lantian329ygf" data-mail-domain="163.com">lantian329ygf&#64;163.com</a></td>
             </tr>
             <tr>
               <th>网址</th>
@@ -1445,7 +1445,7 @@ a:focus-visible {
       <div class="footer-col">
         <h4>联系</h4>
         <ul>
-          <li><a href="mailto:lantian329ygf&#64;163.com">电子邮箱</a></li>
+          <li><a href="mailto:" data-mail-user="lantian329ygf" data-mail-domain="163.com">电子邮箱</a></li>
           <li><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">官方网站</a></li>
         </ul>
       </div>
@@ -1454,7 +1454,7 @@ a:focus-visible {
     <div class="footer-bottom">
       <span>© 艾卡软件工作室 版权所有</span>
       <span>
-        <a href="mailto:lantian329ygf&#64;163.com">技术支持</a>
+        <a href="mailto:" data-mail-user="lantian329ygf" data-mail-domain="163.com">技术支持</a>
         &nbsp;·&nbsp;
         <a href="http://www.ikasoft.cn" target="_blank" rel="noopener">ikasoft.cn</a>
       </span>
@@ -1516,9 +1516,9 @@ a:focus-visible {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // 所有邮件入口统一预填标题与正文；mailto 参数由 JS 生成，避免长串重复与 HTML 属性中的 & 转义问题
+  // 所有邮件入口统一预填标题与正文。地址由 data 属性分行拼接，避免 Cloudflare 邮箱混淆把静态 mailto 改写成
+  // /cdn-cgi/l/email-protection#… 且缺少 data-cfemail 导致点击后地址显示错误。
   (function initMailtoLinks() {
-    var recipient = 'lantian329ygf@163.com';
     var subject = '咨询：文件夹加密隐藏王 V6.2.1 购买与注册';
     var body = [
       '您好，我想咨询《文件夹加密隐藏王》V6.2.1 的购买与注册事宜。',
@@ -1534,12 +1534,12 @@ a:focus-visible {
       '',
       '谢谢！'
     ].join('\r\n');
-    var href = 'mailto:' + recipient +
-      '?subject=' + encodeURIComponent(subject) +
-      '&body=' + encodeURIComponent(body);
 
-    document.querySelectorAll('a[href^="mailto:"]').forEach(function(link) {
-      link.setAttribute('href', href);
+    document.querySelectorAll('a[data-mail-user]').forEach(function(link) {
+      var recipient = link.getAttribute('data-mail-user') + '@' + link.getAttribute('data-mail-domain');
+      link.setAttribute('href', 'mailto:' + recipient +
+        '?subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(body));
     });
   })();
 })();
