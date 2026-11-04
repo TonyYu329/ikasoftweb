@@ -68,7 +68,8 @@ FHWeb/
 - 所有颜色必须使用 `:root` 中的 CSS 变量（`--bg-*`、`--color-gold*`、`--text-*`、`--color-border`、`--color-success/error`），禁止新增硬编码色值；令牌以 `DESIGN-蓝橙色-tony.md` 为唯一真源。
 - 设计语言特征：卡片直角（`--radius-lg: 0`）、金色 CTA 带微弱发光（`--shadow-glow`）、分割线低对比（`#1a2a3a`）；勿擅自改成圆角/大投影/蓝色强调。
 - 单页锚点导航：`#download`（免费下载）、`#features`（功能特点）、`#howto`（使用说明）、`#pricing`（怎样注册）、`#about`（关于本软件），导航中「下载 V6.2.1」为描边胶囊入口（直接下载 zip）；导航高亮、移动端汉堡菜单、回到顶部按钮逻辑在文件末尾内联 IIFE 中。
-- 注册区为双 tab 面板：`#panel-offline`（在线注册，含 `image/reg1.png`、`image/reg2.png` 两张邮件截图，自适应宽度 `flex: 1 1 300px`）与 `#panel-free`（免费注册）；改注册流程时两处文案同步核对。
+- 注册区为双 tab 面板：`#panel-offline`（在线注册，顶部「🛒 在线购买」三卡入口：淘宝 / 闲鱼 / 拼多多，均 `target="_blank"` + `rel="noopener"`；下方「邮件注册的方式」为无编号说明块 `.mail-reg`：发邮件（作者E-mail / 主题 / 姓名+机器码+版本）→ 获得注册码后输入并点击激活；再往下是「💡 推荐做法」与 `image/reg1.png`、`image/reg2.png` 两张邮件截图，自适应宽度 `flex: 1 1 300px`）与 `#panel-free`（免费注册）；改注册流程时两处文案同步核对。
+- 购买链接（2026-11-04 起）：淘宝 `https://h5.m.taobao.com/awp/core/detail.htm?ft=t&id=1098577044534`、闲鱼 `https://m.tb.cn/h.jhxmkAX?tk=iunt6bZhZcq`、拼多多 `https://mobile.yangkeduo.com/goods.html?goods_id=1025398232553&refer_page_app=mms&refer_page_name=mms_goods_list_new&refer_page_id=10357_1793777501465_1379930096`；均为移动端链接，页面提示「建议在手机端打开」。
 - 邮件入口：全站 6 处裸 `mailto:` 由文件末尾 `initMailtoLinks()` 统一生成预填 subject/body（收件人 lantian329ygf@163.com，UTF-8 `encodeURIComponent`，换行 `%0D%0A`，当前 1005 字符）；新增邮件入口只写裸 `mailto:` 即可自动套用，改模板只改这一处。
 - 语义化与可访问性：`<section>` 带 `aria-label`，`<nav role="navigation">`，图标按钮带 `aria-label`/`title`。
 - 文案事实口径（2026-11-02 起按 V6.2.1）：软件名《文件夹加密隐藏王》V6.2.1（folderhide 项目 README/发布物为准，产品名 FolderHide）、平台 Windows 10 / 11 x64、zip 约 5.3 MB（5,508,752 B）/ 单 exe 约 11.8 MB（12,378,624 B）、30 天全功能试用、技术支持邮箱 lantian329ygf@163.com、官网 http://www.ikasoft.cn；V6.2.0 起取消「找回版」，忘记密码改为向作者索取短效救援令牌；V6.2.1 卡片视图支持框选多选与拖拽排序。旧版《文件夹加密隐藏王2011》V5.0 / Win9x~Win7 文案已下线，仅在 `old/` 历史页面保留。官网不展示任何价格（2026-11-02 起移除试用版/注册版价格行，保留注册流程与两种注册方式）。

@@ -937,47 +937,6 @@ a:focus-visible {
   gap: var(--space-2);
 }
 
-.reg-steps {
-  list-style: none;
-  counter-reset: step;
-}
-
-.reg-steps li {
-  counter-increment: step;
-  padding: var(--space-3) 0;
-  padding-left: var(--space-10);
-  position: relative;
-  font-size: 0.875rem;
-  color: rgba(154, 169, 185, 0.7);
-  line-height: 1.6;
-  border-bottom: 1px solid rgba(26, 42, 58, 0.3);
-}
-
-.reg-steps li:last-child { border-bottom: none; }
-
-.reg-steps li::before {
-  content: counter(step);
-  position: absolute;
-  left: 0;
-  top: var(--space-3);
-  width: 26px;
-  height: 26px;
-  border-radius: var(--radius-sm);
-  background: rgba(238, 144, 56, 0.08);
-  border: 1px solid rgba(238, 144, 56, 0.12);
-  color: var(--color-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.reg-steps li strong { color: var(--color-text-secondary); }
-.reg-steps li .highlight { color: var(--color-warning); font-weight: 600; }
-.reg-steps li a { font-weight: 500; color: var(--color-accent); }
-.reg-steps li a:hover { color: var(--text-primary); }
-
 .reg-images {
   display: flex;
   gap: var(--space-4);
@@ -1007,6 +966,75 @@ a:focus-visible {
 }
 
 .reg-note strong { color: var(--color-warning); }
+
+/* 在线购买方式 */
+.buy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.buy-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-4) var(--space-3);
+  background: rgba(26, 42, 58, 0.18);
+  border: 1px solid rgba(26, 42, 58, 0.5);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.buy-card:hover {
+  background: rgba(238, 144, 56, 0.06);
+  border-color: rgba(238, 144, 56, 0.45);
+  transform: translateY(-1px);
+}
+
+.buy-icon {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.buy-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.buy-desc {
+  font-size: 0.75rem;
+  color: rgba(154, 169, 185, 0.55);
+}
+
+.buy-hint {
+  margin-bottom: var(--space-4);
+  font-size: 0.8125rem;
+  color: rgba(154, 169, 185, 0.55);
+  line-height: 1.6;
+}
+
+/* 邮件注册说明 */
+.mail-reg {
+  font-size: 0.875rem;
+  color: rgba(154, 169, 185, 0.7);
+  line-height: 1.6;
+}
+
+.mail-reg p { margin-bottom: var(--space-3); }
+
+.mail-reg p:last-child { margin-bottom: 0; }
+
+.mail-reg strong { color: var(--color-text-secondary); }
+
+.mail-reg a { font-weight: 500; color: var(--color-accent); }
+
+.mail-reg a:hover { color: var(--text-primary); }
+
+.mail-reg .highlight { color: var(--color-gold); font-weight: 600; }
 
 .free-methods {
   width: 100%;
@@ -1296,6 +1324,8 @@ a:focus-visible {
   .reg-tabs { flex-direction: column; }
   .reg-tab { padding: var(--space-3) var(--space-4); }
   .reg-tab.active::after { display: none; }
+
+  .buy-grid { grid-template-columns: 1fr; }
 
   .free-methods th,
   .free-methods td { padding: var(--space-2); font-size: 0.8125rem; }
@@ -1620,27 +1650,36 @@ a:focus-visible {
 
       <!-- 在线注册 -->
       <div class="reg-panel active" id="panel-offline" role="tabpanel">
-        <h4><span class="icon">📧</span> 在线注册步骤</h4>
-        <ol class="reg-steps">
-          <li>
-            <strong>【第一步】</strong>给我们发送注册电子邮件索取详细付款方式。
-            或 <a href="http://www.ikasoft.cn" target="_blank" rel="noopener">点击这里</a> 获得详细付款方式。<br>
-            <strong>网站地址：</strong><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">http://www.ikasoft.cn</a><br>
-            <strong>作者E-mail：</strong><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a><br>
-            <strong>E-mail主题：</strong>索要《文件夹加密隐藏王》详细注册方式<br>
-            <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在软件「⚙设置」→「注册」处获取）</span>  3.软件名称及版本（V6.2.1）
-          </li>
-          <li>
-            <strong>【第二步】</strong>按照详细注册方式付费，同时发送注册E-mail给作者。<br>
+        <h4><span class="icon">🛒</span> 在线购买</h4>
+        <p class="buy-hint">选择您常用的平台直接下单，付款后按下面步骤把机器码发送给作者即可获取注册码；建议在手机端打开购买链接。</p>
+        <div class="buy-grid">
+          <a class="buy-card" href="https://h5.m.taobao.com/awp/core/detail.htm?ft=t&amp;id=1098577044534" target="_blank" rel="noopener">
+            <span class="buy-icon">🛍️</span>
+            <span class="buy-name">淘宝</span>
+            <span class="buy-desc">官方店铺下单</span>
+          </a>
+          <a class="buy-card" href="https://m.tb.cn/h.jhxmkAX?tk=iunt6bZhZcq" target="_blank" rel="noopener">
+            <span class="buy-icon">🐟</span>
+            <span class="buy-name">闲鱼</span>
+            <span class="buy-desc">平台直接购买</span>
+          </a>
+          <a class="buy-card" href="https://mobile.yangkeduo.com/goods.html?goods_id=1025398232553&amp;refer_page_app=mms&amp;refer_page_name=mms_goods_list_new&amp;refer_page_id=10357_1793777501465_1379930096" target="_blank" rel="noopener">
+            <span class="buy-icon">📦</span>
+            <span class="buy-name">拼多多</span>
+            <span class="buy-desc">平台直接购买</span>
+          </a>
+        </div>
+
+        <h4><span class="icon">📧</span> 邮件注册的方式</h4>
+        <div class="mail-reg">
+          <p>给我们发送注册电子邮件注册</p>
+          <p>
             <strong>作者E-mail：</strong><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a><br>
             <strong>E-mail主题：</strong>注册《文件夹加密隐藏王》<br>
-            <strong>E-mail内容：</strong>1.您的姓名  2.机器码  3.软件名称及版本  4.您的付费金额 <span class="highlight">（以便核对您的付费金额）</span>
-          </li>
-          <li>
-            <strong>【第三步】</strong>接受作者E-mail，并将注册码输入软件，完成注册。<br>
-            <span class="highlight">注意：如果您在注册费寄出10日内未收到作者E-mail请给作者发送E-mail查询；作者会为您核实，并给您答复。</span>
-          </li>
-        </ol>
+            <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在软件「⚙设置」→「注册」处获取）</span>  3.软件名称及版本（V6.2.1）
+          </p>
+          <p>获得注册码后，将注册码输入软件，点击激活，完成注册。</p>
+        </div>
 
         <div style="margin-top:var(--space-5); padding:var(--space-4); background:rgba(238,144,56,0.03); border:1px solid rgba(238,144,56,0.08); border-radius:var(--radius-sm);">
           <p style="font-size:0.875rem; color:rgba(154,169,185,0.7);">
