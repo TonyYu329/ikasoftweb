@@ -29,6 +29,9 @@
   --color-gold: #ee9038;
   --color-gold-hover: #f3a13e;
   --color-gold-deep: #d47828;
+  /* 购买按钮的近似色 —— 与下载按钮同亮度、同版式，仅色相略偏暖 */
+  --color-gold-alt: #f2a04a;
+  --color-gold-alt-hover: #f7ad58;
 
   /* 文本色 */
   --text-primary: #e8edf3;
@@ -310,6 +313,15 @@ a:focus-visible {
   background: var(--color-gold-hover);
   transform: translateY(-1px);
   color: var(--text-primary);
+}
+
+/* 购买主按钮：与下载主按钮完全同尺寸/同字重/同阴影，仅底色略偏暖 */
+.btn-primary.btn-buy {
+  background: var(--color-gold-alt);
+}
+
+.btn-primary.btn-buy:hover {
+  background: var(--color-gold-alt-hover);
 }
 
 .btn-secondary {
@@ -1142,7 +1154,7 @@ a:focus-visible {
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           立即下载 V6.2.1
         </a>
-        <a href="#buy" class="btn btn-primary btn-lg">
+        <a href="#buy" class="btn btn-primary btn-buy btn-lg">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
           立即购买
         </a>
@@ -1268,7 +1280,7 @@ a:focus-visible {
           立即下载 V6.2.1（x64 绿色版）
         </a>
 
-        <a href="#buy" class="btn btn-primary btn-lg">
+        <a href="#buy" class="btn btn-primary btn-buy btn-lg">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
           立即购买
         </a>
@@ -1320,7 +1332,7 @@ a:focus-visible {
       <div class="mail-reg">
         <p>给我们发送注册电子邮件注册</p>
         <p>
-          <strong>作者E-mail：</strong><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a><br>
+          <strong>作者E-mail：</strong><a href="mailto:lantian329ygf&#64;163.com">lantian329ygf&#64;163.com</a><br>
           <strong>E-mail主题：</strong>注册《文件夹加密隐藏王》<br>
           <strong>E-mail内容：</strong>1.您的姓名  2.机器码 <span class="highlight">（在软件「⚙设置」→「注册」处获取）</span>  3.软件名称及版本（V6.2.1）
         </p>
@@ -1379,7 +1391,7 @@ a:focus-visible {
             </tr>
             <tr>
               <th>技术支持</th>
-              <td><a href="mailto:lantian329ygf@163.com">lantian329ygf@163.com</a></td>
+              <td><a href="mailto:lantian329ygf&#64;163.com">lantian329ygf&#64;163.com</a></td>
             </tr>
             <tr>
               <th>网址</th>
@@ -1433,7 +1445,7 @@ a:focus-visible {
       <div class="footer-col">
         <h4>联系</h4>
         <ul>
-          <li><a href="mailto:lantian329ygf@163.com">电子邮箱</a></li>
+          <li><a href="mailto:lantian329ygf&#64;163.com">电子邮箱</a></li>
           <li><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">官方网站</a></li>
         </ul>
       </div>
@@ -1442,7 +1454,7 @@ a:focus-visible {
     <div class="footer-bottom">
       <span>© 艾卡软件工作室 版权所有</span>
       <span>
-        <a href="mailto:lantian329ygf@163.com">技术支持</a>
+        <a href="mailto:lantian329ygf&#64;163.com">技术支持</a>
         &nbsp;·&nbsp;
         <a href="http://www.ikasoft.cn" target="_blank" rel="noopener">ikasoft.cn</a>
       </span>
