@@ -17,11 +17,11 @@
 
 | 项 | 内容 |
 |----|------|
-| 官网版本 | **V1.0.0**（2026-11-05 发布，Git tag `V1.0.0`；软件版本另计，当前 V6.2.1） |
+| 官网版本 | **V1.0.1**（2026-11-05 发布，Git tag `V1.0.1`；软件版本另计，当前 V6.2.1） |
 | 官方网站 | http://www.ikasoft.cn |
 | 软件名称 | 文件夹加密隐藏王 V6.2.1（FolderHide） |
 | 下载包 | `soft/FolderHide_V6.2.1_x64.zip`（5,512,632 B，绿色版三件套：exe + 使用说明 + `.sig` 签名） |
-| 旧版兼容包 | `soft/folderhide_v5.3.0_x86.zip`（677,671 B，V5.3.0 x86 绿色版，供 XP / Win7 等旧版 Windows 使用） |
+| 旧版兼容包 | `soft/folderhide_v5.3.0_x86.zip`（677,672 B，SHA-256 `850F8530…3A76667E`，V5.3.0 x86 绿色版，供 XP / Win7 等旧版 Windows 使用） |
 | 运行平台 | Windows 10 / 11（x64）；旧版系统请用上述 V5.3.0 兼容版 |
 | 版权所有 | 艾卡软件工作室 |
 | 技术支持 | lantian329ygf@163.com |
@@ -32,7 +32,7 @@
 | 渠道 | 链接 | 说明 |
 |------|------|------|
 | 仓库内分发 | [`soft/FolderHide_V6.2.1_x64.zip`](soft/FolderHide_V6.2.1_x64.zip) | 与官网所有下载按钮同源，5,512,632 B |
-| 旧系统兼容版 | [`soft/folderhide_v5.3.0_x86.zip`](soft/folderhide_v5.3.0_x86.zip) | V5.3.0 x86，677,671 B；官网首屏与 `#download` 下载按钮下方各 1 处入口 |
+| 旧系统兼容版 | [`soft/folderhide_v5.3.0_x86.zip`](soft/folderhide_v5.3.0_x86.zip) | V5.3.0 x86，677,672 B；官网首屏与 `#download` 下载按钮下方各 1 处入口 |
 | 官网下载区 | `index.html#download` | V6.2.1 首屏、下载区、页脚共 3 处直链入口 |
 | 桌面源码 | `D:\Study\AICode\folderhide` | 独立仓库，本仓库只托管官网与分发包 |
 
@@ -57,7 +57,7 @@ FHWeb/
 ├── .agent/AGENTS.md           # AI 编码指引
 ├── soft/                      # 软件分发包（官网下载链接指向此处）
 │   ├── FolderHide_V6.2.1_x64.zip   # V6.2.1 绿色版三件套（约 5.3 MB，5,512,632 B）
-│   └── folderhide_v5.3.0_x86.zip   # V5.3.0 x86 旧系统兼容版（677,671 B，XP / Win7 等）
+│   └── folderhide_v5.3.0_x86.zip   # V5.3.0 x86 旧系统兼容版（677,672 B，XP / Win7 等）
 ├── image/                     # 官网截图素材（reg1.png、reg2.png 注册邮件示例；og-cover.png 分享封面）
 ├── old/                       # 旧版页面与注册说明素材（历史留存，已不被官网引用）
 └── g/                         # Space War 太空战机小游戏
@@ -128,10 +128,11 @@ python -m http.server 8080
 | 2026-11-05 | 同版本重发 | V6.2.1 分发包连续换包（5,509,525 B → **5,509,785 B**，包内 exe 12,379,136 B，SHA-256 `FEF3CAC7…750238`），同步上游「年限授权不显示永久」与主窗直角描边修正；`.agent/AGENTS.md` 与 Obsidian 记忆库同步至快照 `20261105-092745`（commit `89a03af` / `f0b6dfa` / `69a8c37` / `da4dcf6`） |
 | 2026-11-05 | 口径收口与站点元信息 | README／修改记录／项目仪表盘／全局偏好／设计规范同步到快照 `20261105-092745` 与 5,509,785 B；新增 `favicon.svg`、`favicon.ico`、`image/og-cover.png`，`index.html` head 补 `rel="icon"`、canonical、Open Graph、twitter、theme-color，消除 `favicon.ico` 404；全站 4 处邮件入口复验通过 |
 | 2026-11-05 | **官网 V1.0.0** | 首个正式版本发布（Git tag `V1.0.0`）：补齐 `favicon.svg` / `favicon.ico` / `image/og-cover.png` 与 `rel="icon"`、canonical、Open Graph、twitter、theme-color，消除 `favicon.ico` 404；新增 `<noscript>` 静态明文邮件兜底（`<!--email_off-->` 关闭 CF 混淆 + `body:has()` 无脚本留白）；邮件主题/正文与购买区注册说明统一为「注册《文件夹加密隐藏王》」+ 姓名/机器码/版本三项；同步 V6.2.1 加固重发分发包 **5,512,632 B**（三件套，exe 12,386,816 B，SHA-256 `13B8E565…45B6758`，commit `6ee78a9`）与 README／修改记录／AGENTS／仪表盘口径；按 7 步流程写入 Obsidian 记忆库快照 `20261105-143547` |
+| 2026-11-05 | **官网 V1.0.1** | 增补发布（Git tag `V1.0.1`）：修正旧系统兼容包 `soft/folderhide_v5.3.0_x86.zip` 内 `Readme.txt` 的版本笔误（5.2.0 → 5.3.0），保持 GB18030 编码 / CRLF / 无 BOM 与其它 5 个条目字节不变；包体 677,671 B → **677,672 B**，SHA-256 `E38EF4ED…B3` → `850F8530…3A76667E`；收录上一提交 `7ba2acb` 的首页旧版 Windows → V5.3.0 兼容版双入口；按 7 步流程写入 Obsidian 记忆库快照 `20261105-154307`。V6.2.1 主包 5,512,632 B 三件套未变 |
 
 ## 维护约定
 
 - 每次向 GitHub 提交前，如功能、目录结构或版本发生变化，同步更新本文件（版本记录追加一行）。
 - 每次修改在根目录 `修改记录.md` 追加记录（时间精确到秒、修改人 Tony）。
 - 临时文件统一放 `.traetemp/`（已 gitignore），不入库。
-- 官网版本用 Git tag 标记（沿用 `V0.1.0` / `V0.1.1` → `V1.0.0` 命名）；推送用 `git -c http.proxy= -c https.proxy= push origin master`（本机代理会干扰 HTTPS），公网 Cloudflare 缓存约 1~2 分钟后刷新。
+- 官网版本用 Git tag 标记（沿用 `V0.1.0` / `V0.1.1` → `V1.0.0` → `V1.0.1` 命名）；推送用 `git -c http.proxy= -c https.proxy= push origin master`（本机代理会干扰 HTTPS），公网 Cloudflare 缓存约 1~2 分钟后刷新。
