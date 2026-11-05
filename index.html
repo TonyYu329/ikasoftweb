@@ -7,6 +7,33 @@
 <meta name="description" content="《文件夹加密隐藏王》V6.2.1：强隐蔽的文件夹隐藏与专业级加密保护，绿色单文件免安装，解压即用。Windows 10/11 x64，30 天全功能试用，官网直接下载。">
 <meta name="keywords" content="文件夹加密隐藏王, FolderHide, 文件夹加密, 文件夹隐藏, 加密软件, 隐藏文件夹, 绿色软件下载, 艾卡软件工作室">
 
+<!--
+  文件：index.html（ikasoft.cn 官网单页）
+  首次创建：Tony / 2026-06-09（V0.1.0 基线）
+  功能：产品介绍 → 立即下载 → 立即购买 → 关于我们 四段式单页，CSS/JS 全部内联
+  最后修改：Tony / 2026-11-05 14:15:47（邮件入口 noscript 明文兜底 + 注册口径统一）
+-->
+<meta name="theme-color" content="#05152c">
+<link rel="canonical" href="https://www.ikasoft.cn/">
+
+<!-- 站点图标：显式声明 rel="icon" 后浏览器不再回退请求 /favicon.ico（消除 404） -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico" sizes="any">
+
+<!-- Open Graph / 社交分享（色值与设计令牌同源；head 元信息与独立图标资源无法引用 CSS 变量） -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="艾卡软件工作室">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:url" content="https://www.ikasoft.cn/">
+<meta property="og:title" content="文件夹加密隐藏王 V6.2.1 — 文件夹加密、文件夹隐藏系统安全工具">
+<meta property="og:description" content="强隐蔽的文件夹隐藏与专业级加密保护，绿色单文件免安装，解压即用。Windows 10/11 x64，30 天全功能试用，官网直接下载。">
+<meta property="og:image" content="https://www.ikasoft.cn/image/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="文件夹加密隐藏王 V6.2.1 — 艾卡软件工作室">
+<meta name="twitter:description" content="绿色单文件免安装，彻底隐藏 + 高强度加密保护，30 天全功能试用。">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1096,9 +1123,52 @@ a:focus-visible {
   .download-card .btn { min-width: 0; }
   .download-version { font-size: 1.75rem; }
 }
+/* ===================== 无脚本环境邮件兜底 ===================== */
+/* 禁用 JavaScript 时 4 处邮件链接无法拼接；固定底栏常驻，颜色全部走设计令牌 */
+.noscript-mail {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface-dark);
+  color: var(--text-primary);
+  border-top: 1px solid var(--color-gold);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  text-align: center;
+}
+.noscript-mail a { color: var(--color-gold); text-decoration: underline; }
+.noscript-mail-alt {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--text-body);
+  font-size: 0.8125rem;
+}
+/* 提示条为 fixed；:has() 只在无脚本环境（元素真实存在）给 body 补底部留白，避免遮挡页脚 */
+body:has(.noscript-mail) { padding-bottom: 5rem; }
+@media (max-width: 600px) {
+  .noscript-mail { font-size: 0.8125rem; padding: var(--space-2) var(--space-3); }
+  body:has(.noscript-mail) { padding-bottom: 11rem; }
+}
+
 </style>
 </head>
 <body>
+<!-- 禁用 JavaScript 时的邮件入口兜底：4 处邮件链接依赖 initMailtoLinks() 运行时拼接，无脚本时 href 为空；
+     Cloudflare 会把静态 href="mailto:" 改写成 /cdn-cgi/l/email-protection#…（线上实测连空地址也被改写），
+     且其 email-decode.min.js 在无脚本环境同样不执行。故用 email_off 关闭 CF 混淆，给出纯静态明文地址。 -->
+<noscript>
+  <!--email_off-->
+  <div class="noscript-mail" role="status">
+    <strong>提示：</strong>当前浏览器禁用了 JavaScript，页面内的邮件链接无法自动填写。请发送邮件至
+    <a href="mailto:lantian329ygf&#64;163.com?subject=注册《文件夹加密隐藏王》">lantian329ygf&#64;163.com</a>，
+    主题填写「注册《文件夹加密隐藏王》」，正文附上姓名、机器码与软件名称及版本（V6.2.1）。
+    <span class="noscript-mail-alt">若上方链接不可用，请手动复制地址：lantian329ygf&#64;163.com</span>
+  </div>
+  <!--/email_off-->
+</noscript>
 
 <!-- ==================== 导航栏 ==================== -->
 <nav class="navbar" role="navigation" aria-label="主导航">
@@ -1525,23 +1595,19 @@ a:focus-visible {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // 所有邮件入口统一预填标题与正文。地址由 data 属性分行拼接，避免 Cloudflare 邮箱混淆把静态 mailto 改写成
-  // /cdn-cgi/l/email-protection#… 且缺少 data-cfemail 导致点击后地址显示错误。
+  // 所有邮件入口统一预填标题与正文。地址由 data 属性拆分拼接，避免 Cloudflare 邮箱混淆把静态 mailto 改写成
+  // /cdn-cgi/l/email-protection#… 且缺少 data-cfemail 导致点击后地址显示错误；无脚本环境见 body 开头 <noscript> 兜底。
+  // 主题与正文口径以购买区「邮件注册的方式」说明为真源（主题 / 姓名·机器码·软件名称及版本），三处保持一致。
   (function initMailtoLinks() {
-    var subject = '咨询：文件夹加密隐藏王 V6.2.1 购买与注册';
+    var subject = '注册《文件夹加密隐藏王》';
     var body = [
-      '您好，我想咨询《文件夹加密隐藏王》V6.2.1 的购买与注册事宜。',
+      '您好，按官网「邮件注册的方式」发送注册信息：',
       '',
-      '软件名称：文件夹加密隐藏王',
-      '版本：V6.2.1',
+      '1. 姓名：________________',
+      '2. 机器码：________________（在软件「设置」→「注册」处复制）',
+      '3. 软件名称及版本：文件夹加密隐藏王 V6.2.1',
       '',
-      '请告知购买方式与价格。',
-      '',
-      '我的机器码是：________________（请在此填写）',
-      '',
-      '我的联系方式：________________',
-      '',
-      '谢谢！'
+      '请发回注册码，谢谢！'
     ].join('\r\n');
 
     document.querySelectorAll('a[data-mail-user]').forEach(function(link) {

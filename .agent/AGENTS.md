@@ -11,10 +11,11 @@
 | 技术栈 | 纯静态 HTML5 + CSS3 + 原生 JavaScript（无前端框架、无构建工具、无包管理） |
 | 游戏渲染 | 2D Canvas 主层 + 透明 WebGL（three.js 本地副本 `g/js/lib/three.min.js`）3D 叠加层 |
 | 字体 | Google Fonts CDN（官网 Inter；游戏 Orbitron / Share Tech Mono / Exo 2） |
-| 设计规范 | `DESIGN-蓝橙色-tony.md`：暗蓝底色（主背景 `#05152c`、卡片 `#0f2636`）+ 暖金唯一强调色（`#ee9038`），全部颜色走 CSS 自定义属性 |
+| 设计规范 | `DESIGN-蓝橙色-tony.md`：暗蓝底色（主背景 `#05152c`、卡片 `#0f2636`）+ 暖金主强调色（`#ee9038`）+ 青蓝辅助强调色（`--color-accent-2`，仅「立即购买」主按钮），CSS 中颜色全部走自定义属性；head 元信息与图标/封面为同源字面色值例外 |
 | 服务入口 | 无服务端；官网入口 `index.html`，游戏入口 `g/index.html` |
 | 软件本体 | 官网介绍的为《文件夹加密隐藏王》V6.2.1（folderhide 项目 C#/.NET 10 AOT 版本，产品名 FolderHide）；分发包由 `soft/` 目录提供下载，桌面版源码仍是独立项目 `D:\Study\AICode\folderhide`，不在本仓库 |
-| 代码仓库 | `git@github.com:TonyYu329/ikasoftweb.git`（master 分支；官网 V0.1.0 基线 2026-06-09） |
+| 代码仓库 | `https://github.com/TonyYu329/ikasoftweb.git`（master 分支，origin 永久 HTTPS；官网 V0.1.0 基线 2026-06-09） |
+| 官网版本 | **V1.0.0**（2026-11-05 发布，Git tag `V1.0.0`；与软件版本 V6.2.1 分属两套版本号） |
 
 ## 构建、测试与校验
 
@@ -24,21 +25,23 @@
 - **缓存破坏**：游戏页静态资源用 `?v=x.y.z` 查询串（当前 `g/index.html` 引用 `merged.css?v=4.2.1`、`index_cjs.js?v=4.2.1`、`index_3d.js?v=4.2.1`）；改动 JS/CSS 后必须同步升版本号。
 - **界面类改动必须截图验证**：改完后在浏览器实际渲染并截图/像素/DOM 断言确认，禁止"代码写了即视为完成"。
 - **下载链接校验**：官网下载按钮统一指向 `soft/FolderHide_V6.2.1_x64.zip`（相对路径 + `download` 属性）；发布新版本时替换 zip 并同步 Hero、`#download`、页脚共 3 处直链入口与文件名（导航「立即下载」与所有「立即购买」按钮均为页内锚点）。
-- **校验口径**：HTML 结构与可访问性（aria-label、role）人工核对；无自动化测试套件。
+- **校验口径**：HTML 结构与可访问性（aria-label、role）人工核对；无自动化测试套件。元信息改动后用浏览器核对 `rel="icon"` / canonical / OG 标签；用本地静态服务确认 `/favicon.ico`、`/favicon.svg` 均返回 200；邮件入口须用浏览器读**最终 DOM 的 href**（不能只看原始 HTML）。
 
 ## 目录结构
 
 ```
 FHWeb/
 ├── index.html                 # 官网单页（约 1900 行，CSS/JS 全部内联，LF 行尾）
+├── favicon.svg / favicon.ico  # 站点图标（SVG 主 + ICO 16/32/48/64 多尺寸）
 ├── DESIGN-蓝橙色-tony.md      # 设计系统（暗蓝 + 暖金配色令牌与 Do/Don't）
 ├── README.md                  # 项目说明（每次提交 GitHub 时同步更新）
 ├── 修改记录.md                 # 每次修改的流水记录（时间精确到秒）
 ├── .agent/AGENTS.md           # 本文件，AI 编码指引
 ├── soft/                      # 软件分发包（官网全部下载按钮指向此处）
-│   └── FolderHide_V6.2.1_x64.zip   # V6.2.1 绿色版（5,509,785 B，2026-11-05 09:27 换包；仓库仅保留当前版本分发包）
+│   └── FolderHide_V6.2.1_x64.zip   # V6.2.1 绿色版三件套（5,512,632 B，2026-11-05 14:26 加固重发；仓库仅保留当前版本分发包）
 ├── image/                     # 官网截图素材
 │   ├── reg1.png               # 注册邮件发送示例（2026-10-25 起被注册区引用）
+│   ├── og-cover.png           # 社交分享封面 1200×630（og:image，2026-11-05 起）
 │   └── reg2.png               # 注册邮件填写示例（2026-10-25 起被注册区引用）
 ├── old/                       # 旧版官网页面与注册说明素材
 │   ├── about.html / how.html / reg.html / freeREG.html   # 旧版页面（历史留存）
@@ -70,9 +73,10 @@ FHWeb/
 - 单页锚点导航（4 项）：`#features`（产品介绍）、`#download`（立即下载）、`#buy`（立即购买）、`#about`（关于我们）；页面顺序与导航顺序一致。导航高亮、移动端汉堡菜单、回到顶部按钮逻辑在文件末尾内联 IIFE 中。
 - 立即购买区为独立 `#buy` 区块（2026-11-04 起，替代原双 tab 注册面板）：`.buy-block` 容器内金色大标题「🛒 立即购买」→ 紧跟三卡入口（淘宝 / 闲鱼 / 拼多多，均 `target="_blank"` + `rel="noopener"`）→ `.buy-hint` → 「📧 邮件注册的方式」`.mail-reg`（作者E-mail / 主题 / 姓名+机器码+版本 → 输入注册码并激活）→ `.buy-tip` 推荐做法 → `image/reg1.png`、`image/reg2.png` 两张截图（自适应 `flex: 1 1 300px`）。全站「立即购买」按钮（Hero、下载区、导航、页脚）统一锚到 `#buy`。主按钮规范（2026-11-05 起）：Hero 与 `#download` 的「立即下载」「立即购买」均为 `btn btn-primary btn-lg` 实心样式，尺寸/字重/圆角/发光强度完全一致，颜色明显区分——下载用 `--color-gold`（`#ee9038`），购买追加 `btn-buy` 走 `--color-accent-2`（`#1f9be0`，hover `#38abec`，光晕同为青蓝）；按钮文案全站统一——下载按钮一律「立即下载 V6.2.1」、购买按钮一律「立即购买」，下载按钮不带「x64 绿色版」等后缀；禁止把购买按钮改回 `btn-outline` 或降低尺寸/字重。购买三卡（2026-11-05 起）按要求做大做醒目：`.buy-card` 内边距 `var(--space-6) var(--space-4)`、平台图标 `.buy-icon` `2.25rem` 且带金色 `drop-shadow`、平台名 `.buy-name` `1.125rem` / 700、说明 `.buy-desc` `0.8125rem`、边框 `rgba(238,144,56,.28)`；hover 提亮至 `.1` 背景、边框 `.7`、追加金色光晕并上浮 2px、平台名转 `--color-gold-hover`；`.buy-grid` 间距 `var(--space-4)`。
 - 购买链接（2026-11-04 起）：淘宝 `https://h5.m.taobao.com/awp/core/detail.htm?ft=t&id=1098577044534`、闲鱼 `https://m.tb.cn/h.jhxmkAX?tk=iunt6bZhZcq`、拼多多 `https://mobile.yangkeduo.com/goods.html?goods_id=1025398232553&refer_page_app=mms&refer_page_name=mms_goods_list_new&refer_page_id=10357_1793777501465_1379930096`；均为移动端链接，页面提示「建议在手机端打开」。
-- 邮件入口：全站 4 处（立即购买区、关于我们信息表、页脚 ×2）统一写成 `<a href="mailto:" data-mail-user="lantian329ygf" data-mail-domain="163.com">`——地址拆成 `data-mail-user` / `data-mail-domain` 两个属性，由文件末尾 `initMailtoLinks()` 运行时拼成完整 `mailto:` 并预填 subject/body。**原因**：线上 ikasoft.cn 由 Cloudflare 托管且开启 Email Address Obfuscation，它会解码 HTML 实体后把静态 `mailto:` 改写成 `/cdn-cgi/l/email-protection#…`（且不写 `data-cfemail`，解码脚本无法还原），导致点击邮箱地址显示不对、明文地址被替换成 `[email protected]`；这就是线上「点击邮箱地址不对」的根因。拆属性后 CF 扫描不到邮箱模式，链接保持正常。新增邮件入口照此写法；可见文本写 `lantian329ygf&#64;163.com`（实体渲染为真实地址）；改预填模板只改 JS 一处。
+- 邮件入口：全站 4 处（立即购买区、关于我们信息表、页脚 ×2）统一写成 `<a href="mailto:" data-mail-user="lantian329ygf" data-mail-domain="163.com">`——地址拆成 `data-mail-user` / `data-mail-domain` 两个属性，由文件末尾 `initMailtoLinks()` 运行时拼成完整 `mailto:` 并预填 subject/body。**原因**：线上 ikasoft.cn 由 Cloudflare 托管且开启 Email Address Obfuscation，会把静态 `href="mailto:"` 改写成 `/cdn-cgi/l/email-protection#…`（2026-11-05 复验：连空地址也被改成 `#8c`，且不写 `data-cfemail`，解码脚本无法还原），拆属性后 JS 在页面加载后 `setAttribute` 覆盖为正确 `mailto:`（以浏览器最终 DOM 为准）。新增邮件入口照此写法；可见文本写 `lantian329ygf&#64;163.com`（实体渲染为真实地址）；改预填模板只改 JS 一处。**无脚本兜底（2026-11-05 14:15:47 起）**：`<body>` 开头有 `<noscript>` 固定底栏 `.noscript-mail`，用 `<!--email_off-->` / `<!--/email_off-->` 关闭 CF 混淆，给出静态明文地址、可点击 mailto 与可复制纯文本；禁用 JS 时仍可联系作者。CF 侧改写行为本地无法模拟，发版后须线上复验 noscript 段 href 未被改写。**邮件文案唯一口径**：主题「注册《文件夹加密隐藏王》」，正文三项「1. 姓名 / 2. 机器码 / 3. 软件名称及版本（V6.2.1）」，以购买区「📧 邮件注册的方式」说明为真源，JS 预填模板与 noscript 兜底三处一致；不得再出现「咨询：…购买与注册」或询问价格的旧口吻（购买流程已由三平台卡片承接）。4 处入口（含「技术支持」）沿用同一份模板，如需按用途分主题须另行决策。
+- **站点元信息与图标（2026-11-05 起）**：`head` 内 `rel="icon"` 同时声明 `favicon.svg`（主）与 `favicon.ico`（兼容，含 16/32/48/64），消除浏览器回退请求 `/favicon.ico` 的 404；`canonical` 固定 `https://www.ikasoft.cn/`（线上 http 301 → https，勿改回 http）；OG 含 type/site_name/locale/url/title/description/image(1200×630)，twitter:card 为 `summary_large_image`；`theme-color` = `#05152c`。改站点标题/描述时同步 `<title>`、`description`、OG 与 twitter 四处；色值属「CSS 变量」规则例外，以 `DESIGN-蓝橙色-tony.md` 的「站点元信息层」为准。
 - 语义化与可访问性：`<section>` 带 `aria-label`，`<nav role="navigation">`，图标按钮带 `aria-label`/`title`。
-- 文案事实口径（2026-11-05 起按 V6.2.1 最新构建）：软件名《文件夹加密隐藏王》V6.2.1（folderhide 项目 README/发布物为准，产品名 FolderHide）、平台 Windows 10 / 11 x64、zip 约 5.3 MB（**5,509,785 B**，SHA-256 `FEF3CAC7…750238`）/ 单 exe 约 11.8 MB（**12,379,136 B**）、30 天全功能试用、技术支持邮箱 lantian329ygf@163.com、官网 http://www.ikasoft.cn；V6.2.0 起取消「找回版」，忘记密码改为向作者索取短效救援令牌；V6.2.1 卡片视图支持框选多选与拖拽排序，主窗四周为 1 px 直角描边，年限授权在设置中显示「注册版」（不写「永久」）。旧版《文件夹加密隐藏王2011》V5.0 / Win9x~Win7 文案已下线，仅在 `old/` 历史页面保留。官网不展示任何价格（2026-11-02 起移除试用版/注册版价格行）；2026-11-04 起页面只保留购买与邮件注册流程，「试用版/注册版对比」与「免费获取」面板已下线。官网文案中不得再出现「重构版」「全新重构版」等字样。
+- 文案事实口径（2026-11-05 起按 V6.2.1 最新构建）：软件名《文件夹加密隐藏王》V6.2.1（folderhide 项目 README/发布物为准，产品名 FolderHide）、平台 Windows 10 / 11 x64、zip 约 5.3 MB（**5,512,632 B**，SHA-256 `13B8E565…45B6758`，三件套含 `FolderHide.exe.sig`）/ 单 exe 约 11.8 MB（**12,386,816 B**）、30 天全功能试用、技术支持邮箱 lantian329ygf@163.com、官网 http://www.ikasoft.cn；V6.2.0 起取消「找回版」，忘记密码改为向作者索取短效救援令牌；V6.2.1 卡片视图支持框选多选与拖拽排序，主窗四周为 1 px 直角描边，年限授权在设置中显示「注册版」（不写「永久」）。旧版《文件夹加密隐藏王2011》V5.0 / Win9x~Win7 文案已下线，仅在 `old/` 历史页面保留。官网不展示任何价格（2026-11-02 起移除试用版/注册版价格行）；2026-11-04 起页面只保留购买与邮件注册流程，「试用版/注册版对比」与「免费获取」面板已下线。官网文案中不得再出现「重构版」「全新重构版」等字样。
 - 对外文案脱敏（2026-10-25 用户明确要求）：官网面向最终用户，**不得介绍技术实现方案**；禁止出现「回收站伪装 / AES / PBKDF2 / DPAPI 机器绑定 / Native AOT / .NET 运行时 / 清单 / setup.stamp / data.dat / settings.cfg / 完整性闸门 / 多锚点」等字样，改用「彻底隐藏」「高强度加密保护」「两种锁定模式」「绿色单文件」等结果导向表述。
 - `index.html` 现状为 **LF 行尾**；其余文件（含 g/ 目录、md 文档）为 **CRLF**。修改既有文件时保持其原有行尾，不整文件转换。
 
@@ -119,7 +123,7 @@ FHWeb/
 会话约定：
 
 - 每次开启项目会话，首先读取 Obsidian 记忆文件（根导航 → 项目 @上下文 → 会话记录/架构决策/项目文档）。
-- **2026-10-25 起 FHWeb 已登记进记忆库根导航项目区**：项目目录 `01-项目区\FHWeb官网\`（含 `会话记录\`、`架构决策\`、`项目文档\`），最新入口 `@上下文-FHWeb官网-20261105-092745.md`，仪表盘 `FHWeb官网-项目仪表盘.md`；每次保存会话追加新的 `@上下文-FHWeb官网-<YYYYMMDD-HHMMSS>.md` 并在根导航行首链更新为最新快照。
+- **2026-10-25 起 FHWeb 已登记进记忆库根导航项目区**：项目目录 `01-项目区\FHWeb官网\`（含 `会话记录\`、`架构决策\`、`项目文档\`），最新入口 `@上下文-FHWeb官网-20261105-143547.md`，仪表盘 `FHWeb官网-项目仪表盘.md`；每次保存会话追加新的 `@上下文-FHWeb官网-<YYYYMMDD-HHMMSS>.md` 并在根导航行首链更新为最新快照。**2026-11-05 11:08:49 口径收口**：README／修改记录／项目仪表盘／全局偏好／设计规范均已同步到 `20261105-092745` 与 5,509,785 B；**2026-11-05 14:26 换包**（并行会话，`6ee78a9`）只提交分发包到 5,512,632 B 三件套，文档旧字节滞后；**2026-11-05 14:35:47 官网 V1.0.0 发布**：README／修改记录／本文件／仪表盘统一收口到 5,512,632 B，Git tag `V1.0.0`，记忆库入口指向 `20261105-143547`（7 步流程写入）。
 - 用户说"保存会话到obsidian"时，按 7 步流程写入：① 提交 GitHub → ② 读根导航 → ③ 更新 @上下文（文件名带精确到秒时间戳）→ ④ 写会话记录/架构决策/项目文档 → ⑤ 更新通用偏好配置 → ⑥ 更新本文件 → ⑦ 输出写入的文件名。
 - 复制文件到 Obsidian 目录须用 Python：`python -c "import shutil; shutil.copy2(src, dst)"`。
 

@@ -15,9 +15,10 @@
 
 | 项 | 内容 |
 |----|------|
+| 官网版本 | **V1.0.0**（2026-11-05 发布，Git tag `V1.0.0`；软件版本另计，当前 V6.2.1） |
 | 官方网站 | http://www.ikasoft.cn |
 | 软件名称 | 文件夹加密隐藏王 V6.2.1（FolderHide） |
-| 下载包 | `soft/FolderHide_V6.2.1_x64.zip`（5,508,752 B，绿色版） |
+| 下载包 | `soft/FolderHide_V6.2.1_x64.zip`（5,512,632 B，绿色版三件套：exe + 使用说明 + `.sig` 签名） |
 | 运行平台 | Windows 10 / 11（x64） |
 | 版权所有 | 艾卡软件工作室 |
 | 技术支持 | lantian329ygf@163.com |
@@ -27,7 +28,7 @@
 
 | 渠道 | 链接 | 说明 |
 |------|------|------|
-| 仓库内分发 | [`soft/FolderHide_V6.2.1_x64.zip`](soft/FolderHide_V6.2.1_x64.zip) | 与官网所有下载按钮同源，5,508,752 B |
+| 仓库内分发 | [`soft/FolderHide_V6.2.1_x64.zip`](soft/FolderHide_V6.2.1_x64.zip) | 与官网所有下载按钮同源，5,512,632 B |
 | 官网下载区 | `index.html#download` | 首屏、下载区、页脚共 3 处直链入口 |
 | 桌面源码 | `D:\Study\AICode\folderhide` | 独立仓库，本仓库只托管官网与分发包 |
 
@@ -45,13 +46,14 @@
 ```
 FHWeb/
 ├── index.html                 # 官网单页（CSS/JS 内联）
+├── favicon.svg / favicon.ico  # 站点图标（SVG 主 + ICO 多尺寸兼容）
 ├── DESIGN-蓝橙色-tony.md      # 暗蓝 + 暖金设计系统
 ├── README.md                  # 本文件
 ├── 修改记录.md                 # 修改流水记录
 ├── .agent/AGENTS.md           # AI 编码指引
 ├── soft/                      # 软件分发包（官网下载链接指向此处）
-│   └── FolderHide_V6.2.1_x64.zip   # V6.2.1 绿色版（约 5.3 MB）
-├── image/                     # 官网截图素材（reg1.png、reg2.png 注册邮件示例）
+│   └── FolderHide_V6.2.1_x64.zip   # V6.2.1 绿色版三件套（约 5.3 MB，5,512,632 B）
+├── image/                     # 官网截图素材（reg1.png、reg2.png 注册邮件示例；og-cover.png 分享封面）
 ├── old/                       # 旧版页面与注册说明素材（历史留存，已不被官网引用）
 └── g/                         # Space War 太空战机小游戏
     ├── index.html             # 游戏当前版（V4.3.0）
@@ -88,12 +90,21 @@ python -m http.server 8080
 - 移动端：屏幕虚拟按钮（子弹 / 导弹）
 - 维护入口：`g/index.html` + `g/js/index_cjs.js` + `g/js/index_3d.js` + `g/css/ui/merged.css`；改动静态资源后同步升级 `?v=` 缓存版本号。
 
+## 站点元信息与邮件入口
+
+- **图标与社交分享**：`favicon.svg`（主）、`favicon.ico`（16/32/48/64）、`image/og-cover.png`（1200×630）；`index.html` 的 head 声明 `rel="icon"`、canonical `https://www.ikasoft.cn/`、Open Graph、twitter:card 与 `theme-color`。改站点标题/描述时须同步 `<title>`、description、OG、twitter 四处。
+- **4 处邮件入口**（立即购买区、关于我们信息表、页脚 ×2）：统一写成 `href="mailto:"` + `data-mail-user` / `data-mail-domain`，由文件末尾 `initMailtoLinks()` 运行时拼接并预填主题/正文，规避 Cloudflare Email Address Obfuscation 把静态 `mailto:` 改写成 `/cdn-cgi/l/email-protection#…`。
+- **唯一文案口径**：主题「注册《文件夹加密隐藏王》」，正文三项「1. 姓名 / 2. 机器码 / 3. 软件名称及版本（V6.2.1）」；以购买区「📧 邮件注册的方式」说明为真源，JS 预填模板与 `<noscript>` 兜底三处一致，不得再出现咨询购买或询问价格的旧口吻。
+- **无脚本兜底**：`<body>` 开头有 `<noscript>` 固定底栏 `.noscript-mail`，用 `<!--email_off-->` / `<!--/email_off-->` 关闭 CF 混淆，提供静态明文地址、可点击 mailto 与可复制地址；`body:has(.noscript-mail)` 仅在无脚本环境给 body 补底部留白（桌面 80px / ≤600px 176px）。
+- **验证口径**：界面/邮件改动须用浏览器读最终 DOM 的 href 并截图验证；禁用 JavaScript 场景用 Chrome DevTools `Emulation.setScriptExecutionDisabled`（`--disable-javascript` 在 Chrome 157 为无效 flag）。
+
 ## 设计规范
 
 - 设计令牌唯一来源：`DESIGN-蓝橙色-tony.md`
 - 主背景 `#05152c`，卡片表面 `#0f2636`，边框 `#1a2a3a`；暖金强调 `#ee9038`（hover `#f3a13e`）
 - 正文 `#9ca9b9`，标题 `#e8edf3`；卡片直角、微弱发光，不使用蓝色强调与强投影
 - 所有颜色使用 CSS 变量，禁止硬编码
+- 第二强调色 `--color-accent-2: #1f9be0`（hover `#38abec`）仅用于「立即购买」主按钮，禁止扩散；`head` 元信息（theme-color / favicon / OG 封面）为字面色值例外，与设计令牌同源
 
 ## 版本记录
 
@@ -109,9 +120,13 @@ python -m http.server 8080
 | 2026-11-04 | 页面精简 | 全站去除「重构版」字样；页面重构为「产品介绍 → 立即下载 → 立即购买 → 关于我们」四段式，删除 `#howto` 使用说明与 `#pricing` 试用/注册对比及免费获取面板；购买入口统一为「立即购买」并锚定新 `#buy` 区块（三平台卡片 + 邮件注册说明），下载区新增「立即购买」按钮；导航与页脚同步为 4 项 |
 | 2026-11-05 | 按钮与邮件修复 | 「立即下载」「立即购买」统一为同尺寸、同字重、同发光强度的实心主按钮，颜色明显区分（下载金色 `#ee9038`、购买青蓝 `#1f9be0`，新增 `--color-accent-2` 与 `.btn-buy`）；下载按钮文案统一为「立即下载 V6.2.1」（去掉「（x64 绿色版）」后缀）；邮件入口改为 `data-mail-user` / `data-mail-domain` 两段属性 + JS 运行时拼接 `mailto:`，规避 Cloudflare Email Obfuscation 把静态地址改写成 `/cdn-cgi/l/email-protection#…` 或显示为 `[email protected]` |
 | 2026-11-05 | 购买三卡放大 | `#buy` 的淘宝 / 闲鱼 / 拼多多三卡做大做醒目：图标 36px（`2.25rem`，带金色投影）、平台名 18px / 700、说明 13px，内边距改为 `var(--space-6) var(--space-4)`，卡片加金色边框（`.28`），hover 加金色光晕并上浮 2px、平台名转暖金；`.buy-grid` 间距 `var(--space-4)`，桌面 3 列 / ≤768px 单列不变 |
+| 2026-11-05 | 同版本重发 | V6.2.1 分发包连续换包（5,509,525 B → **5,509,785 B**，包内 exe 12,379,136 B，SHA-256 `FEF3CAC7…750238`），同步上游「年限授权不显示永久」与主窗直角描边修正；`.agent/AGENTS.md` 与 Obsidian 记忆库同步至快照 `20261105-092745`（commit `89a03af` / `f0b6dfa` / `69a8c37` / `da4dcf6`） |
+| 2026-11-05 | 口径收口与站点元信息 | README／修改记录／项目仪表盘／全局偏好／设计规范同步到快照 `20261105-092745` 与 5,509,785 B；新增 `favicon.svg`、`favicon.ico`、`image/og-cover.png`，`index.html` head 补 `rel="icon"`、canonical、Open Graph、twitter、theme-color，消除 `favicon.ico` 404；全站 4 处邮件入口复验通过 |
+| 2026-11-05 | **官网 V1.0.0** | 首个正式版本发布（Git tag `V1.0.0`）：补齐 `favicon.svg` / `favicon.ico` / `image/og-cover.png` 与 `rel="icon"`、canonical、Open Graph、twitter、theme-color，消除 `favicon.ico` 404；新增 `<noscript>` 静态明文邮件兜底（`<!--email_off-->` 关闭 CF 混淆 + `body:has()` 无脚本留白）；邮件主题/正文与购买区注册说明统一为「注册《文件夹加密隐藏王》」+ 姓名/机器码/版本三项；同步 V6.2.1 加固重发分发包 **5,512,632 B**（三件套，exe 12,386,816 B，SHA-256 `13B8E565…45B6758`，commit `6ee78a9`）与 README／修改记录／AGENTS／仪表盘口径；按 7 步流程写入 Obsidian 记忆库快照 `20261105-143547` |
 
 ## 维护约定
 
 - 每次向 GitHub 提交前，如功能、目录结构或版本发生变化，同步更新本文件（版本记录追加一行）。
 - 每次修改在根目录 `修改记录.md` 追加记录（时间精确到秒、修改人 Tony）。
 - 临时文件统一放 `.traetemp/`（已 gitignore），不入库。
+- 官网版本用 Git tag 标记（沿用 `V0.1.0` / `V0.1.1` → `V1.0.0` 命名）；推送用 `git -c http.proxy= -c https.proxy= push origin master`（本机代理会干扰 HTTPS），公网 Cloudflare 缓存约 1~2 分钟后刷新。
