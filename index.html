@@ -396,6 +396,27 @@ a:focus-visible {
   line-height: 1.6;
 }
 
+/* 旧版本 Windows 兼容版下载提示（首屏与下载区共用） */
+.legacy-download {
+  margin-top: var(--space-2);
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.legacy-download a {
+  color: var(--color-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legacy-download a:hover { color: var(--color-gold-hover); }
+
+.legacy-download a:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
 /* 导航下载入口 */
 .navbar-links a.nav-download {
   color: var(--color-accent);
@@ -1239,6 +1260,7 @@ body:has(.noscript-mail) { padding-bottom: 5rem; }
         </a>
       </div>
       <p class="hero-download-note">Windows 10 / 11 (x64) · 绿色免安装 zip 约 5.3 MB · 30 天全功能试用</p>
+      <p class="legacy-download">如果您使用其他旧版本的 Windows（如 XP / 7），请 <a href="soft/folderhide_v5.3.0_x86.zip" download>下载 V5.3.0 兼容版</a></p>
     </div>
 
     <div class="hero-visual">
@@ -1364,6 +1386,8 @@ body:has(.noscript-mail) { padding-bottom: 5rem; }
           立即购买
         </a>
       </div>
+
+      <p class="legacy-download">如果您使用其他旧版本的 Windows（如 XP / 7），请 <a href="soft/folderhide_v5.3.0_x86.zip" download>下载 V5.3.0 兼容版</a></p>
 
       <p class="download-file">下载文件：<code>FolderHide_V6.2.1_x64.zip</code></p>
 
