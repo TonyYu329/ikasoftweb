@@ -880,63 +880,11 @@ a:focus-visible {
   border-top: 1px solid rgba(26, 42, 58, 0.4);
 }
 
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-8);
-  align-items: start;
-}
-
-.about-info-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--color-surface);
-  border: 1px solid rgba(26, 42, 58, 0.4);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.about-info-table th,
-.about-info-table td {
-  padding: var(--space-3) var(--space-5);
-  font-size: 0.875rem;
-  border-bottom: 1px solid rgba(26, 42, 58, 0.3);
-}
-
-.about-info-table th {
-  background: rgba(26, 42, 58, 0.2);
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-  width: 120px;
-  text-align: left;
-}
-
-.about-info-table td {
-  color: rgba(154, 169, 185, 0.7);
-}
-
-.about-info-table tr:last-child th,
-.about-info-table tr:last-child td {
-  border-bottom: none;
-}
-
-.about-info-table a {
-  color: var(--color-accent);
-}
-
 .about-desc-box {
   background: var(--color-surface);
   border: 1px solid rgba(26, 42, 58, 0.4);
   border-radius: var(--radius-lg);
   padding: var(--space-8);
-}
-
-.about-desc-box h3 {
-  font-size: 1.0625rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-4);
 }
 
 .about-desc-box p {
@@ -950,19 +898,6 @@ a:focus-visible {
   color: var(--color-accent);
   font-weight: 500;
 }
-
-.about-trial-note {
-  margin-top: var(--space-6);
-  padding: var(--space-4) var(--space-5);
-  background: rgba(238, 144, 56, 0.04);
-  border: 1px solid rgba(238, 144, 56, 0.1);
-  border-radius: var(--radius-sm);
-  font-size: 0.875rem;
-  color: rgba(154, 169, 185, 0.8);
-  line-height: 1.7;
-}
-
-.about-trial-note strong { color: var(--color-accent); }
 
 /* ===================== 底部 ===================== */
 .footer {
@@ -1090,8 +1025,6 @@ a:focus-visible {
   .hero-visual { display: none; }
 
   .features-grid { grid-template-columns: repeat(2, 1fr); }
-
-  .about-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -1461,67 +1394,12 @@ body:has(.noscript-mail) { padding-bottom: 5rem; }
     <div class="section-header">
       <span class="section-label">关于我们</span>
       <h2>关于我们</h2>
-      <p>经典品牌的 V6.2.1 版本：绿色单文件、免安装、开箱即用</p>
     </div>
 
-    <div class="about-grid">
-      <div>
-        <table class="about-info-table">
-          <tbody>
-            <tr>
-              <th>软件名称</th>
-              <td>文件夹加密隐藏王（FolderHide）</td>
-            </tr>
-            <tr>
-              <th>版本号</th>
-              <td>6.2.1</td>
-            </tr>
-            <tr>
-              <th>文件大小</th>
-              <td>单 exe 约 11.8 MB（zip 包约 5.3 MB）</td>
-            </tr>
-            <tr>
-              <th>使用平台</th>
-              <td>Windows 10 / 11（x64）</td>
-            </tr>
-            <tr>
-              <th>授权方式</th>
-              <td>30 天全功能试用 · 机器码 + 注册码</td>
-            </tr>
-            <tr>
-              <th>版权所有</th>
-              <td>艾卡软件工作室</td>
-            </tr>
-            <tr>
-              <th>技术支持</th>
-              <td><a href="mailto:" data-mail-user="lantian329ygf" data-mail-domain="163.com">lantian329ygf&#64;163.com</a></td>
-            </tr>
-            <tr>
-              <th>网址</th>
-              <td><a href="http://www.ikasoft.cn" target="_blank" rel="noopener">http://www.ikasoft.cn</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div>
-        <div class="about-desc-box">
-          <h3>功能简介</h3>
-          <p><span class="highlight-desc">《文件夹加密隐藏王》V6.2.1</span> 是基于经典版本的升级版本（FolderHide）：把您的私密文件夹彻底隐藏起来，再配上一把只属于您的密码锁，让他人既无从发现，也无法访问。</p>
-          <p>采用 <span class="highlight-desc">业界公认的强加密方案</span>保护您的隐藏记录，防篡改、防暴力破解，密码本身不以明文形式保存。</p>
-          <p>支持<span class="highlight-desc">密码模式与本机免登录模式</span>两种锁定方式；连续输错 5 次自动进入 30 秒冷却。</p>
-          <p>全新 Nova 风格界面：<span class="highlight-desc">深色 / 浅色</span>原地切换，毛玻璃、液态玻璃、亚克力三种背景样式，背景透明度、字体、图标大小均可调，设置自动保存。</p>
-          <p>隐藏列表支持 <span class="highlight-desc">列表 / 卡片双视图</span>：列表可表头全选并批量隐藏、显示、删除，卡片视图便于快速浏览并支持框选多选与拖拽调整顺序，切换选择自动记忆。</p>
-          <p>她为<span class="highlight-desc">绿色单文件</span>：单个 exe 约 11.8 MB，免安装、免配置，也不在后台常驻监视，不会拖慢系统。</p>
-          <p>30 天试用期内可完整体验全部功能，注册后解除所有限制，并可享受以后的免费升级。</p>
-          <p><span class="highlight-desc">《文件夹加密隐藏王》将是您加密文件夹、隐藏文件夹的理想选择！</span></p>
-
-          <div class="about-trial-note">
-            <strong>使用说明：</strong>
-            未注册的《文件夹加密隐藏王》V6.2.1 可免费全功能试用 30 天，注册后不再有任何限制，并可享受以后的免费升级！
-          </div>
-        </div>
-      </div>
+    <div class="about-desc-box">
+      <p>艾卡软件工作室致力于为大家提供优秀喜爱的软件。</p>
+      <p>技术支持：<a href="mailto:" data-mail-user="lantian329ygf" data-mail-domain="163.com">lantian329ygf&#64;163.com</a></p>
+      <p>网址：<a href="http://www.ikasoft.cn" target="_blank" rel="noopener">http://www.ikasoft.cn</a></p>
     </div>
   </div>
 </section>
